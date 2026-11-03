@@ -1,0 +1,17 @@
+# Shared hosts and knowledge
+
+Keep one `AGENTS.md`. For Claude, use a safe link to it or a supported `@AGENTS.md` import that preserves Claude-specific owner text. Keep ritual sources in `.agents/skills`; link individual skills into an existing `.claude/skills` directory. Never replace user directories with a link. Codex discovers the canonical `.agents/skills` source. Generate native role and hook formats from one shared contract.
+
+Put lasting project rules in AGENTS.md and durable lessons in `.agents/memory`, with an index pointing to decisions, handoffs and topic files. Include source/date and supersession when correcting a lesson. Read relevant shared knowledge in each fresh session and task dossier. Do not merge raw histories or link private vendor memory databases together. Reviewer memory suggestions go back to the coordinator without expanding reviewer permissions.
+
+Claude and Codex hooks need their actual event/matcher/output format. Test a real allowed edit and a real denied edit on each host. Hook configuration existing on disk does not prove it loaded; trust, working directory and missing code matter. A fresh clone must contain the hook launcher and code. Startup, resume, compaction and repeated delivery retain the active task. Session title files are records; only native read-back proves a UI rename.
+
+Use the startup hook's exact coordination ID for claims/locks and inherit it through `ARTI_SESSION_ID` in delegated CLI processes. The guard permits native Claude Markdown plan scratch and this project's native memory cache, with symlink checks; durable lessons still belong in the shared files. Codex settings use explicit `[features]` and `[agents]` tables; reconcile inline/dotted forms before setup rather than appending invalid duplicate tables.
+
+Codex workspace mode protects `.agents` and Git metadata. Setup returns a scoped `codex_launch` argument list: grant `.agents/memory` for authorised knowledge updates and the private Git-common runtime directory for coordinator operations. Existing lease validation is read-only; workers reuse the coordinator's ID. For a CLI session, prefix that command with `ARTI_SESSION_ID="$(uuidgen)"` and inherit the same value in delegated processes. These grants do not open other agent configuration or authentication directories. Other clients must provide equivalent explicit permissions; the live report certifies the tested CLI route.
+
+Codex custom agents inherit parent permissions. Their role files cannot create a separate read-only sandbox. Native tool restrictions, parent sandbox, guards and a separately restricted external review process have different coverage; state what each actually enforces. Do not silently weaken a sandbox to run a test.
+
+macOS is the first live qualification target. Linux/Windows integration remains documented until tested. On Windows prefer supported instruction imports and directory junctions; copied skills require drift checks. Other agents can read AGENTS.md and the shared skill directly, invoking helpers themselves; missing native hooks/subagents must be labelled manual checks rather than enforcement.
+
+Sources: [Codex skills](https://learn.chatgpt.com/docs/build-skills), [Codex agents](https://learn.chatgpt.com/docs/agent-configuration/subagents), [Codex hooks](https://learn.chatgpt.com/docs/hooks), [Claude memory](https://code.claude.com/docs/en/memory), [Claude agents](https://code.claude.com/docs/en/sub-agents).

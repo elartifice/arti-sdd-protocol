@@ -1,0 +1,67 @@
+{
+  "schema_version": 2,
+  "enabled_roles": [
+    "coordinator",
+    "scout",
+    "implementer",
+    "reviewer",
+    "escalation"
+  ],
+  "max_concurrent": 2,
+  "bindings": {
+    "claude": {
+      "coordinator": {
+        "model": "opus",
+        "effective_model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "scout": {
+        "model": "haiku",
+        "effective_model": "claude-haiku-5-5",
+        "effort": "low"
+      },
+      "implementer": {
+        "model": "sonnet",
+        "effective_model": "claude-sonnet-5-5",
+        "effort": "high"
+      },
+      "reviewer": {
+        "model": "opus",
+        "effective_model": "claude-opus-5-5",
+        "effort": "high"
+      },
+      "escalation": {
+        "model": "opus",
+        "effective_model": "claude-opus-5-5",
+        "effort": "high"
+      }
+    },
+    "codex": {
+      "coordinator": {
+        "model": "gpt-6.1-sol",
+        "effective_model": "gpt-6.1-sol",
+        "effort": "high"
+      },
+      "scout": {
+        "model": "gpt-6-luna",
+        "effective_model": "gpt-6-luna",
+        "effort": "high"
+      },
+      "implementer": {
+        "model": "gpt-6.1-terra",
+        "effective_model": "gpt-6.1-terra",
+        "effort": "high"
+      },
+      "reviewer": {
+        "model": "gpt-6.1-sol",
+        "effective_model": "gpt-6.1-sol",
+        "effort": "high"
+      },
+      "escalation": {
+        "model": "gpt-6-astra",
+        "effective_model": "gpt-6-astra",
+        "effort": "high"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+# Project charter
+
+Describe the goal, users, scope, architecture, constraints and success criteria. Distinguish confirmed facts from assumptions. Resolve every required null before setup.
+
+<!-- arti-sdd:config -->
+```json
+{
+  "schema_version": 2,
+  "project": "example-project",
+  "facts": { "has_ui": false, "deploys": false, "uses_llm": false },
+  "hosts": ["claude", "codex"],
+  "decisions": {
+    "merge": "manual",
+    "planning": "committed",
+    "qa": "checks",
+    "team": "single",
+    "review": null,
+    "review_risks": [],
+    "board": "markdown"
+  }
+}
+```
+<!-- /arti-sdd:config -->
+
+## Architecture and milestones
+
+Describe interfaces, data, dependencies and concrete milestone outcomes.
+
+## Initial tickets
+
+Give each ticket its goal, prerequisites, territory hints and observable acceptance evidence. Do not claim repository inspection or tests that have not run.
+
+## Open questions
+
+List decisions and assumptions requiring repository evidence.

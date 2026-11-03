@@ -1,0 +1,11 @@
+{
+  "name": "arti-protocol-development",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node dev/test.mjs",
+    "check": "node dev/check.mjs",
+    "test:live": "node dev/qualify.mjs",
+    "package": "node dev/package.mjs"
+  }
+}
