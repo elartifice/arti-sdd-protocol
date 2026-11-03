@@ -1,112 +1,11 @@
 {
   "as_of": "2026-11-03",
-  "samples": [
-    {
-      "id": "A1",
-      "repository": "A",
-      "workload": "Delegated implementation session",
-      "category": "delegated",
-      "baseline": "claude-opus-5-5",
-      "groups": [
-        {
-          "model": "claude-opus-5-5",
-          "context": "coordinator",
-          "tier": "standard",
-          "requests": 193,
-          "input": 436,
-          "cached": 64250927,
-          "write_5m": 0,
-          "write_1h": 1179351,
-          "output": 188316
-        },
-        {
-          "model": "claude-haiku-5-5",
-          "context": "worker",
-          "tier": "standard",
-          "requests": 6,
-          "input": 12,
-          "cached": 263252,
-          "write_5m": 89400,
-          "write_1h": 0,
-          "output": 33644
-        },
-        {
-          "model": "claude-sonnet-5-5",
-          "context": "worker",
-          "tier": "standard",
-          "requests": 23,
-          "input": 48,
-          "cached": 946004,
-          "write_5m": 118272,
-          "write_1h": 0,
-          "output": 12719
-        }
-      ]
-    },
-    {
-      "id": "A2",
-      "repository": "A",
-      "workload": "Delegated implementation session",
-      "category": "delegated",
-      "baseline": "claude-opus-5-5",
-      "groups": [
-        {
-          "model": "claude-opus-5-5",
-          "context": "coordinator",
-          "tier": "standard",
-          "requests": 239,
-          "input": 508,
-          "cached": 59986859,
-          "write_5m": 0,
-          "write_1h": 1159475,
-          "output": 206661
-        },
-        {
-          "model": "claude-sonnet-5-5",
-          "context": "worker",
-          "tier": "standard",
-          "requests": 18,
-          "input": 36,
-          "cached": 842791,
-          "write_5m": 70999,
-          "write_1h": 0,
-          "output": 14652
-        },
-        {
-          "model": "claude-opus-5-5",
-          "context": "worker",
-          "tier": "standard",
-          "requests": 50,
-          "input": 104,
-          "cached": 2837108,
-          "write_5m": 175122,
-          "write_1h": 0,
-          "output": 55635
-        }
-      ]
-    },
-    {
-      "id": "B1",
-      "repository": "B",
-      "workload": "Documentation ticket session (model-choice control; no delegation)",
-      "category": "control",
-      "baseline": "gpt-6-astra",
-      "groups": [
-        {
-          "model": "gpt-6.1-sol",
-          "context": "coordinator",
-          "tier": "standard",
-          "requests": 19,
-          "input": 58352,
-          "cached": 3853696,
-          "write_5m": 0,
-          "write_1h": 0,
-          "output": 47160
-        }
-      ]
-    }
-  ],
-  "scope": "Historical provider-side ticket-session captures from two repositories; fixed-token API repricing, not invoices or an end-to-end causal benchmark.",
+  "scope": "17 ticket-linked captures from one private project: 12 Claude session families and 5 Codex root threads with descendants. Captured-token API repricing, not invoices or a causal benchmark.",
+  "selection": {
+    "claude": "10 most recently active independent native-child session families with ticket references, plus original A1/A2 retained for continuity. Shared fork histories count once.",
+    "codex": "All 5 captured root threads opened from the canonical project checkout, plus their descendants. Temporary harness/worktree roots are excluded.",
+    "excluded": "Uncaptured external CLI processes and non-token charges. Private project names, ticket IDs, transcripts and session IDs are not published."
+  },
   "rates_usd_per_million": {
     "claude-opus-5-5": {
       "input": 4,
@@ -149,31 +48,782 @@
     "https://developers.openai.com/api/docs/models/gpt-6-astra",
     "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
   ],
-  "expected": {
-    "delegated": {
-      "actual_usd": 54.97419452,
-      "baseline_usd": 57.0420772,
-      "saving_percent": 3.6251882496312837
+  "samples": [
+    {
+      "id": "A1",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 193,
+          "input": 436,
+          "cached": 64250927,
+          "write_5m": 0,
+          "write_1h": 1179351,
+          "output": 188316
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 6,
+          "input": 12,
+          "cached": 263252,
+          "write_5m": 89400,
+          "write_1h": 0,
+          "output": 33644
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 23,
+          "input": 48,
+          "cached": 946004,
+          "write_5m": 118272,
+          "write_1h": 0,
+          "output": 12719
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
     },
-    "control": {
-      "actual_usd": 0.9736736,
-      "baseline_usd": 6.795216,
-      "saving_percent": 85.67118984885838
+    {
+      "id": "A2",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 239,
+          "input": 508,
+          "cached": 59986859,
+          "write_5m": 0,
+          "write_1h": 1159475,
+          "output": 206661
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 18,
+          "input": 36,
+          "cached": 842791,
+          "write_5m": 70999,
+          "write_1h": 0,
+          "output": 14652
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 50,
+          "input": 104,
+          "cached": 2837108,
+          "write_5m": 175122,
+          "write_1h": 0,
+          "output": 55635
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A3",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 1016,
+          "input": 2160,
+          "cached": 454540912,
+          "write_5m": 92028,
+          "write_1h": 2505807,
+          "output": 831137
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 7,
+          "input": 14,
+          "cached": 236912,
+          "write_5m": 60329,
+          "write_1h": 0,
+          "output": 24577
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 12,
+          "input": 24,
+          "cached": 757672,
+          "write_5m": 99672,
+          "write_1h": 0,
+          "output": 13816
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "context": "worker",
+          "tier": "over-100k",
+          "requests": 1,
+          "input": 2,
+          "cached": 99672,
+          "write_5m": 680,
+          "write_1h": 0,
+          "output": 2325
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 42,
+          "input": 88,
+          "cached": 3388562,
+          "write_5m": 131349,
+          "write_1h": 0,
+          "output": 35287
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A4",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 976,
+          "input": 2110,
+          "cached": 369733115,
+          "write_5m": 29174,
+          "write_1h": 3188941,
+          "output": 765947
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 24,
+          "input": 50,
+          "cached": 2231732,
+          "write_5m": 137350,
+          "write_1h": 0,
+          "output": 31696
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A5",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 391,
+          "input": 828,
+          "cached": 109736016,
+          "write_5m": 0,
+          "write_1h": 840857,
+          "output": 284027
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 25,
+          "input": 52,
+          "cached": 1509755,
+          "write_5m": 83378,
+          "write_1h": 0,
+          "output": 27649
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A6",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 237,
+          "input": 488,
+          "cached": 79158346,
+          "write_5m": 0,
+          "write_1h": 482886,
+          "output": 281143
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 39,
+          "input": 80,
+          "cached": 4005763,
+          "write_5m": 137490,
+          "write_1h": 0,
+          "output": 50700
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A7",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 279,
+          "input": 588,
+          "cached": 47011590,
+          "write_5m": 0,
+          "write_1h": 750986,
+          "output": 220736
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 45,
+          "input": 92,
+          "cached": 2680778,
+          "write_5m": 157401,
+          "write_1h": 0,
+          "output": 45920
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A8",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 581,
+          "input": 1222,
+          "cached": 134667120,
+          "write_5m": 0,
+          "write_1h": 1483885,
+          "output": 451958
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 112,
+          "input": 230,
+          "cached": 8004870,
+          "write_5m": 472266,
+          "write_1h": 0,
+          "output": 97360
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 19,
+          "input": 40,
+          "cached": 782286,
+          "write_5m": 73097,
+          "write_1h": 0,
+          "output": 15710
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 13,
+          "input": 26,
+          "cached": 366730,
+          "write_5m": 92905,
+          "write_1h": 0,
+          "output": 24379
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A9",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 19,
+          "input": 40,
+          "cached": 2396901,
+          "write_5m": 0,
+          "write_1h": 115816,
+          "output": 29802
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 206,
+          "input": 430,
+          "cached": 55962365,
+          "write_5m": 0,
+          "write_1h": 774685,
+          "output": 246111
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 33,
+          "input": 70,
+          "cached": 2741943,
+          "write_5m": 119296,
+          "write_1h": 0,
+          "output": 34993
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A10",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 241,
+          "input": 522,
+          "cached": 57254786,
+          "write_5m": 0,
+          "write_1h": 587651,
+          "output": 199587
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 59,
+          "input": 122,
+          "cached": 2965699,
+          "write_5m": 197288,
+          "write_1h": 0,
+          "output": 53614
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A11",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 185,
+          "input": 392,
+          "cached": 44727926,
+          "write_5m": 0,
+          "write_1h": 435011,
+          "output": 150851
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 33,
+          "input": 68,
+          "cached": 1613480,
+          "write_5m": 121525,
+          "write_1h": 0,
+          "output": 26197
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "A12",
+      "repository": "A",
+      "provider": "anthropic",
+      "workload": "Ticket-linked session family with native subagents",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 365,
+          "input": 786,
+          "cached": 102244416,
+          "write_5m": 0,
+          "write_1h": 1298534,
+          "output": 455690
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 127,
+          "input": 256,
+          "cached": 24442225,
+          "write_5m": 781211,
+          "write_1h": 0,
+          "output": 145078
+        }
+      ],
+      "coordinator_baseline": "claude-opus-5-5"
+    },
+    {
+      "id": "C1",
+      "repository": "A",
+      "provider": "openai",
+      "workload": "Ticket-linked Codex thread with captured descendants",
+      "category": "delegated",
+      "baseline": "gpt-6-astra",
+      "groups": [
+        {
+          "model": "gpt-6-astra",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 624,
+          "input": 1922540,
+          "cached": 99759488,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 279996
+        },
+        {
+          "model": "gpt-6-astra",
+          "context": "coordinator",
+          "tier": "over-272k",
+          "requests": 28,
+          "input": 331413,
+          "cached": 7896704,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 13714
+        },
+        {
+          "model": "gpt-6-astra",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 627,
+          "input": 2785762,
+          "cached": 75754368,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 389853
+        }
+      ],
+      "coordinator_baseline": "gpt-6-astra"
+    },
+    {
+      "id": "C2",
+      "repository": "A",
+      "provider": "openai",
+      "workload": "Ticket-linked Codex thread with captured descendants",
+      "category": "delegated",
+      "baseline": "gpt-6-astra",
+      "groups": [
+        {
+          "model": "gpt-6-astra",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 62,
+          "input": 614549,
+          "cached": 9799808,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 51430
+        },
+        {
+          "model": "gpt-6-astra",
+          "context": "coordinator",
+          "tier": "over-272k",
+          "requests": 28,
+          "input": 77084,
+          "cached": 8154496,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 19938
+        },
+        {
+          "model": "gpt-6-astra",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 4,
+          "input": 21333,
+          "cached": 393472,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 1420
+        }
+      ],
+      "coordinator_baseline": "gpt-6-astra"
+    },
+    {
+      "id": "C3",
+      "repository": "A",
+      "provider": "openai",
+      "workload": "Ticket-linked Codex thread with captured descendants",
+      "category": "delegated",
+      "baseline": "gpt-6-astra",
+      "groups": [
+        {
+          "model": "gpt-6.1-sol",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 500,
+          "input": 696633,
+          "cached": 81105664,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 214888
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "coordinator",
+          "tier": "over-272k",
+          "requests": 299,
+          "input": 973256,
+          "cached": 104050048,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 248522
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 555,
+          "input": 1881304,
+          "cached": 87587456,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 319326
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "worker",
+          "tier": "over-272k",
+          "requests": 225,
+          "input": 545264,
+          "cached": 74827008,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 200168
+        }
+      ],
+      "coordinator_baseline": "gpt-6.1-sol"
+    },
+    {
+      "id": "C4",
+      "repository": "A",
+      "provider": "openai",
+      "workload": "Ticket-linked Codex thread with captured descendants",
+      "category": "delegated",
+      "baseline": "gpt-6-astra",
+      "groups": [
+        {
+          "model": "gpt-6.1-sol",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 654,
+          "input": 1272418,
+          "cached": 104984448,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 470363
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "coordinator",
+          "tier": "over-272k",
+          "requests": 379,
+          "input": 1483591,
+          "cached": 133019264,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 476565
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 1151,
+          "input": 4866589,
+          "cached": 166357888,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 816773
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "worker",
+          "tier": "over-272k",
+          "requests": 339,
+          "input": 1332038,
+          "cached": 114502400,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 338133
+        }
+      ],
+      "coordinator_baseline": "gpt-6.1-sol"
+    },
+    {
+      "id": "C5",
+      "repository": "A",
+      "provider": "openai",
+      "workload": "Ticket-linked Codex thread with captured descendants",
+      "category": "delegated",
+      "baseline": "gpt-6-astra",
+      "groups": [
+        {
+          "model": "gpt-6.1-sol",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 36,
+          "input": 178883,
+          "cached": 4464768,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 31172
+        },
+        {
+          "model": "gpt-6.1-sol",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 7,
+          "input": 184663,
+          "cached": 1107840,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 2620
+        }
+      ],
+      "coordinator_baseline": "gpt-6.1-sol"
+    }
+  ],
+  "expected": {
+    "claude": {
+      "actual_usd": 558.5444848250002,
+      "baseline_usd": 564.3159786000001,
+      "saved_usd": 5.7714937749999535,
+      "saving_percent": 1.0227415125331651
+    },
+    "codex": {
+      "actual_usd": 520.9205324,
+      "baseline_usd": 1981.48475,
+      "saved_usd": 1460.5642176000001,
+      "saving_percent": 73.71059593569923
     },
     "all": {
-      "actual_usd": 55.94786812,
-      "baseline_usd": 63.8372932,
-      "saving_percent": 12.358645995974038
+      "actual_usd": 1079.465017225,
+      "baseline_usd": 2545.8007286,
+      "saved_usd": 1466.335711375,
+      "saving_percent": 57.59821241709577
     },
     "workers": {
-      "actual_usd": 3.51271332,
-      "baseline_usd": 5.580596,
-      "saving_percent": 37.054871558521704
+      "actual_usd": 265.882498125,
+      "baseline_usd": 1004.3378378,
+      "saved_usd": 738.455339675,
+      "saving_percent": 73.52658755669157
+    },
+    "workers_vs_coordinator": {
+      "actual_usd": 265.882498125,
+      "baseline_usd": 270.65293779999996,
+      "saved_usd": 4.770439674999977,
+      "saving_percent": 1.7625671140969135
     },
     "context": {
-      "worker_input_per_request": 55084,
-      "coordinator_input_per_request": 293003.60185185185,
-      "smaller_percent": 81.200231105742
+      "claude": {
+        "worker_input_per_request": 92787.32267441861,
+        "coordinator_input_per_request": 323986.7849025974,
+        "smaller_percent": 71.36076932819529
+      },
+      "codex": {
+        "worker_input_per_request": 182994.2864511692,
+        "coordinator_input_per_request": 214860.17432950193,
+        "smaller_percent": 14.830988561642112
+      },
+      "all": {
+        "worker_input_per_request": 165735.55700778644,
+        "coordinator_input_per_request": 286202.1664897851,
+        "smaller_percent": 42.091438705548114
+      }
+    },
+    "counts": {
+      "captures": 17,
+      "claude_requests": 5616,
+      "codex_requests": 5518
+    },
+    "worker_models": {
+      "claude-haiku-5-5": 38,
+      "claude-sonnet-5-5": 61,
+      "claude-opus-5-5": 589,
+      "gpt-6-astra": 631,
+      "gpt-6.1-sol": 2277
     }
   }
 }

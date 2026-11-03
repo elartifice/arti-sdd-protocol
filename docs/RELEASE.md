@@ -52,7 +52,7 @@ The published v0.4.0 release contains `arti-sdd-protocol-0.4.0.zip` and `SHA256S
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Contributor workflow and appropriate checks. |
 | [LICENSE](../LICENSE) | MIT and required notice. |
 
-The two overview graphics are self-contained SVGs under `docs/assets`, with text and accessible descriptions kept editable. No external fonts, scripts or tracking are embedded. Supporting shared-source and review diagrams use Mermaid. Check the overview graphics at README width and verify their paths in the published tree.
+The workflow and agent hierarchy are self-contained SVGs under `docs/assets`, with text and accessible descriptions kept editable. The hierarchy shows tasks down and reports back up to one coordinator, with role icons and provider marks on the reviewer. No external fonts, scripts or tracking are embedded. [Vendor-mark sources and ownership](assets/BRAND-MARKS.md) are recorded separately from the MIT grant for original work. Supporting shared-source and review diagrams use Mermaid. Check the overview graphics at README width and verify their paths in the published tree.
 
 ## First release and future versions
 

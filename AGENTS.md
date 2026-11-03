@@ -7,6 +7,7 @@
 - Let each project choose its cross-lab review policy during setup, with no preselected policy. Enforce the policy it chooses and report whether cross-lab review actually ran.
 - Gate the first public release on live Claude Code and Codex tests on macOS. Clearly label support for other hosts and operating systems.
 - Use MIT for the public release and owned helpers, retaining required notices.
+- Base cost estimates on counted token types and public model prices, with the baseline and included workload stated.
 
 The canonical package is `.agents/skills/arti-sdd-protocol`. Run `npm test` and `npm run check` for implementation changes. Use real native qualification for agent, hook and review integration changes. Raw live evidence stays under `.local-evidence/`; only sanitised summaries belong in public artifacts. Build the allowlisted tree and archive with `npm run package`. Publish only on an explicit maintainer request.
 <!-- arti-public:rules:end -->

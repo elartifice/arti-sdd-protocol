@@ -1,5 +1,102 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="1780" viewBox="0 0 1100 1780" role="img" aria-labelledby="title desc">
-<title id="title">Arti custom agents: focused contexts, explicit models</title><desc id="desc">Top-to-bottom architecture. A coordinator sends a bounded dossier to only the roles needed. Scouts, implementers and reviewers work in separate contexts and return short evidence reports. An escalation role is used after repeated failure. Shared rules and memory are read by every role. The dated tested Claude and Codex model bindings are shown. Separate contexts do not guarantee fewer total tokens.</desc>
-<defs><linearGradient id="bg" x2="0.9" y2="1"><stop stop-color="#10162e"/><stop offset="1" stop-color="#080c1d"/></linearGradient><radialGradient id="glow"><stop stop-color="#6d4aff" stop-opacity=".25"/><stop offset="1" stop-color="#6d4aff" stop-opacity="0"/></radialGradient><marker id="arrow" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M2 2 L10 6 L2 10" fill="none" stroke="#c2d1ee" stroke-width="2" stroke-linejoin="round"/></marker></defs>
-<rect width="1100" height="1780" rx="32" fill="url(#bg)"/><circle cx="1020" cy="120" r="440" fill="url(#glow)"/>
-<g font-family="Arial, Helvetica, sans-serif"><rect x="70" y="45" width="294" height="42" rx="21" fill="#263451" stroke="none" stroke-width="2" /><text x="92" y="74" font-size="19" fill="#f3f6ff" font-weight="700" >THE CUSTOM AGENT TEAM</text><text x="70" y="148" font-size="65" fill="#f5f7ff" font-weight="800" >BIG PLAN.</text><text x="70" y="215" font-size="65" fill="#68dcff" font-weight="800" >FOCUSED CONTEXTS.</text><text x="73" y="257" font-size="25" fill="#b9c6e2" font-weight="400" >Choose the roles the task needs. Keep their logs out of the main chat.</text><rect x="70" y="298" width="960" height="168" rx="24" fill="#1c2547" stroke="#b49aff" stroke-width="2" /><text x="99" y="341" font-size="29" fill="#b49aff" font-weight="800" >COORDINATOR</text><text x="99" y="380" font-size="29" fill="#f5f7ff" font-weight="700" >Own the ticket, scope, decisions and next step.</text><text x="99" y="424" font-size="23" fill="#b9c6e2" font-weight="400" >Claude: Opus 5.5 · high     /     Codex: GPT-6.1 Sol · high</text><path d="M550 477 L550 529" fill="none" stroke="#b49aff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/><text x="550" y="567" font-size="22" fill="#d8e3fa" font-weight="700" text-anchor="middle">ONE BOUNDED DOSSIER → ONLY THE ROLES NEEDED</text><rect x="70" y="598" width="960" height="682" rx="28" fill="#10192d" stroke="#334562" stroke-width="2" /><text x="100" y="639" font-size="20" fill="#b9c6e2" font-weight="700" letter-spacing="2">SEPARATE WORKER CONTEXTS</text><rect x="100" y="666" width="900" height="154" rx="22" fill="#19243d" stroke="#68dcff" stroke-width="2" /><rect x="122" y="690" width="9" height="102" rx="4" fill="#68dcff" stroke="none" stroke-width="2" /><text x="150" y="705" font-size="27" fill="#68dcff" font-weight="800" >SCOUT</text><text x="150" y="746" font-size="27" fill="#f5f7ff" font-weight="700" >Find facts, file locations and constraints.</text><text x="150" y="789" font-size="22" fill="#b9c6e2" font-weight="400" >Claude: Haiku 5.5 · low     /     Codex: GPT-6 Luna · high</text><rect x="100" y="842" width="900" height="154" rx="22" fill="#19243d" stroke="#77f7d0" stroke-width="2" /><rect x="122" y="866" width="9" height="102" rx="4" fill="#77f7d0" stroke="none" stroke-width="2" /><text x="150" y="881" font-size="27" fill="#77f7d0" font-weight="800" >IMPLEMENTER</text><text x="150" y="922" font-size="27" fill="#f5f7ff" font-weight="700" >Change scoped files. Run meaningful checks.</text><text x="150" y="965" font-size="22" fill="#b9c6e2" font-weight="400" >Claude: Sonnet 5.5 · high     /     Codex: GPT-6.1 Terra · high</text><rect x="100" y="1018" width="900" height="154" rx="22" fill="#19243d" stroke="#ff82a6" stroke-width="2" /><rect x="122" y="1042" width="9" height="102" rx="4" fill="#ff82a6" stroke="none" stroke-width="2" /><text x="150" y="1057" font-size="27" fill="#ff82a6" font-weight="800" >REVIEWER</text><text x="150" y="1098" font-size="27" fill="#f5f7ff" font-weight="700" >Challenge the change. Return concrete findings.</text><text x="150" y="1141" font-size="22" fill="#b9c6e2" font-weight="400" >Claude: Opus 5.5 · high     /     Codex: GPT-6.1 Sol · high</text><text x="100" y="1228" font-size="23" fill="#d8e3fa" font-weight="400" >Same-lab or cross-lab review, according to project policy.</text><text x="100" y="1260" font-size="22" fill="#b9c6e2" font-weight="400" >These are role choices, not a mandatory chain of three agents.</text><rect x="70" y="1310" width="960" height="126" rx="24" fill="#332d23" stroke="#ffbb65" stroke-width="2" stroke-dasharray="8 8"/><text x="98" y="1349" font-size="25" fill="#ffcc82" font-weight="800" >ESCALATION · ONLY AFTER REPEATED FAILURE</text><text x="98" y="1385" font-size="25" fill="#f5f7ff" font-weight="700" >A failure dossier prevents repeating rejected approaches.</text><text x="98" y="1416" font-size="22" fill="#b9c6e2" font-weight="400" >Claude: Opus 5.5 · high     /     Codex: GPT-6 Astra · high</text><path d="M550 1450 L550 1490" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/><text x="550" y="1528" font-size="22" fill="#d8e3fa" font-weight="700" text-anchor="middle">SHORT RESULT + CHECKS + EVIDENCE + OPEN RISKS</text><rect x="70" y="1554" width="960" height="118" rx="24" fill="#15352f" stroke="#77f7d0" stroke-width="2" /><text x="98" y="1596" font-size="25" fill="#77f7d0" font-weight="800" >COORDINATOR CONTINUES · SHARED MEMORY PERSISTS</text><text x="98" y="1634" font-size="24" fill="#f5f7ff" font-weight="400" >Every role reads relevant rules and lessons from the same files.</text><text x="70" y="1717" font-size="21" fill="#b9c6e2" font-weight="400" >Tested profile: 2026-11-03. Primary chat model remains your choice.</text><text x="70" y="1749" font-size="21" fill="#b9c6e2" font-weight="400" >Effort: Claude requested; Codex resolved. See agent setup for permission limits.</text></g></svg>
+<?xml version="1.0" ?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1250" viewBox="0 0 1600 1250" role="img" aria-labelledby="title desc">
+  <title id="title">Arti custom agents: coordinator-led reporting hierarchy</title>
+  <desc id="desc">One coordinator sits above four sibling subagents: scout, implementer, reviewer and conditional escalation. Cyan arrows send bounded tasks down from the coordinator; purple arrows return short results, checks and risks up to it. Subagents do not report to one another. Each has a role icon. The reviewer includes Claude and ChatGPT/OpenAI marks identifying the two review providers; OpenAI reviews run through Codex. All roles use shared rules and memory. The dated model and effort profile is shown; Claude effort is requested, Codex effort resolved.</desc>
+  <defs>
+    <linearGradient id="background" x2="1" y2="1">
+      <stop stop-color="#111a33"/>
+      <stop offset="1" stop-color="#080d1d"/>
+    </linearGradient>
+    <marker id="task" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M2 2L10 6L2 10" fill="none" stroke="#68dcff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="report" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M2 2L10 6L2 10" fill="none" stroke="#bb9cff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect width="1600" height="1250" rx="36" fill="url(#background)"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="55" y="94" font-size="66" fill="#f4f7ff" font-weight="800">ONE COORDINATOR.</text>
+    <text x="55" y="170" font-size="66" fill="#77f7d0" font-weight="800">FOCUSED SUBAGENTS.</text>
+    <text x="1168" y="80" font-size="23" fill="#becbe5" font-weight="700">ARTI SDD PROTOCOL</text>
+    <rect x="490" y="225" width="620" height="210" rx="24" fill="#232b4c" stroke="#bb9cff" stroke-width="2.5"/>
+    <g transform="translate(520 250) scale(1.3333333333333333)" fill="none" stroke="#bb9cff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="24" cy="17" r="7"/>
+      <path d="M11 40v-5a13 13 0 0 1 26 0v5M7 7h4M37 7h4M7 17v-6M41 17v-6"/>
+    </g>
+    <text x="616" y="271" font-size="32" fill="#bb9cff" font-weight="800">COORDINATOR</text>
+    <text x="616" y="311" font-size="26" fill="#f4f7ff" font-weight="700">Scope, decisions, next step.</text>
+    <text x="520" y="364" font-size="26" fill="#becbe5" font-weight="400">Claude: Opus 5.5 · high</text>
+    <text x="520" y="406" font-size="26" fill="#becbe5" font-weight="400">Codex: GPT-6.1 Sol · high</text>
+    <path d="M758 435V490H202" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M758 490H1357" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M238 550H842V443" fill="none" stroke="#bb9cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#report)"/>
+    <path d="M1393 550H842" fill="none" stroke="#bb9cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="55" y="463" font-size="24" fill="#68dcff" font-weight="700">TASK + RELEVANT CONTEXT</text>
+    <text x="1000" y="524" font-size="24" fill="#bb9cff" font-weight="700">RESULT + CHECKS + RISKS</text>
+    <path d="M202 490V642" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#task)"/>
+    <path d="M238 650V550" fill="none" stroke="#bb9cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#report)"/>
+    <path d="M587 490V642" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#task)"/>
+    <path d="M623 650V550" fill="none" stroke="#bb9cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#report)"/>
+    <path d="M972 490V642" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#task)"/>
+    <path d="M1008 650V550" fill="none" stroke="#bb9cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#report)"/>
+    <path d="M1357 490V642" fill="none" stroke="#68dcff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#task)" stroke-dasharray="9 9"/>
+    <path d="M1393 650V550" fill="none" stroke="#bb9cff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#report)" stroke-dasharray="9 9"/>
+    <text x="55" y="209" font-size="24" fill="#dce6f8" font-weight="700">Use only the roles needed.</text>
+    <rect x="45" y="650" width="350" height="375" rx="24" fill="#19243c" stroke="#68dcff" stroke-width="2.5"/>
+    <g transform="translate(65 676) scale(1.25)" fill="none" stroke="#68dcff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="21" cy="21" r="12"/>
+      <path d="m30 30 12 12M15 21h12M21 15v12"/>
+    </g>
+    <text x="144" y="710" font-size="27" fill="#68dcff" font-weight="800">SCOUT</text>
+    <text x="71" y="775" font-size="27" fill="#f4f7ff" font-weight="700">Find facts and</text>
+    <text x="71" y="812" font-size="27" fill="#f4f7ff" font-weight="700">file locations.</text>
+    <text x="71" y="860" font-size="17" fill="#becbe5" font-weight="700">CLAUDE</text>
+    <text x="71" y="892" font-size="24" fill="#f4f7ff" font-weight="400">Haiku 5.5 · low</text>
+    <text x="71" y="941" font-size="17" fill="#becbe5" font-weight="700">CODEX</text>
+    <text x="71" y="974" font-size="24" fill="#f4f7ff" font-weight="400">GPT-6 Luna · high</text>
+    <rect x="430" y="650" width="350" height="375" rx="24" fill="#19243c" stroke="#77f7d0" stroke-width="2.5"/>
+    <g transform="translate(450 676) scale(1.25)" fill="none" stroke="#77f7d0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m15 12-10 12 10 12m18-24 10 12-10 12M28 7l-8 34"/>
+    </g>
+    <text x="529" y="710" font-size="27" fill="#77f7d0" font-weight="800">IMPLEMENTER</text>
+    <text x="456" y="775" font-size="27" fill="#f4f7ff" font-weight="700">Change scoped files.</text>
+    <text x="456" y="812" font-size="27" fill="#f4f7ff" font-weight="700">Run checks.</text>
+    <text x="456" y="860" font-size="17" fill="#becbe5" font-weight="700">CLAUDE</text>
+    <text x="456" y="892" font-size="24" fill="#f4f7ff" font-weight="400">Sonnet 5.5 · high</text>
+    <text x="456" y="941" font-size="17" fill="#becbe5" font-weight="700">CODEX</text>
+    <text x="456" y="974" font-size="24" fill="#f4f7ff" font-weight="400">GPT-6.1 Terra · high</text>
+    <rect x="815" y="650" width="350" height="375" rx="24" fill="#19243c" stroke="#ff87ac" stroke-width="2.5"/>
+    <g transform="translate(835 676) scale(1.25)" fill="none" stroke="#ff87ac" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 4 40 10v12c0 10-9 18-16 22C17 40 8 32 8 22V10zM15 24l6 6 12-13"/>
+    </g>
+    <text x="914" y="710" font-size="27" fill="#ff87ac" font-weight="800">REVIEWER</text>
+    <text x="841" y="775" font-size="27" fill="#f4f7ff" font-weight="700">Challenge changes.</text>
+    <text x="841" y="812" font-size="27" fill="#f4f7ff" font-weight="700">Return findings.</text>
+    <svg x="839" y="846" width="43" height="43" viewBox="0 0 248 248" color="#ffffff" fill="none">
+      <path xmlns="http://www.w3.org/2000/svg" d="M52.4285 162.873L98.7844 136.879L99.5485 134.602L98.7844 133.334H96.4921L88.7237 132.862L62.2346 132.153L39.3113 131.207L17.0249 130.026L11.4214 128.844L6.2 121.873L6.7094 118.447L11.4214 115.257L18.171 115.847L33.0711 116.911L55.485 118.447L71.6586 119.392L95.728 121.873H99.5485L100.058 120.337L98.7844 119.392L97.7656 118.447L74.5877 102.732L49.4995 86.1905L36.3823 76.62L29.3779 71.7757L25.8121 67.2858L24.2839 57.3608L30.6515 50.2716L39.3113 50.8623L41.4763 51.4531L50.2636 58.1879L68.9842 72.7209L93.4357 90.6804L97.0015 93.6343L98.4374 92.6652L98.6571 91.9801L97.0015 89.2625L83.757 65.2772L69.621 40.8192L63.2534 30.6579L61.5978 24.632C60.9565 22.1032 60.579 20.0111 60.579 17.4246L67.8381 7.49965L71.9133 6.19995L81.7193 7.49965L85.7946 11.0443L91.9074 24.9865L101.714 46.8451L116.996 76.62L121.453 85.4816L123.873 93.6343L124.764 96.1155H126.292V94.6976L127.566 77.9197L129.858 57.3608L132.15 30.8942L132.915 23.4505L136.608 14.4708L143.994 9.62643L149.725 12.344L154.437 19.0788L153.8 23.4505L150.998 41.6463L145.522 70.1215L141.957 89.2625H143.994L146.414 86.7813L156.093 74.0206L172.266 53.698L179.398 45.6635L187.803 36.802L193.152 32.5484H203.34L210.726 43.6549L207.415 55.1159L196.972 68.3492L188.312 79.5739L175.896 96.2095L168.191 109.585L168.882 110.689L170.738 110.53L198.755 104.504L213.91 101.787L231.994 98.7149L240.144 102.496L241.036 106.395L237.852 114.311L218.495 119.037L195.826 123.645L162.07 131.592L161.696 131.893L162.137 132.547L177.36 133.925L183.855 134.279H199.774L229.447 136.524L237.215 141.605L241.8 147.867L241.036 152.711L229.065 158.737L213.019 154.956L175.45 145.977L162.587 142.787H160.805V143.85L171.502 154.366L191.242 172.089L215.82 195.011L217.094 200.682L213.91 205.172L210.599 204.699L188.949 188.394L180.544 181.069L161.696 165.118H160.422V166.772L164.752 173.152L187.803 207.771L188.949 218.405L187.294 221.832L181.308 223.959L174.813 222.777L161.187 203.754L147.305 182.486L136.098 163.345L134.745 164.2L128.075 235.42L125.019 239.082L117.887 241.8L111.902 237.31L108.718 229.984L111.902 215.452L115.722 196.547L118.779 181.541L121.58 162.873L123.291 156.636L123.14 156.219L121.773 156.449L107.699 175.752L86.304 204.699L69.3663 222.777L65.291 224.431L58.2867 220.768L58.9235 214.27L62.8713 208.48L86.304 178.705L100.44 160.155L109.551 149.507L109.462 147.967L108.959 147.924L46.6977 188.512L35.6182 189.93L30.7788 185.44L31.4156 178.115L33.7079 175.752L52.4285 162.873Z" fill="#D97757"/>
+    </svg>
+    <svg x="839" y="929" width="43" height="43" viewBox="100 100 411 411" color="#ffffff" fill="none">
+      <path xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" d="M252.794 108.802C289.191 99.0484 326.265 110.305 351.148 135.135C385.113 126.072 422.85 134.862 449.492 161.505C476.136 188.149 484.925 225.888 475.862 259.85V259.854C500.696 284.735 511.95 321.81 502.198 358.207C492.447 394.602 464.161 421.084 430.215 430.217C421.083 464.162 394.603 492.448 358.206 502.199C321.812 511.951 284.734 500.693 259.852 475.864C225.887 484.927 188.15 476.137 161.507 449.495C134.864 422.851 126.073 385.111 135.136 351.149C110.304 326.266 99.0496 289.192 108.801 252.795C118.552 216.4 146.84 189.918 180.784 180.785C189.917 146.841 216.396 118.553 252.794 108.802ZM374.292 407.145C374.292 411.271 372.092 415.086 368.517 417.148L283.723 466.102C302.487 480.585 327.555 486.459 352.217 479.852C386.997 470.532 410.068 439.312 410.555 405.006V317.717C410.555 315.08 409.125 312.621 406.843 311.303L374.292 292.509V407.145ZM251.868 415.897C248.296 417.959 243.893 417.959 240.317 415.897L155.526 366.942C152.366 390.436 159.811 415.08 177.866 433.136H177.863C203.325 458.594 241.896 462.962 271.85 446.232L347.449 402.586C349.735 401.268 351.148 398.8 351.148 396.163V358.579L251.868 415.897ZM368.602 220.628C366.319 219.309 363.474 219.318 361.191 220.637L328.641 239.431L427.921 296.749C431.496 298.811 433.697 302.627 433.697 306.752V404.661C455.622 395.654 473.244 376.881 479.851 352.218C489.169 317.442 473.668 281.85 444.201 264.274L368.602 220.628ZM177.303 206.34C155.377 215.348 137.756 234.122 131.148 258.783C121.832 293.561 137.331 329.153 166.799 346.727L242.398 390.373C244.68 391.692 247.525 391.684 249.807 390.366L282.357 371.572L183.078 314.253C179.504 312.189 177.303 308.375 177.303 304.251V206.34ZM259.849 279.145V331.858L305.5 358.213L351.15 331.858V279.145L305.5 252.789L259.849 279.145ZM327.276 144.9C308.512 130.418 283.445 124.543 258.782 131.15C224.002 140.471 200.931 171.691 200.445 205.995V293.286C200.445 295.923 201.875 298.381 204.158 299.7L236.707 318.493V203.856C236.707 199.731 238.909 195.916 242.483 193.853L327.276 144.9ZM433.137 177.867C407.675 152.407 369.103 148.038 339.149 164.769L263.55 208.415C261.265 209.734 259.852 212.202 259.852 214.838V252.423L359.132 195.105C362.703 193.041 367.108 193.041 370.682 195.105L455.473 244.06C458.635 220.567 451.189 195.922 433.135 177.867H433.137Z" fill="currentColor"/>
+    </svg>
+    <text x="898" y="860" font-size="17" fill="#becbe5" font-weight="700">CLAUDE</text>
+    <text x="898" y="892" font-size="24" fill="#f4f7ff" font-weight="400">Opus 5.5 · high</text>
+    <text x="898" y="941" font-size="17" fill="#becbe5" font-weight="700">CHATGPT / CODEX</text>
+    <text x="898" y="974" font-size="23" fill="#f4f7ff" font-weight="400">GPT-6.1 Sol · high</text>
+    <rect x="1200" y="650" width="350" height="375" rx="24" fill="#302a25" stroke="#ffbf73" stroke-width="2.5" stroke-dasharray="10 8"/>
+    <g transform="translate(1220 676) scale(1.25)" fill="none" stroke="#ffbf73" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M27 3 9 27h13l-1 18 18-26H26z"/>
+    </g>
+    <text x="1299" y="710" font-size="27" fill="#ffbf73" font-weight="800">ESCALATION</text>
+    <text x="1226" y="775" font-size="27" fill="#f4f7ff" font-weight="700">Only after repeated</text>
+    <text x="1226" y="812" font-size="27" fill="#f4f7ff" font-weight="700">failed approaches.</text>
+    <text x="1226" y="860" font-size="17" fill="#becbe5" font-weight="700">CLAUDE</text>
+    <text x="1226" y="892" font-size="24" fill="#f4f7ff" font-weight="400">Opus 5.5 · high</text>
+    <text x="1226" y="941" font-size="17" fill="#becbe5" font-weight="700">CODEX</text>
+    <text x="1226" y="974" font-size="24" fill="#f4f7ff" font-weight="400">GPT-6 Astra · high</text>
+    <rect x="45" y="1060" width="1505" height="96" rx="24" fill="#14342f" stroke="#77f7d0" stroke-width="2.5"/>
+    <text x="77" y="1101" font-size="27" fill="#77f7d0" font-weight="800">ONE SHARED SOURCE FOR EVERY ROLE</text>
+    <text x="77" y="1138" font-size="26" fill="#f4f7ff" font-weight="400">AGENTS.md · role definitions · project knowledge · decisions and handoffs</text>
+    <text x="55" y="1202" font-size="22" fill="#becbe5" font-weight="400">Tested profile: 2026-11-03. Claude effort is requested; Codex effort is resolved. Primary chat model remains your choice.</text>
+  </g>
+</svg>

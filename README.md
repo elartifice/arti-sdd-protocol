@@ -39,17 +39,17 @@ The coordinator owns the plan and decisions. A scout finds facts, an implementer
 
 Each worker receives the relevant ticket, file scope, rules, lessons and acceptance checks, then returns a compact result with evidence. Detailed investigation stays in its worker context. Cheaper scout/implementation models can reduce cost while stronger review and escalation remain available. Shared role instructions generate Claude and Codex definitions from one source.
 
-![Custom-agent architecture flowing down: a coordinator sends bounded dossiers to selected worker roles, receives short evidence reports and preserves shared memory. Each role shows the tested Claude and Codex model/effort pair.](docs/assets/agent-architecture.svg)
+![Agent reporting hierarchy: the coordinator sits above scout, implementer, reviewer and conditional escalation subagents. Cyan arrows send tasks down; purple arrows return evidence up. Role icons and Claude/ChatGPT reviewer marks identify the roles and providers.](docs/assets/agent-architecture.svg)
 
-Measured tradeoffs from two historical delegated ticket sessions:
+Estimated cost from **11,134 recorded requests across 17 historical ticket-linked captures**, priced by model, token type and context tier:
 
 | Local observation | Result |
 |---|---|
-| Estimated Claude-side API cost, including captured coordination | **3.6% lower**: $54.97 versus $57.04 with the same tokens entirely on Opus. |
-| Worker calls alone | **37.1% lower** estimated API cost. |
-| Average worker input per request | **81.2% smaller** than coordinator input. |
+| Recorded model mix versus Opus/Astra throughout | **57.6% lower** estimated API cost: $1,079.47 versus $2,545.80, a $1,466.34 difference. |
+| Claude captures / Codex captures | **1.0% / 73.7% lower**, respectively; individual captures range from 0% to 88.2%. |
+| Average worker input per request | **42.1% smaller** than coordinator input in this sample. |
 
-These are small observational samples; external review costs are outside that capture. They do not establish total token reduction or subscription-bill savings. A separate documentation ticket from a second repository illustrates model choice without delegation. See the [cost study, dollar amounts and reproducible calculation](docs/COSTS.md).
+Most cost reduction here comes from choosing Sol for entire Codex threads. Workers usually used the same model as their coordinator; using cheaper worker models contributed only **1.8%** against that narrower reference. The 57.6% figure describes the observed model mix against an all-flagship alternative, not a saving caused by delegation alone. External review costs are incomplete, and API-equivalent costs are not subscription bills. See the [token counts, per-capture results and reproducible calculation](docs/COSTS.md).
 
 Separate contexts help protect the main conversation from noisy logs, but spawning agents adds requests, and a fork may copy existing history. The host's context-window capacity is unchanged. Keep dossiers and return reports short, and measure the whole workload. See the vendor guidance for [Claude subagents](https://code.claude.com/docs/en/sub-agents) and [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
