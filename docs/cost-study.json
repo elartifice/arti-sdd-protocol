@@ -1,0 +1,179 @@
+{
+  "as_of": "2026-11-03",
+  "samples": [
+    {
+      "id": "A1",
+      "repository": "A",
+      "workload": "Delegated implementation session",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 193,
+          "input": 436,
+          "cached": 64250927,
+          "write_5m": 0,
+          "write_1h": 1179351,
+          "output": 188316
+        },
+        {
+          "model": "claude-haiku-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 6,
+          "input": 12,
+          "cached": 263252,
+          "write_5m": 89400,
+          "write_1h": 0,
+          "output": 33644
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 23,
+          "input": 48,
+          "cached": 946004,
+          "write_5m": 118272,
+          "write_1h": 0,
+          "output": 12719
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "repository": "A",
+      "workload": "Delegated implementation session",
+      "category": "delegated",
+      "baseline": "claude-opus-5-5",
+      "groups": [
+        {
+          "model": "claude-opus-5-5",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 239,
+          "input": 508,
+          "cached": 59986859,
+          "write_5m": 0,
+          "write_1h": 1159475,
+          "output": 206661
+        },
+        {
+          "model": "claude-sonnet-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 18,
+          "input": 36,
+          "cached": 842791,
+          "write_5m": 70999,
+          "write_1h": 0,
+          "output": 14652
+        },
+        {
+          "model": "claude-opus-5-5",
+          "context": "worker",
+          "tier": "standard",
+          "requests": 50,
+          "input": 104,
+          "cached": 2837108,
+          "write_5m": 175122,
+          "write_1h": 0,
+          "output": 55635
+        }
+      ]
+    },
+    {
+      "id": "B1",
+      "repository": "B",
+      "workload": "Documentation ticket session (model-choice control; no delegation)",
+      "category": "control",
+      "baseline": "gpt-6-astra",
+      "groups": [
+        {
+          "model": "gpt-6.1-sol",
+          "context": "coordinator",
+          "tier": "standard",
+          "requests": 19,
+          "input": 58352,
+          "cached": 3853696,
+          "write_5m": 0,
+          "write_1h": 0,
+          "output": 47160
+        }
+      ]
+    }
+  ],
+  "scope": "Historical provider-side ticket-session captures from two repositories; fixed-token API repricing, not invoices or an end-to-end causal benchmark.",
+  "rates_usd_per_million": {
+    "claude-opus-5-5": {
+      "input": 4,
+      "cached": 0.2,
+      "write_5m": 5,
+      "write_1h": 8,
+      "output": 20
+    },
+    "claude-sonnet-5-5": {
+      "input": 2,
+      "cached": 0.1,
+      "write_5m": 2.5,
+      "write_1h": 4,
+      "output": 10
+    },
+    "claude-haiku-5-5": {
+      "input": 0.1,
+      "cached": 0.01,
+      "write_5m": 0.125,
+      "write_1h": 0.2,
+      "output": 0.5
+    },
+    "gpt-6-astra": {
+      "input": 10,
+      "cached": 1,
+      "write_5m": null,
+      "write_1h": null,
+      "output": 50
+    },
+    "gpt-6.1-sol": {
+      "input": 2,
+      "cached": 0.1,
+      "write_5m": null,
+      "write_1h": null,
+      "output": 10
+    }
+  },
+  "price_sources": [
+    "https://platform.claude.com/docs/en/about-claude/pricing",
+    "https://developers.openai.com/api/docs/models/gpt-6-astra",
+    "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+  ],
+  "expected": {
+    "delegated": {
+      "actual_usd": 54.97419452,
+      "baseline_usd": 57.0420772,
+      "saving_percent": 3.6251882496312837
+    },
+    "control": {
+      "actual_usd": 0.9736736,
+      "baseline_usd": 6.795216,
+      "saving_percent": 85.67118984885838
+    },
+    "all": {
+      "actual_usd": 55.94786812,
+      "baseline_usd": 63.8372932,
+      "saving_percent": 12.358645995974038
+    },
+    "workers": {
+      "actual_usd": 3.51271332,
+      "baseline_usd": 5.580596,
+      "saving_percent": 37.054871558521704
+    },
+    "context": {
+      "worker_input_per_request": 55084,
+      "coordinator_input_per_request": 293003.60185185185,
+      "smaller_percent": 81.200231105742
+    }
+  }
+}

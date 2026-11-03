@@ -4,6 +4,16 @@ This is the **tested release profile**, dated 2026-11-03, for the exact clients 
 
 Projects can choose single-agent work. This custom profile enables five roles; ordinary work need not invoke all of them, and escalation is reserved for repeated failure.
 
+## Why split work into custom agents?
+
+A coordinator keeps the ticket, decisions and next step. It gives a worker the relevant spec, file scope, shared lessons and checks, then receives a short result with evidence. Investigation logs stay in the worker context. This keeps the main conversation focused and lets bounded scouting and implementation use cheaper models while preserving stronger review and escalation.
+
+![Coordinator, selected workers and shared knowledge, flowing down; each role shows its tested Claude/Codex model and effort.](assets/agent-architecture.svg)
+
+The worker cards are choices, not a required sequence. They do not spawn one another automatically. Same-lab and cross-lab review follow the policy chosen by the project. The named coordinator binding does not override the primary chat model.
+
+Separate contexts are an efficiency mechanism, not a token guarantee: spawning adds requests, forks can inherit history, and long handbacks add context. The [local cost study](COSTS.md) reports 3.6% estimated Claude-side savings across two delegated captures, 37.1% on their worker calls and 81.2% smaller worker inputs per request. It includes captured coordination overhead, states missing external-review coverage, and keeps a second repository's non-delegated model-choice example separate.
+
 ## Models and effort per role
 
 | Named role | Claude effective model | Requested effort | Codex effective model | Resolved effort |
@@ -41,6 +51,12 @@ flowchart TB
     claude <-->|Read and record| knowledge["Shared knowledge and handoffs"]
     codex <-->|Read and record| knowledge
     other <-->|Read and record| knowledge
+    classDef source fill:#d9ceff,stroke:#7652bb,color:#20113b
+    classDef host fill:#c8efff,stroke:#147394,color:#092b3d
+    classDef memory fill:#c6f7df,stroke:#288359,color:#123824
+    class shared source
+    class claude,codex,other host
+    class knowledge memory
 ```
 
 An installed project's relevant files are:

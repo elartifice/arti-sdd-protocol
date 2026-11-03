@@ -2,9 +2,9 @@
 
 [![Deterministic checks](https://github.com/elartifice/arti-sdd-protocol/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/elartifice/arti-sdd-protocol/actions/workflows/check.yml)
 
-**Give AI coding a clear spec, a work queue and a definition of done.**
+**Clear specs. Focused agents. Evidence before “done.”**
 
-Arti is a lightweight skill for spec-driven development (SDD). Use it in chat to turn an idea into a portable project blueprint, or give it to a coding agent to start or organise a repository. Claude Code and Codex work from shared instructions, skills, roles and project knowledge.
+Arti is a lightweight skill for spec-driven development (SDD). Use it in chat to turn an idea into a portable project blueprint, or give it to a coding agent to start or organise a repository. Claude Code and Codex share instructions and project knowledge. An optional custom team routes focused tasks to explicit models, keeping worker investigations out of the main conversation and reserving expensive reasoning for the work that needs it.
 
 The installable core is 22 files, about 122 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
 
@@ -14,15 +14,7 @@ Spec-driven development means agreeing on the intended behaviour and how to reco
 
 Arti turns that idea into a working loop: a charter describes the project; milestones and tickets divide the work; each ticket has a bounded scope and an observable Definition of Done (DoD); checks and the chosen review policy supply evidence before work is closed.
 
-```mermaid
-flowchart LR
-    charter["Charter and spec"] --> ticket["Ticket and DoD"]
-    ticket --> work["Claim and implement"]
-    work --> verify["Checks and chosen review"]
-    verify -->|Pass| merge["Merge and close out"]
-    verify -->|Revise| work
-    merge -->|Shared learning| ticket
-```
+![Five steps flowing down: agree the outcome, cut a scoped ticket, give agents focus, demand evidence, then land the work and share lessons. Failed checks return to implementation.](docs/assets/workflow.svg)
 
 ## From vibe coding to work you can follow
 
@@ -36,9 +28,30 @@ Fast experimentation helps you discover what to build. As a project grows, a str
 | Switching models or starting a fresh chat loses context | Shared rules, a knowledge index and handoffs that preserve the task and existing approval. |
 | Claude and Codex maintain different instructions | One shared source, with links or generated adapters for each host. |
 | A configured reviewer never actually runs | Native role qualification and review receipts: records of who reviewed which revision, with completion, findings, failure or “not run.” |
+| Every investigation fills the main chat and uses its most expensive model | Focused worker contexts, explicit model/effort bindings and short evidence reports; measure coordination and review overhead too. |
 | A new setup overwrites existing project conventions | A preview, owner-content preservation, drift checks and recoverable installation. |
 
 These mechanisms are designed to reduce coordination mistakes and false confidence. Product judgment, useful specifications and meaningful tests still matter. A passing fixture suite does not guarantee bug-free software or general equivalence between models.
+
+## A small team, with a reason for every role
+
+The coordinator owns the plan and decisions. A scout finds facts, an implementer changes scoped files, a reviewer challenges the result, and an escalation role receives a failure dossier after repeated failure. Invoke the roles the task needs; a small change can stay with one agent.
+
+Each worker receives the relevant ticket, file scope, rules, lessons and acceptance checks, then returns a compact result with evidence. Detailed investigation stays in its worker context. Cheaper scout/implementation models can reduce cost while stronger review and escalation remain available. Shared role instructions generate Claude and Codex definitions from one source.
+
+![Custom-agent architecture flowing down: a coordinator sends bounded dossiers to selected worker roles, receives short evidence reports and preserves shared memory. Each role shows the tested Claude and Codex model/effort pair.](docs/assets/agent-architecture.svg)
+
+Measured tradeoffs from two historical delegated ticket sessions:
+
+| Local observation | Result |
+|---|---|
+| Estimated Claude-side API cost, including captured coordination | **3.6% lower**: $54.97 versus $57.04 with the same tokens entirely on Opus. |
+| Worker calls alone | **37.1% lower** estimated API cost. |
+| Average worker input per request | **81.2% smaller** than coordinator input. |
+
+These are small observational samples; external review costs are outside that capture. They do not establish total token reduction or subscription-bill savings. A separate documentation ticket from a second repository illustrates model choice without delegation. See the [cost study, dollar amounts and reproducible calculation](docs/COSTS.md).
+
+Separate contexts help protect the main conversation from noisy logs, but spawning agents adds requests, and a fork may copy existing history. The host's context-window capacity is unchanged. Keep dossiers and return reports short, and measure the whole workload. See the vendor guidance for [Claude subagents](https://code.claude.com/docs/en/sub-agents) and [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
 ## Start where you are
 
@@ -46,7 +59,7 @@ These mechanisms are designed to reduce coordination mistakes and false confiden
 |---|---|---|
 | An idea in chat | A project charter or blueprint | One portable `PROJECT-CHARTER.md`, with architecture, milestones, initial tickets, acceptance evidence and open decisions. No repository tools needed. |
 | A new repository | Setup using the charter | The selected shared layout, planning files, rituals and host adapters. |
-| An existing repository | An audit and a reconciled setup or upgrade | Existing owner rules, skills, tickets and unfinished work are preserved. |
+| An existing repository | An audit and setup that fits its current work | Existing owner rules, skills, tickets and unfinished work are preserved. |
 
 Read the canonical [SKILL.md](.agents/skills/arti-sdd-protocol/SKILL.md), or tell your assistant to read it by its full local path. In chat, provide that file and the charter reference/template it requests.
 
@@ -56,7 +69,7 @@ Example requests:
 
 > Use Arti SDD to set up this repository from its charter. Preserve existing instructions and work, preview the changes, and implement the setup choices I have authorised.
 
-> Review this existing repository's working protocol. Reconcile its tickets, shared knowledge and Claude/Codex setup before proposing an upgrade.
+> Review this existing repository's working protocol. Organise its tickets, shared knowledge and Claude/Codex setup while preserving existing work.
 
 ## One shared project contract
 
@@ -94,7 +107,7 @@ Review and trust Codex project hooks with `/hooks` before relying on them. `chec
 
 A custom team also needs an explicit `--team` file for both plan and apply. The [dated example mapping](docs/examples/team-2026-11-03.json) reproduces the release profile; it is not a default or proof of access on your account. Follow the [qualification procedure](docs/AGENT-SETUP.md#qualify-your-project) before relying on it.
 
-For a user-level installation, keep one reviewed copy under `~/.agents/skills/arti-sdd-protocol` and link that individual skill from `~/.claude/skills`. Reconcile an existing installation and preserve real directories. Ordinary project setup does not change global configuration.
+For a user-level installation, keep one reviewed copy under `~/.agents/skills/arti-sdd-protocol` and link that individual skill from both `~/.claude/skills` and `~/.codex/skills`. Preserve any real directories when creating links. Ordinary project setup does not change global configuration.
 
 ## What has actually been verified?
 

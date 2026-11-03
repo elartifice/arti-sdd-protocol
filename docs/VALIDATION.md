@@ -5,7 +5,7 @@ The release gate combines deterministic regression tests, native CLI qualificati
 | Area | Observable acceptance |
 |---|---|
 | Charter and setup | Explicit false and undecided review policy survive handoff; new/unborn and existing repositories preserve owner content; repeat apply is stable. |
-| Recovery and upgrade | A real killed installer restores original bytes only in its originating worktree; stale concurrent previews refuse; disabled owned adapters retire without removing owner agents. |
+| Setup preservation and recovery | A real killed installer restores original bytes only in its originating worktree; stale concurrent previews refuse; disabled owned adapters retire without removing owner agents. |
 | Scope and ownership | Literal paths, moves, dangling links, worktrees and header IDs are checked; two competing owners cannot claim one ticket; disjoint claims can proceed. |
 | Coordination | Real separate clones compare-and-create a unique remote claim; interrupted acquisition preserves remote intent; approved integration contracts cannot be weakened by editing and reclaiming. |
 | Completion | Required review belongs to this ticket and generation; an old merge cannot close reopened work; cleanup reserves completion before releasing claims and locks. |
