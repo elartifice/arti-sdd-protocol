@@ -2,11 +2,11 @@
   "schema_version": 1,
   "kind": "release",
   "status": "passed",
-  "version": "0.4.0",
-  "package_sha256": "c1999cd64cb34a6371237705782fe4d2725a3a891d8fa15337ed2ab5da672534",
-  "harness_sha256": "f6784ea8cc33861cb54fc1260da31b0f523395a8082f337b51e85ab21b507b2a",
+  "version": "0.4.1",
+  "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
+  "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da",
   "platform": "darwin",
-  "created_at": "2026-11-03T16:18:06.258Z",
+  "created_at": "2026-11-04T02:04:13.044Z",
   "native_runs": [
     {
       "host": "claude",
@@ -18,9 +18,12 @@
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
       "agent": "arti_coordinator",
-      "seconds": 18.7,
+      "seconds": 19.4,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -39,9 +42,12 @@
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
       "agent": "arti_scout",
-      "seconds": 11.9,
+      "seconds": 14.9,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -49,69 +55,6 @@
       ],
       "parent_permissions": "read-only",
       "native_permissions": "plan with read-only tools"
-    },
-    {
-      "host": "claude",
-      "role": "implementer",
-      "status": "passed",
-      "source": "native-Agent-tool-child-message-and-modelUsage",
-      "model": "claude-sonnet-5-5",
-      "effort": "high",
-      "effort_verified": false,
-      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
-      "agent": "arti_implementer",
-      "seconds": 18.3,
-      "checks": [
-        "native-invocation",
-        "resolved-model",
-        "role-task-cases",
-        "shared-memory",
-        "assigned-source-only-and-protected-tests"
-      ],
-      "parent_permissions": "workspace-write",
-      "native_permissions": "acceptEdits with exact test command permission and scope hooks"
-    },
-    {
-      "host": "claude",
-      "role": "reviewer",
-      "status": "passed",
-      "source": "native-Agent-tool-child-message-and-modelUsage",
-      "model": "claude-opus-5-5",
-      "effort": "high",
-      "effort_verified": false,
-      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
-      "agent": "arti_reviewer",
-      "seconds": 16.9,
-      "checks": [
-        "native-invocation",
-        "resolved-model",
-        "role-task-cases",
-        "shared-memory",
-        "no-product-mutations"
-      ],
-      "parent_permissions": "read-only",
-      "native_permissions": "plan with read-only tools"
-    },
-    {
-      "host": "claude",
-      "role": "escalation",
-      "status": "passed",
-      "source": "native-Agent-tool-child-message-and-modelUsage",
-      "model": "claude-opus-5-5",
-      "effort": "high",
-      "effort_verified": false,
-      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
-      "agent": "arti_escalation",
-      "seconds": 50.5,
-      "checks": [
-        "native-invocation",
-        "resolved-model",
-        "role-task-cases",
-        "shared-memory",
-        "assigned-source-only-and-protected-tests"
-      ],
-      "parent_permissions": "workspace-write",
-      "native_permissions": "acceptEdits with exact test command permission and scope hooks"
     },
     {
       "host": "codex",
@@ -123,9 +66,12 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_coordinator",
-      "seconds": 20.3,
+      "seconds": 40.2,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -133,6 +79,30 @@
       ],
       "parent_permissions": "read-only",
       "native_permissions": "read-only"
+    },
+    {
+      "host": "claude",
+      "role": "implementer",
+      "status": "passed",
+      "source": "native-Agent-tool-child-message-and-modelUsage",
+      "model": "claude-sonnet-5-5",
+      "effort": "high",
+      "effort_verified": false,
+      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
+      "agent": "arti_implementer",
+      "seconds": 25.7,
+      "checks": [
+        "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
+        "resolved-model",
+        "role-task-cases",
+        "shared-memory",
+        "assigned-source-only-and-protected-tests"
+      ],
+      "parent_permissions": "workspace-write",
+      "native_permissions": "acceptEdits with exact test command permission and scope hooks"
     },
     {
       "host": "codex",
@@ -144,9 +114,12 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_scout",
-      "seconds": 25.9,
+      "seconds": 35.5,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -154,6 +127,30 @@
       ],
       "parent_permissions": "read-only",
       "native_permissions": "read-only"
+    },
+    {
+      "host": "claude",
+      "role": "reviewer",
+      "status": "passed",
+      "source": "native-Agent-tool-child-message-and-modelUsage",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "effort_verified": false,
+      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
+      "agent": "arti_reviewer",
+      "seconds": 31.7,
+      "checks": [
+        "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
+        "resolved-model",
+        "role-task-cases",
+        "shared-memory",
+        "no-product-mutations"
+      ],
+      "parent_permissions": "read-only",
+      "native_permissions": "plan with read-only tools"
     },
     {
       "host": "codex",
@@ -165,9 +162,12 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_implementer",
-      "seconds": 33.6,
+      "seconds": 37.6,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -175,6 +175,30 @@
       ],
       "parent_permissions": "workspace-write",
       "native_permissions": "workspace-write"
+    },
+    {
+      "host": "claude",
+      "role": "escalation",
+      "status": "passed",
+      "source": "native-Agent-tool-child-message-and-modelUsage",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "effort_verified": false,
+      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
+      "agent": "arti_escalation",
+      "seconds": 25.3,
+      "checks": [
+        "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
+        "resolved-model",
+        "role-task-cases",
+        "shared-memory",
+        "assigned-source-only-and-protected-tests"
+      ],
+      "parent_permissions": "workspace-write",
+      "native_permissions": "acceptEdits with exact test command permission and scope hooks"
     },
     {
       "host": "codex",
@@ -186,9 +210,12 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_reviewer",
-      "seconds": 21.5,
+      "seconds": 72.6,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -207,9 +234,12 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_escalation",
-      "seconds": 34.1,
+      "seconds": 45.6,
       "checks": [
         "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
         "shared-memory",
@@ -229,87 +259,9 @@
       "model": "gpt-6.1-sol",
       "effort": "high",
       "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "704780ca9e7a3271c1bc40379a9736cc1243c602f613a8fa9cf195721fccd80b",
+      "snapshot_sha256": "1a95dc54588780d7ff395adc7c9b069cc2eab02b43067806231bcfa427a6775a",
       "findings": 1,
-      "seconds": 10
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "security",
-      "iteration": 2,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "5d99bc8e9a147de430299673f4faa26903722f6da0b3efdfc7c0646a4f709d39",
-      "findings": 1,
-      "seconds": 9.9
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "security",
-      "iteration": 3,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "25e19f0dd79a9d7ba6ce4b7c2ebf1c7513a7990eaec7c7c69ba265c41e9377f2",
-      "findings": 1,
-      "seconds": 12.8
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "quantity",
-      "iteration": 1,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "df676ffefd7ec6f934d1a9a53e3cfe369a791dc65f642d3e3bad2c5f44645afa",
-      "findings": 1,
-      "seconds": 9.3
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "quantity",
-      "iteration": 2,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "1193bf1102953d590e833683b081fe83c87e5867cd51329e42c422be4ca6db03",
-      "findings": 1,
-      "seconds": 8.4
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "quantity",
-      "iteration": 3,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "672a80f0e909f561c2abd787a52e530dc7e09cfaa1afadbe4b7b3d9caaffd9b7",
-      "findings": 1,
-      "seconds": 8.8
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "clean",
-      "iteration": 1,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "47f22799d76954db8a5742ed3a9dc7693e0119ea58f5e414ce152b439224f00e",
-      "findings": 0,
-      "seconds": 6.4
+      "seconds": 7.7
     },
     {
       "author": "codex",
@@ -320,9 +272,35 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "f53f1740a07e0a45f57d4d4db1a30caf87d552108a09140d78d989a7ea224bf3",
+      "snapshot_sha256": "8e5fcce03869aa0bbf542f0ccafe4d5efc2ea94c13d128b6cd54ae2f108ae6c8",
       "findings": 2,
-      "seconds": 10.9
+      "seconds": 11.8
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "security",
+      "iteration": 2,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "b3a42fb592ba680b43118913f32d8aae1a525a296fc9d984b8e4e56f7540d0e8",
+      "findings": 1,
+      "seconds": 7
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "security",
+      "iteration": 3,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "6eb5653a89f5db169c97416b2ea275f1ffa87d806036ba4934c77ffc64439228",
+      "findings": 1,
+      "seconds": 7.4
     },
     {
       "author": "codex",
@@ -333,9 +311,22 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "fd5c6b2a216c478aaa5def9f8a06cdf9b66630e3c77f3d6242e8a909363b5c69",
+      "snapshot_sha256": "092baca8c2638ca1cc37a1d9497cee3610b381592efa1bf0595c159814cc0333",
       "findings": 2,
-      "seconds": 9.3
+      "seconds": 11.2
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "quantity",
+      "iteration": 1,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "abe974a52f50d86f29358a9442f9f21b24632d5e347c02b4dd8ce79729605dd5",
+      "findings": 1,
+      "seconds": 7.5
     },
     {
       "author": "codex",
@@ -346,9 +337,22 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "1a57090aeda046d0558740fe5278983521a2b714ec95d58a7377e959453f2ea4",
+      "snapshot_sha256": "0899554e46d022d8cdfe18c968113571c3000f6eeb0315a4998aaacb5e7807ab",
       "findings": 2,
-      "seconds": 9.1
+      "seconds": 11.6
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "quantity",
+      "iteration": 2,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "09b39435155d26b7138d0ff98fb8e3b6a524b60ac4db722e3ecf44cbb8dc0c7a",
+      "findings": 1,
+      "seconds": 7.9
     },
     {
       "author": "codex",
@@ -359,37 +363,63 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "226853901eda7d9ba2510cb8364f859d159624c9b4a12c2a584bf3f3161d3123",
-      "findings": 2,
-      "seconds": 9.3
-    },
-    {
-      "author": "codex",
-      "reviewer": "claude",
-      "fixture": "quantity",
-      "iteration": 2,
-      "status": "passed",
-      "model": "claude-opus-5-5",
-      "effort": "high",
-      "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "6413376246c5a451585dab1560fdcdfd6a5e72f715a762c2c3aa2587a2003e2e",
-      "findings": 2,
-      "seconds": 10.5
-    },
-    {
-      "author": "codex",
-      "reviewer": "claude",
-      "fixture": "quantity",
-      "iteration": 3,
-      "status": "passed",
-      "model": "claude-opus-5-5",
-      "effort": "high",
-      "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "9aa4e9db2c9f3551f0dff477f47ade060f0f18d629ff0c094a58e71bd812d508",
+      "snapshot_sha256": "e825b1df2bdf5b74865317a681281391a9abd8593f9696ae8fa472d738fddf94",
       "findings": 2,
       "seconds": 10.7
     },
     {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "quantity",
+      "iteration": 3,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "5cbf47c0e811bcd6966262ea09656cd4eb4130cb7a1dec2cb16ad5c769e13165",
+      "findings": 1,
+      "seconds": 8.9
+    },
+    {
+      "author": "codex",
+      "reviewer": "claude",
+      "fixture": "quantity",
+      "iteration": 2,
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cli_version": "2.1.310 (Claude Code)",
+      "snapshot_sha256": "afe0e787602718fd504819f42c68e6ee6a049e67381401b40f58c9de6596d66a",
+      "findings": 2,
+      "seconds": 7.5
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "clean",
+      "iteration": 1,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "e7c7d65b87628d5b79b97760222723b2fd570da419f42441ccd8f3929ab4473d",
+      "findings": 0,
+      "seconds": 7.5
+    },
+    {
+      "author": "codex",
+      "reviewer": "claude",
+      "fixture": "quantity",
+      "iteration": 3,
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cli_version": "2.1.310 (Claude Code)",
+      "snapshot_sha256": "5e866e2c58569ea3a5e269560231b31785b7aad10796862bec4f70a99d1c139c",
+      "findings": 2,
+      "seconds": 10.4
+    },
+    {
       "author": "codex",
       "reviewer": "claude",
       "fixture": "clean",
@@ -398,9 +428,9 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "c1f945658584a1af3dba22b1b6a0c379d1612261251ca3101ebabcd0bb382431",
+      "snapshot_sha256": "f2a269ad06a4483818343c7690d60a7466b22586d90951b46e9110035c692ece",
       "findings": 0,
-      "seconds": 9.2
+      "seconds": 9
     }
   ],
   "hook_runs": [
@@ -451,17 +481,6 @@
   ],
   "chat_runs": [
     {
-      "host": "claude",
-      "status": "passed",
-      "checks": [
-        "portable-charter",
-        "explicit-false-retained",
-        "review-undecided",
-        "no-repository-writes"
-      ],
-      "model": "claude-opus-5-5"
-    },
-    {
       "host": "codex",
       "status": "passed",
       "checks": [
@@ -471,6 +490,17 @@
         "no-repository-writes"
       ],
       "model": "gpt-6.1-sol"
+    },
+    {
+      "host": "claude",
+      "status": "passed",
+      "checks": [
+        "portable-charter",
+        "explicit-false-retained",
+        "review-undecided",
+        "no-repository-writes"
+      ],
+      "model": "claude-opus-5-5"
     }
   ],
   "dispatch_runs": [
@@ -529,6 +559,40 @@
       ]
     }
   ],
+  "routing_guard_runs": [
+    {
+      "host": "claude",
+      "status": "passed",
+      "checks": [
+        "actual-native-dispatch-attempts",
+        "audited-hook-denials",
+        "no-silent-model-inheritance"
+      ],
+      "probes": [
+        "generic inherited-model dispatch",
+        "model override differs",
+        "effort override differs"
+      ],
+      "effort_override_surface": "actual native effort override denied; effective effort telemetry unavailable"
+    },
+    {
+      "host": "codex",
+      "status": "passed",
+      "checks": [
+        "actual-native-dispatch-attempts",
+        "audited-hook-denials",
+        "no-silent-model-inheritance"
+      ],
+      "probes": [
+        "generic inherited-model dispatch",
+        "model override differs",
+        "native Codex requires configured agent_type",
+        "effort override differs",
+        "require a fresh context"
+      ],
+      "effort_override_surface": "actual native effort override denied"
+    }
+  ],
   "clients": {
     "claude": "2.1.310 (Claude Code)",
     "codex": "codex-cli 0.166.0"
@@ -540,5 +604,15 @@
     "arch": "arm64"
   },
   "team_fingerprint": "3e3bdeaa0a1389848c7686da94f453da8ff3acb6214e9e0f78100e49990ad2ca",
-  "finished_at": "2026-11-03T16:29:36.728Z"
+  "finished_at": "2026-11-04T02:13:45.401Z",
+  "component_evidence": {
+    "native_and_review": {
+      "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da"
+    },
+    "routing_guards": {
+      "harness_sha256": "54d7c44464d060b92c72bd16f7c436dfee4bd59426211e55cb22bdc6c2727240",
+      "finished_at": "2026-11-04T02:47:40.418Z",
+      "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf"
+    }
+  }
 }

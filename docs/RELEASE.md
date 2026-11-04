@@ -38,6 +38,14 @@ Copy-ready release text:
 
 The published v0.4.0 release contains `arti-sdd-protocol-0.4.0.zip` and `SHA256SUMS`. Documentation on `main` may improve after a release; its tag and installable archive remain fixed. Release copy can link to the current overview graphics and cost study while retaining links to the exact release qualification.
 
+## Routing patch v0.4.1
+
+Patch title: **Arti SDD Protocol v0.4.1 — explicit worker routing**.
+
+The patch adds one small dispatch helper, with fresh-context dossiers and actual native child verification. It fixes generic-worker model inheritance, required native arguments and conflicting overrides. Claude and Codex native roles, both review directions and five desktop bindings have dated evidence. Desktop native profile selection and role-source delivery remain unobservable; Claude effective effort remains unobservable.
+
+The current core has 23 files, about 141 KB, a 581-word entry point and no runtime package dependencies. The v0.4.0 tag and ZIP stay fixed. Publish this patch only after its reviewed export and exact-commit CI pass under maintainer authority; packaging and local installation do not create a release.
+
 ## Documentation included in the public tree
 
 | File | Purpose |
@@ -71,7 +79,7 @@ Initial publication uses fresh history from the reviewed export. Once that publi
 
 These are declared scope limits, not pending claims of support:
 
-- Live host support is limited to the exact macOS Claude Code/Codex CLI versions in the report. Linux/Windows journeys, additional agents and separate desktop/IDE surfaces need their own evidence.
+- Live host support is limited to the exact macOS Claude Code/Codex versions and surfaces in the reports. Codex desktop model/effort routing has separate bounded task evidence; its tool cannot select native profiles and its hook coverage is unproven. Linux/Windows journeys and additional agents/IDE surfaces need their own evidence.
 - Claude effective effort is not observable in the tested client. Codex native roles inherit parent permissions; hooks are not a complete shell security boundary.
 - The fixture results do not establish general vendor/model equivalence or availability on another account. Requalify changed bindings, aliases, role sources, package or clients.
 - Remote claims protect ticket IDs; cross-clone work on different tickets still needs coordinator-assigned disjoint territory.
@@ -90,7 +98,7 @@ node dev/package.mjs --require-qualified
 The output is:
 
 ```text
-dist/arti-sdd-protocol-0.4.0.zip    Installable skill only
+dist/arti-sdd-protocol-0.4.1.zip    Installable skill only
 dist/public-repository/           Allowlisted source and documentation
 dist/manifest.json                Package/archive hashes and every public source hash
 ```

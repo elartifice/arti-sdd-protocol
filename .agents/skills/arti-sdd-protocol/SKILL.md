@@ -15,7 +15,7 @@ Chat needs only Markdown. Repository helpers need Node.js 22+ and Git; Claude Co
 - **Chat or blueprint:** Read [charter.md](references/charter.md). Produce one `PROJECT-CHARTER.md` containing scope, architecture, milestones, tickets, acceptance evidence, settled decisions and open questions. Mark assumptions that require repository inspection. No installation or tools are required.
 - **New repository:** Read [repository.md](references/repository.md). Validate an existing charter or collect missing decisions, inspect the target folder, then preview and apply only the chosen protocol. The charter's explicit facts win over heuristics; report contradictions.
 - **Existing repository or upgrade:** Read [repository.md](references/repository.md). Inventory rules, skills, work and planning before changing them. Reconcile owner content, preserve IDs and unfinished work, and show the exact changes. Never audit this package's assets as project code.
-- **Agents and review:** Load [agents.md](references/agents.md) only when configuring or qualifying a team. A generated role is configured, not verified. Record actual native invocation, model/effort evidence, permission limits and behavioral results.
+- **Agents and review:** Load [agents.md](references/agents.md) when configuring, qualifying or delegating a custom team. Prepare ordinary delegation with `scripts/dispatch.mjs`; select the bound native role or explicit desktop model/effort, then verify native evidence. Generated profiles alone do not establish production routing.
 
 ## Small shared core
 

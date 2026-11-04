@@ -21,8 +21,9 @@ export function binding(team,host,role) {
   const b=team.bindings?.[host]?.[role];invariant(b&&typeof b==='object',`Unresolved ${host}/${role} binding`);
   for(const k of Object.keys(b))invariant(['model','effective_model','effort'].includes(k),`Unknown binding field ${k}`);
   for(const k of ['model','effective_model'])invariant(typeof b[k]==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9._:@/-]{0,127}$/.test(b[k]),`Invalid ${host}/${role} ${k}`);
-  invariant(host!=='codex'||!b.model.startsWith('claude'),'Wrong-lab Codex binding');
-  invariant(host!=='claude'||!b.model.startsWith('gpt-'),'Wrong-lab Claude binding');
+  const openai=id=>/^(?:gpt-|o[1-9](?:-|$)|codex-)/.test(id),anthropic=id=>/^claude-/.test(id);
+  invariant(host!=='codex'||(openai(b.model)&&openai(b.effective_model)),'Wrong-lab or unsupported Codex binding');
+  invariant(host!=='claude'||((['opus','sonnet','haiku'].includes(b.model)||anthropic(b.model))&&anthropic(b.effective_model)),'Wrong-lab or unsupported Claude binding');
   invariant(['low','medium','high','xhigh','max'].includes(b.effort),'Unsupported effort; qualify a supported setting');
   return b;
 }
@@ -61,7 +62,7 @@ export function inspectTeam(repo,{requireLive=false,versionOf=installedVersion}=
     qualified=r.status==='passed'&&r.fingerprint===fingerprint&&r.package_sha256===packageDigest()&&Array.isArray(r.native_runs);
     for(const host of config.hosts.filter(h=>h!=='other'))for(const role of team.enabled_roles) {
       const b=binding(team,host,role),run=r.native_runs?.find(x=>x.host===host&&x.role===role);
-      qualified=qualified&&run?.status==='passed'&&run.model===b.effective_model&&run.effort===b.effort&&run.checks?.includes('native-invocation')&&run.checks.includes('role-task-cases')&&r.clients?.[host]===versionOf(host);
+      qualified=qualified&&run?.status==='passed'&&run.model===b.effective_model&&run.effort===b.effort&&['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','role-task-cases'].every(c=>run.checks?.includes(c))&&r.clients?.[host]===versionOf(host);
     }
   }
   invariant(!requireLive||qualified,'Team is configured but not live-qualified for this mapping');
@@ -80,7 +81,7 @@ export function recordQualification(repo,report,{versionOf=installedVersion}={})
       const b=binding(team,host,role),r=report.native_runs.find(x=>x.host===host&&x.role===role);
       invariant(r?.status==='passed'&&r.model===b.effective_model&&r.effort===b.effort,`No matching native qualification for ${host}/${role}`);
       invariant(r.effort_verified===(host==='codex')&&typeof r.effort_evidence==='string','Effort evidence is missing or overstated');
-      invariant(['native-invocation','resolved-model','role-task-cases','shared-memory'].every(c=>r.checks?.includes(c)),`Incomplete role evidence: ${host}/${role}`);
+      invariant(['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases','shared-memory'].every(c=>r.checks?.includes(c)),`Incomplete role evidence: ${host}/${role}`);
       const write=['implementer','escalation'].includes(role);
       invariant(r.parent_permissions===(write?'workspace-write':'read-only')&&r.checks.includes(write?'assigned-source-only-and-protected-tests':'no-product-mutations'),`Unproven permission boundary: ${host}/${role}`);
     }

@@ -6,7 +6,7 @@
 
 Arti is a lightweight skill for spec-driven development (SDD). Use it in chat to turn an idea into a portable project blueprint, or give it to a coding agent to start or organise a repository. Claude Code and Codex share instructions and project knowledge. An optional custom team routes focused tasks to explicit models, keeping worker investigations out of the main conversation and reserving expensive reasoning for the work that needs it.
 
-The installable core is 22 files, about 122 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
+The installable core is 23 files, about 141 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
 
 ## What is SDD?
 
@@ -27,7 +27,7 @@ Fast experimentation helps you discover what to build. As a project grows, a str
 | Parallel agents overwrite or duplicate work | Explicit file territory, ownership claims and Git worktrees (separate working directories) for concurrent work. Across separate clones, coordinators still assign disjoint territory. |
 | Switching models or starting a fresh chat loses context | Shared rules, a knowledge index and handoffs that preserve the task and existing approval. |
 | Claude and Codex maintain different instructions | One shared source, with links or generated adapters for each host. |
-| A configured reviewer never actually runs | Native role qualification and review receipts: records of who reviewed which revision, with completion, findings, failure or “not run.” |
+| A configured reviewer never actually runs | Explicit dispatch plans, native role qualification and review receipts: records of who reviewed which revision, with completion, findings, failure or “not run.” |
 | Every investigation fills the main chat and uses its most expensive model | Focused worker contexts, explicit model/effort bindings and short evidence reports; measure coordination and review overhead too. |
 | A new setup overwrites existing project conventions | A preview, owner-content preservation, drift checks and recoverable installation. |
 
@@ -37,7 +37,7 @@ These mechanisms are designed to reduce coordination mistakes and false confiden
 
 The coordinator owns the plan and decisions. A scout finds facts, an implementer changes scoped files, a reviewer challenges the result, and an escalation role receives a failure dossier after repeated failure. Invoke the roles the task needs; a small change can stay with one agent.
 
-Each worker receives the relevant ticket, file scope, rules, lessons and acceptance checks, then returns a compact result with evidence. Detailed investigation stays in its worker context. Cheaper scout/implementation models can reduce cost while stronger review and escalation remain available. Shared role instructions generate Claude and Codex definitions from one source.
+Each worker receives the relevant ticket, file scope, rules, lessons and acceptance checks, then returns a compact result with evidence. The dispatcher resolves the per-host binding before each call and verifies the real child session afterward. Codex desktop receives explicit model and effort arguments with a fresh context; native CLI roles use their generated profile. Detailed investigation stays in its worker context. Cheaper scout/implementation models can reduce cost while stronger review and escalation remain available. Shared role instructions generate Claude and Codex definitions from one source.
 
 ![Agent reporting hierarchy: the coordinator sits above scout, implementer, reviewer and conditional escalation subagents. Cyan arrows send tasks down; purple arrows return evidence up. Role icons and Claude/ChatGPT reviewer marks identify the roles and providers.](docs/assets/agent-architecture.svg)
 
@@ -111,12 +111,13 @@ For a user-level installation, keep one reviewed copy under `~/.agents/skills/ar
 
 ## What has actually been verified?
 
-The version 0.4.0 qualification, dated **2026-11-03**, covers macOS 26.6.2 arm64, Claude Code 2.1.310 and Codex CLI 0.166.0:
+The version 0.4.1 qualification, dated **2026-11-04**, covers macOS 26.6.2 arm64, Claude Code 2.1.310 and Codex CLI 0.166.0:
 
 - All five native roles ran on both hosts with actual invocation/model evidence and role-specific task checks.
 - Both review directions passed three security-defect trials, three quantity-calculation-defect trials and a clean control, followed by an actual production author-to-reviewer dispatch.
-- Both clients passed real allowed/denied edit probes, persisted-session resumes, fresh cross-host handoffs and chat-only charters.
-- The deterministic suite passed 75 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
+- Both clients denied actual generic dispatch and conflicting model/effort requests; Codex also denied full-history forks and missing native selectors. Both passed allowed/denied edit probes, persisted-session resumes, fresh cross-host handoffs and chat-only charters.
+- All five Codex desktop bindings passed separate real task, native model/effort and fresh-context checks. Native profile selection and independent role-source delivery are unavailable on that surface.
+- The deterministic suite passed 81 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
 
 The [native report](docs/QUALIFICATION.md) and [machine-readable evidence](docs/qualification.json) bind those results to the installable package digest. The [validation guide](docs/VALIDATION.md) states their boundaries.
 

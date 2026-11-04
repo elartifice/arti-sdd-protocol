@@ -1,0 +1,137 @@
+{
+  "version": "0.4.1",
+  "date": "2026-11-04",
+  "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
+  "surface": "Codex desktop collaboration.spawn_agent",
+  "status": "passed",
+  "runs": [
+    {
+      "role": "coordinator",
+      "status": "verified",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ]
+    },
+    {
+      "role": "scout",
+      "status": "verified",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ]
+    },
+    {
+      "role": "implementer",
+      "status": "verified",
+      "model": "gpt-6.1-terra",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ]
+    },
+    {
+      "role": "reviewer",
+      "status": "verified",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ]
+    },
+    {
+      "role": "escalation",
+      "status": "verified",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ]
+    }
+  ],
+  "boundaries": [
+    "Native named profile selection unsupported",
+    "Parent permissions inherited",
+    "Desktop hook enforcement not proven",
+    "Role source requested in planned argument; delivery not independently exposed",
+    "Codex checker fetches native state itself; supplied thread/rollout JSON rejected",
+    "Dispatch marker correlates task; native metadata establishes model and effort"
+  ]
+}
