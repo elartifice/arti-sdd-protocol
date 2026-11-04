@@ -117,7 +117,7 @@ The version 0.4.1 qualification, dated **2026-11-04**, covers macOS 26.6.2 arm64
 - Both review directions passed three security-defect trials, three quantity-calculation-defect trials and a clean control, followed by an actual production author-to-reviewer dispatch.
 - Both clients denied actual generic dispatch and conflicting model/effort requests; Codex also denied full-history forks and missing native selectors. Both passed allowed/denied edit probes, persisted-session resumes, fresh cross-host handoffs and chat-only charters.
 - All five Codex desktop bindings passed separate real task, native model/effort and fresh-context checks. Native profile selection and independent role-source delivery are unavailable on that surface.
-- The deterministic suite passed 84 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
+- The deterministic suite passed 86 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
 
 The [native report](docs/QUALIFICATION.md) and [machine-readable evidence](docs/qualification.json) bind those results to the installable package digest. The [validation guide](docs/VALIDATION.md) states their boundaries.
 
