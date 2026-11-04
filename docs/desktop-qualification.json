@@ -1,7 +1,7 @@
 {
   "version": "0.4.1",
   "date": "2026-11-04",
-  "package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
+  "package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
   "surface": "Codex desktop collaboration.spawn_agent",
   "status": "passed",
   "runs": [

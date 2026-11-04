@@ -107,6 +107,7 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
     const children=events.filter(e=>e.type==='assistant'&&e.parent_tool_use_id===call.id);
     const childText=children.flatMap(e=>e.message?.content||[]).filter(c=>c.type==='text').at(-1)?.text;
     const completions=events.filter(e=>e.type==='user'&&!e.parent_tool_use_id&&Object.hasOwn(e,'tool_use_result')&&(e.message?.content||[]).some(c=>c.type==='tool_result'&&c.tool_use_id===call.id));
+    if(!completions.length)invariant(events.some(e=>e.type==='system'&&e.subtype==='task_notification'&&e.tool_use_id===call.id&&e.status==='completed'&&typeof e.task_id==='string'&&e.task_id.trim()),'Claude native task completion missing');
     const completionReports=[];
     for(const event of completions) {
       const result=event.tool_use_result,matched=(event.message?.content||[]).filter(c=>c.type==='tool_result');

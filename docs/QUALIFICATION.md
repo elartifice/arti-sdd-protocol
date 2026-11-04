@@ -1,7 +1,7 @@
 # Native qualification
 
 Date: 2026-11-04
-Current package SHA256: b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b
+Current package SHA256: 839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03
 Execution package SHA256: 0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf
 
 Platform: macOS 26.6.2 arm64; 2.1.310 (Claude Code); codex-cli 0.166.0; Node v25.8.1.
@@ -43,6 +43,6 @@ The verifier now scopes Claude calls to the dispatch ID, allowing multiple unrel
 
 Native Codex verifier replay also reads the observed parent: child and parent checkouts must agree and belong to the planned Git repository, with matching current team and adapter sources. This supports a coordinator in the main checkout targeting a linked worktree. The receipt does not attest an intended parent ID or the encrypted loaded role body; it describes inference from native identity and checked local sources. Desktop native profile identity remains unsupported.
 
-The final verifier also accepts a correlated native Claude completion record when the client omits all child assistant messages. It checks the exact Agent result, completed status, native identity, original prompt, resolved model, report nonce and first-party model usage. Conflicting streamed or completion models fail. Historical async launch records additionally need a native completed notification matching both the tool call and child ID; a launch record alone is insufficient.
+The final verifier also accepts a correlated native Claude completion record when the client omits all child assistant messages. It checks the exact Agent result, completed status, native identity, original prompt, resolved model, report nonce and first-party model usage. Conflicting streamed or completion models fail. Historical async launch records additionally need a native completed notification matching both the tool call and child ID; a launch record alone is insufficient. Streamed records without completion metadata also require a native completed notification for the exact call.
 
 A supplemental foreground Scout ran with the release profile on execution package bab85f2cc1943cd19d70888202436c857bc2baca26e03ff7136d3329c0ecc40d: Opus parent, actual Haiku child, no streamed child messages, successful native completion metadata. The saved run passes the current verifier. Its private report-field parser was corrected after requiring a literal value where the task allowed an explanatory sentence; no model call was repeated for that correction. Five historical Claude role recordings and ten Codex native/desktop threads also pass current replay. These are component checks, not a new full matrix execution on the current package.

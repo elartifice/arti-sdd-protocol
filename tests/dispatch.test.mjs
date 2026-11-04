@@ -10,7 +10,7 @@ import {config,repo,temp,mapping,invoke} from './harness.mjs';
 function fixture(t) {const dir=repo(t),c=config(),team=mapping();c.decisions.team='custom';team.bindings.codex.implementer={model:'gpt-6.1-terra',effective_model:'gpt-6.1-terra',effort:'high'};applySetup(planSetup(dir,c,{team}));return dir;}
 const options=(surface,role='implementer')=>({host:surface==='claude-agent'?'claude':'codex',surface,role,task:'Do the bounded task',assignedFiles:role==='implementer'?['src/a.mjs']:[]});
 function codex(plan) {return {thread:{model:plan.expected.model,reasoningEffort:plan.expected.effort,modelProvider:'openai',id:'child',parentThreadId:'parent',cwd:plan.repo,turns:[{id:'child-turn',status:'completed',items:[{type:'agentMessage',text:`DISPATCH_ID: ${plan.dispatchId}`}]}],agentRole:plan.expected.native_identity},rollout:[{type:'session_meta',payload:{id:'child',parent_thread_id:'parent',agent_path:`/root/${plan.invocation.args.task_name}`} },{type:'response_item',payload:{type:'message',role:'user',content:[{type:'input_text',text:plan.invocation.args.message}]}},{type:'turn_context',payload:{turn_id:'child-turn',model:plan.expected.model,effort:plan.expected.effort}}]};}
-function claude(plan) {return [{type:'assistant',message:{content:[{type:'tool_use',name:'Agent',id:'call1',input:{subagent_type:plan.expected.native_identity,prompt:plan.invocation.args.prompt}}]}},{type:'assistant',parent_tool_use_id:'call1',message:{model:plan.expected.model,content:[{type:'text',text:`STATUS: DONE\nDISPATCH_ID: ${plan.dispatchId}`}]}},{type:'user',message:{content:[{type:'tool_result',tool_use_id:'call1',content:'completed'}]}},{type:'result',subtype:'success',modelUsage:{[plan.expected.model]:{provider:'firstParty'}}}];}
+function claude(plan) {return [{type:'assistant',message:{content:[{type:'tool_use',name:'Agent',id:'call1',input:{subagent_type:plan.expected.native_identity,prompt:plan.invocation.args.prompt}}]}},{type:'assistant',parent_tool_use_id:'call1',message:{model:plan.expected.model,content:[{type:'text',text:`STATUS: DONE\nDISPATCH_ID: ${plan.dispatchId}`}]}},{type:'user',message:{content:[{type:'tool_result',tool_use_id:'call1',content:'completed'}]}},{type:'result',subtype:'success',modelUsage:{[plan.expected.model]:{provider:'firstParty'}}},{type:'system',subtype:'task_notification',tool_use_id:'call1',task_id:'native-child-id',status:'completed'}];}
 const verify=(p,e)=>p.host==='codex'?verifyDispatch(p,{threadId:'child'},{readThread:async(_repo,id)=>({thread:id==='parent'?{id:'parent',cwd:e.thread.cwd}:e.thread}),readRollout:async()=>e.rollout}):verifyDispatch(p,e);
 test('each surface selects its bound native invocation and truthful boundary',async t=>{
  const dir=fixture(t);
@@ -89,6 +89,7 @@ test('Claude completion-only native evidence proves the bound model and rejects 
   return events;
  };
  const good=await verify(p,completed());assert.equal(good.status,'verified');assert.equal(good.effort_verified,false);
+ for(const mutate of [e=>{e.splice(e.findIndex(x=>x.type==='system'),1);},e=>{e.find(x=>x.type==='system').status='failed';},e=>{e.find(x=>x.type==='system').tool_use_id='other';},e=>{e.find(x=>x.type==='system').task_id='';}]){const e=claude(p);mutate(e);await assert.rejects(verify(p,e),/task completion/);}
  for(const mutate of [
   e=>{delete e.find(x=>x.type==='user').tool_use_result;},
   e=>{e.find(x=>x.type==='user').tool_use_result=null;},
@@ -111,7 +112,7 @@ test('Claude completion-only native evidence proves the bound model and rejects 
 
 test('Claude historical launch metadata requires a completed streamed child',async t=>{
  const p=planDispatch(fixture(t),options('claude-agent'));
- const launched=()=>{const e=claude(p);e.find(x=>x.type==='user').tool_use_result={status:'async_launched',isAsync:true,agentId:'native-child-id',resolvedModel:p.expected.model};e.splice(-1,0,{type:'system',subtype:'task_notification',tool_use_id:'call1',task_id:'native-child-id',status:'completed'});return e;};
+ const launched=()=>{const e=claude(p);e.find(x=>x.type==='user').tool_use_result={status:'async_launched',isAsync:true,agentId:'native-child-id',resolvedModel:p.expected.model};return e;};
  assert.equal((await verify(p,launched())).status,'verified');
  for(const mutate of [
   e=>{e.splice(1,1);},

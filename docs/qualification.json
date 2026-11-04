@@ -3,7 +3,7 @@
   "kind": "release",
   "status": "passed",
   "version": "0.4.1",
-  "package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
+  "package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
   "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da",
   "platform": "darwin",
   "created_at": "2026-11-04T02:04:13.044Z",
@@ -632,7 +632,7 @@
     "current_verifier_replay": {
       "status": "passed",
       "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
-      "current_verifier_package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
+      "current_verifier_package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
       "changed_package_files": [
         ".agents/skills/arti-sdd-protocol/scripts/dispatch.mjs",
         ".agents/skills/arti-sdd-protocol/scripts/hooks.mjs"
@@ -681,7 +681,7 @@
     },
     "claude_completion_only": {
       "package_sha256": "bab85f2cc1943cd19d70888202436c857bc2baca26e03ff7136d3329c0ecc40d",
-      "current_verifier_package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
+      "current_verifier_package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
       "parent_model": "claude-opus-5-5",
       "child_streamed_messages": 0,
       "native_completion_verified": true,
@@ -689,7 +689,7 @@
       "effort": "low",
       "effort_verified": false,
       "new_model_calls": 0,
-      "method": "Actual foreground native Claude Scout with no child assistant stream; verified using correlated native completion metadata and first-party usage. Recorded run replayed after correcting an over-strict private report-field assertion; original failure retained. Later verifier adds only historical async completion correlation.",
+      "method": "Actual foreground native Claude Scout with no child assistant stream; verified using correlated native completion metadata and first-party usage. Recorded run replayed after correcting an over-strict private report-field assertion; original failure retained. Later verifier adds native completion correlation to historical streamed cases.",
       "execution_harness_sha256": "34cc974adc1f37ab65a9a77bb6634644f9447bb6ecead981812a2ee531d27445"
     }
   },
