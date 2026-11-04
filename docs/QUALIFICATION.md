@@ -1,7 +1,8 @@
 # Native qualification
 
 Date: 2026-11-04
-Package SHA256: 0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf
+Current verifier package SHA256: 2dd9242dc4a086dc288d38b6792cc0b9f18a70fcb50c94a82c893759ec5fa9e4
+Execution package SHA256: 0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf
 
 Platform: macOS 26.6.2 arm64; 2.1.310 (Claude Code); codex-cli 0.166.0; Node v25.8.1.
 
@@ -29,3 +30,5 @@ Additional native routing probes cover Claude model and effort overrides, and Co
 Five Codex desktop role tasks also passed: see [desktop-qualification.json](desktop-qualification.json). Native state proves their model, resolved effort and fresh context. The desktop tool cannot select native profiles, and sealed role-source delivery is not independently observable.
 
 Scout qualification uses two additional native executions with withheld fixture answers. Both children read or content-searched the two seeded files. The original Codex component run encountered a search-output path parsing error after execution; the recorded native evidence was rechecked with the corrected parser, without new model calls. Execution and replay harness hashes are recorded in qualification.json.
+
+The original native qualification and role tasks executed on the execution package above. The only subsequent package change updates the dispatcher verifier to require a completed latest child turn. The corrected verifier was replayed against fresh native thread reads and saved rollouts for five Codex CLI roles and five desktop roles; the full qualification fixtures were not rerun on the current package. The delegated message is sealed, so task correlation checks the native child path and completed report nonce; it does not verify delivery of the task payload.

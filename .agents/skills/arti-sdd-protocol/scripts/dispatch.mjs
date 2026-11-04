@@ -60,7 +60,7 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
     invariant(thread.forkedFromId==null,'Codex child is not fresh');
     invariant(thread.model===expected.model&&thread.reasoningEffort===expected.effort,'Codex effective model or effort mismatch');
     invariant(thread.modelProvider==='openai','Codex provider mismatch');
-    invariant(typeof thread.id==='string'&&thread.id.length>0&&typeof thread.parentThreadId==='string'&&thread.parentThreadId.length>0&&Array.isArray(thread.turns)&&thread.turns.some(t=>t.status==='completed'&&Array.isArray(t.items)&&t.items.length>0),'Missing completed native child thread evidence');
+    invariant(typeof thread.id==='string'&&thread.id.length>0&&typeof thread.parentThreadId==='string'&&thread.parentThreadId.length>0&&Array.isArray(thread.turns)&&thread.turns.at(-1)?.status==='completed'&&Array.isArray(thread.turns.at(-1)?.items)&&thread.turns.at(-1).items.length>0,'Missing completed native child thread evidence');
     if(plan.surface==='codex-collaboration')invariant(thread.agentRole===null,'Desktop native profile identity is unsupported');
     if(plan.surface==='codex-agent')invariant(thread.agentRole===expected.native_identity,'Codex native agent role mismatch');
     const rollout=await readRollout(thread);
@@ -71,7 +71,7 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
     const spawn=meta.source?.subagent?.thread_spawn,agentPath=spawn?.agent_path||meta.agent_path;
     invariant(meta.parent_thread_id===thread.parentThreadId&&(!spawn?.parent_thread_id||spawn.parent_thread_id===thread.parentThreadId)&&typeof agentPath==='string'&&agentPath.endsWith('/'+fresh.invocation.args.task_name),'Native child path or parent mismatch');
     if(meta.agent_path&&spawn?.agent_path)invariant(meta.agent_path===spawn.agent_path,'Native child paths disagree');
-    const messages=thread.turns.filter(t=>t.status==='completed').flatMap(t=>t.items||[]).filter(i=>i.type==='agentMessage'&&typeof i.text==='string');
+    const messages=thread.turns.at(-1).items.filter(i=>i.type==='agentMessage'&&typeof i.text==='string');
     const final=messages.at(-1)?.text||'',id=plan.dispatchId;
     invariant(reportHasId(final,id),'Final child report dispatch ID missing');
     const turnIds=new Set(thread.turns.map(t=>t.id).filter(id=>typeof id==='string'&&id.length>0));
@@ -79,7 +79,7 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
     invariant(contexts.every(e=>turnIds.has(e.payload?.turn_id)),'Foreign turn context in rollout');
     invariant(contexts.length>0,'Missing native child turn context');
     for(const e of contexts) {invariant(e.payload?.model===expected.model,'Rollout model mismatch');invariant(e.payload?.effort===expected.effort,'Rollout effort mismatch');}
-    return {status:'verified',model:thread.model,effort:thread.reasoningEffort,effort_verified:true,profile_identity:expected.profile_identity,native_identity:expected.native_identity,permissions:expected.permissions,source:'native-thread-read-and-rollout-with-reported-dispatch-id',task_correlated:true,fresh_context_verified:true,role_source_verified:plan.surface==='codex-agent',role_source_evidence:plan.surface==='codex-agent'?'native profile identity and adapter hash':'planned argument; delivery not exposed'};
+    return {status:'verified',model:thread.model,effort:thread.reasoningEffort,effort_verified:true,profile_identity:expected.profile_identity,native_identity:expected.native_identity,permissions:expected.permissions,source:'native-thread-read-and-rollout-with-reported-dispatch-id',task_correlated:true,task_payload_verified:false,task_payload_evidence:'Native delegated message is sealed; correlation uses child path and completed report nonce',fresh_context_verified:true,role_source_verified:plan.surface==='codex-agent',role_source_evidence:plan.surface==='codex-agent'?'native profile identity and adapter hash':'planned argument; delivery not exposed'};
   }
   const events=Array.isArray(evidence)?evidence:evidence?.events;
   invariant(Array.isArray(events),'Missing Claude stream-json events');

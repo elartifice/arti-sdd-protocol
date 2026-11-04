@@ -3,7 +3,7 @@
   "kind": "release",
   "status": "passed",
   "version": "0.4.1",
-  "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
+  "package_sha256": "2dd9242dc4a086dc288d38b6792cc0b9f18a70fcb50c94a82c893759ec5fa9e4",
   "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da",
   "platform": "darwin",
   "created_at": "2026-11-04T02:04:13.044Z",
@@ -623,6 +623,18 @@
       "team_fingerprint": "3e3bdeaa0a1389848c7686da94f453da8ff3acb6214e9e0f78100e49990ad2ca",
       "original_report_sha256": "bb6914b47a56e63fecc893bf0f0937ead01f725ae83556d0d797cd0a0fbd56a7",
       "method": "Recorded native executions replayed after correcting search-output path parsing; both child source reads checked; no new model calls."
+    },
+    "current_verifier_replay": {
+      "status": "passed",
+      "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
+      "current_verifier_package_sha256": "2dd9242dc4a086dc288d38b6792cc0b9f18a70fcb50c94a82c893759ec5fa9e4",
+      "changed_package_files": [
+        ".agents/skills/arti-sdd-protocol/scripts/dispatch.mjs"
+      ],
+      "native_codex_runs": 5,
+      "desktop_codex_runs": 5,
+      "method": "Fresh native thread/read and local rollout replay of existing completed executions; no new model calls or full fixture execution on current package."
     }
-  }
+  },
+  "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf"
 }
