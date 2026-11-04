@@ -46,3 +46,20 @@ export function scoutSourceReads(host,evidence,files,repo) {
  if(!files.every(file=>found.has(file)))throw new Error('Scout native child did not read or content-search both fixture files');
  return true;
 }
+
+// Require a successful test command from the delegated child, not its answer
+// or a test independently run by the parent.
+export function nativeTestRun(host,evidence,expectedCommand) {
+ if(typeof expectedCommand!=='string'||!expectedCommand.trim())throw new Error('Missing expected child test command');
+ if(host==='claude') {
+  const {events,callId}=evidence||{};
+  if(!Array.isArray(events)||typeof callId!=='string')throw new Error('Missing native child test evidence');
+  const calls=events.filter(e=>e.type==='assistant'&&e.parent_tool_use_id===callId).flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_use'&&c.name==='Bash'&&c.input?.command===expectedCommand&&typeof c.id==='string');
+  const results=events.filter(e=>e.type==='user'&&e.parent_tool_use_id===callId).flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_result');
+  if(calls.some(c=>results.some(r=>r.tool_use_id===c.id&&r.is_error===false)))return true;
+ } else if(host==='codex') {
+  const turns=evidence?.thread?.turns,latest=Array.isArray(turns)?turns.at(-1):null;
+  if(latest?.status==='completed'&&Array.isArray(latest.items)&&latest.items.some(i=>i.type==='commandExecution'&&i.status==='completed'&&i.exitCode===0&&Array.isArray(i.commandActions)&&i.commandActions.length===1&&i.commandActions[0].command===expectedCommand))return true;
+ } else throw new Error('Unsupported child test evidence host');
+ throw new Error('Successful exact native child test execution not observed');
+}

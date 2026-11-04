@@ -16,6 +16,8 @@ export function checkRoleDispatch(repo,tool,value) {
   const team=validateTeam(readJson(path.join(root,'.agents/team.json')),config.hosts);
   for(const o of teamOperations(root,team,config.hosts))if(o.kind!=='seed')invariant(fs.existsSync(path.join(root,o.path))&&readText(path.join(root,o.path))===o.content,`Role adapter drift: ${o.path}`);
   const claude=tool.split('.').at(-1)==='Agent';
+  if(claude)invariant(value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).every(k=>['subagent_type','description','prompt','model','effort','run_in_background'].includes(k)),'Role routing: Claude unexpected context argument');
+  if(claude&&value.run_in_background!==undefined)invariant(value.run_in_background===false,'Role routing: Claude background dispatch is unsupported');
   if(!claude&&!desktop)invariant(typeof value?.agent_type==='string','Role routing: native Codex requires configured agent_type');
   const name=claude?value?.subagent_type:desktop?value?.task_name:value?.agent_type;
   const role=typeof name==='string'?(team.enabled_roles.find(r=>name===`arti_${r}`||(desktop&&new RegExp(`^arti_${r}_[a-f0-9]{8}$`).test(name)))||''):'';

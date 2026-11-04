@@ -1,7 +1,7 @@
 {
   "version": "0.4.1",
   "date": "2026-11-04",
-  "package_sha256": "2dd9242dc4a086dc288d38b6792cc0b9f18a70fcb50c94a82c893759ec5fa9e4",
+  "package_sha256": "1dd5e7fb4eca945146b4dd5ff29fb89b1d6e5ea35d4193b124aa87d92234147b",
   "surface": "Codex desktop collaboration.spawn_agent",
   "status": "passed",
   "runs": [
@@ -147,6 +147,6 @@
   "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
   "verifier_replay": {
     "status": "passed",
-    "method": "Fresh native thread/read and local rollout replay of existing completed executions; no new model calls or full fixture execution on current package."
+    "method": "Historical Codex native thread reads and Claude streams replayed using current plans; Claude historical plans omitted the now-explicit foreground flag."
   }
 }

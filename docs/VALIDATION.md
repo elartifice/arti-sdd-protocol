@@ -17,7 +17,7 @@ The release gate combines deterministic regression tests, native CLI qualificati
 
 Run `npm test` and `npm run check` without models. `npm run test:live` explicitly uses existing CLI authentication and quota. `node dev/package.mjs --require-qualified` requires a fresh passing release report for the package being exported. The [hosted CI workflow](https://github.com/elartifice/arti-sdd-protocol/actions/workflows/check.yml) runs the deterministic macOS/Linux Node 22/24 matrix. Require a successful run on the exact release commit before creating a release; the workflow history is separate from native qualification.
 
-The local deterministic suite passes 82 tests with no skips on Node.js 22.23.4 and 25.8.1. The exported source also passes all 82 tests. This includes actual process races, separate Git clones, worktrees, linked CLI execution and killed-installer recovery, rather than only rendered-configuration assertions.
+The local deterministic suite passes 84 tests with no skips on Node.js 22.23.4 and 25.8.1. The exported source also passes all 84 tests. This includes actual process races, separate Git clones, worktrees, linked CLI execution and killed-installer recovery, rather than only rendered-configuration assertions.
 
 Claude exposes requested effort settings without effective-effort telemetry. Codex native read-only roles inherit the parent's permissions and are qualified under a read-only parent. Use the isolated external reviewer from a writable coordinator. Hook guards do not enforce arbitrary shell writes; the candidate's approved scope and checks remain required at verification.
 

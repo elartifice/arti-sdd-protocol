@@ -25,7 +25,7 @@ export function planDispatch(repo,options) {
   const b=binding(team,host,role),rolePath=`.agents/roles/${role}.md`,nativePath=host==='claude'?`.claude/agents/arti_${role}.md`:`.codex/agents/arti_${role}.toml`,source=readText(path.join(root,rolePath));
   const dossier=`ROUTING: ${role} because this task is assigned to the ${role} role.\nDISPATCH_ID: ${dispatchId}\nREPOSITORY: ${root}\nAssigned paths resolve relative to REPOSITORY.\n\nTASK:\n${task}\n\nASSIGNED_FILES_EXCLUSIVE: ${write?JSON.stringify(assignedFiles):'none; do not write files'}\n\nPreserve the parent permissions. Report actual verification and modified files. In a final JSON report include \"dispatch_id\": \"${dispatchId}\"; for a plain report include the line DISPATCH_ID: ${dispatchId}.`;
   const identity=`arti_${role}`;
-  const invocation=surface==='claude-agent'?{tool:'Agent',args:{subagent_type:identity,description:`Execute ${role} task`,prompt:dossier}}:surface==='codex-agent'?{tool:'spawn_agent',args:{agent_type:identity,task_name:`${identity}_${dispatchId.slice(0,8)}`,fork_turns:'none',message:dossier}}:{tool:'collaboration.spawn_agent',args:{task_name:`${identity}_${dispatchId.slice(0,8)}`,fork_turns:'none',model:b.model,reasoning_effort:b.effort,message:`SHARED ROLE SOURCE (${rolePath}):\n${source}\n\n${dossier}`}};
+  const invocation=surface==='claude-agent'?{tool:'Agent',args:{subagent_type:identity,description:`Execute ${role} task`,prompt:dossier,run_in_background:false}}:surface==='codex-agent'?{tool:'spawn_agent',args:{agent_type:identity,task_name:`${identity}_${dispatchId.slice(0,8)}`,fork_turns:'none',message:dossier}}:{tool:'collaboration.spawn_agent',args:{task_name:`${identity}_${dispatchId.slice(0,8)}`,fork_turns:'none',model:b.model,reasoning_effort:b.effort,message:`SHARED ROLE SOURCE (${rolePath}):\n${source}\n\n${dossier}`}};
   return {schema_version:1,repo:root,host,role,surface,task,assignedFiles,dispatchId,invocation,expected:{model:b.effective_model,requested_model:b.model,effort:b.effort,native_identity:surface==='codex-collaboration'?null:identity,profile_identity:surface==='codex-collaboration'?'unsupported':'native',permissions:'inherited from parent',effort_verified:host==='codex'},sources:{team_sha256:digest(readText(path.join(root,'.agents/team.json'))),role_sha256:digest(source),native_sha256:digest(readText(path.join(root,nativePath))),team_fingerprint:teamFingerprint(root,team,config.hosts)}};
 }
 
@@ -62,7 +62,16 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
     invariant(thread.modelProvider==='openai','Codex provider mismatch');
     invariant(typeof thread.id==='string'&&thread.id.length>0&&typeof thread.parentThreadId==='string'&&thread.parentThreadId.length>0&&Array.isArray(thread.turns)&&thread.turns.at(-1)?.status==='completed'&&Array.isArray(thread.turns.at(-1)?.items)&&thread.turns.at(-1).items.length>0,'Missing completed native child thread evidence');
     if(plan.surface==='codex-collaboration')invariant(thread.agentRole===null,'Desktop native profile identity is unsupported');
-    if(plan.surface==='codex-agent')invariant(thread.agentRole===expected.native_identity,'Codex native agent role mismatch');
+    if(plan.surface==='codex-agent') {
+      invariant(thread.agentRole===expected.native_identity,'Codex native agent role mismatch');
+      const parent=(await readThread(fresh.repo,thread.parentThreadId))?.thread;
+      invariant(parent?.id===thread.parentThreadId&&typeof parent.cwd==='string'&&typeof thread.cwd==='string','Missing native parent checkout evidence');
+      invariant(fs.realpathSync(thread.cwd)===fs.realpathSync(parent.cwd),'Native child and parent checkout differ');
+      const planned=repoInfo(fresh.repo),observed=repoInfo(parent.cwd);
+      invariant(observed.common===planned.common,'Native parent checkout belongs to another repository');
+      const observedPlan=planDispatch(observed.root,{host:plan.host,role:plan.role,surface:plan.surface,task:plan.task,assignedFiles:plan.assignedFiles,dispatchId:plan.dispatchId});
+      invariant(digest(observedPlan.sources)===digest(fresh.sources)&&digest(observedPlan.expected)===digest(fresh.expected),'Native parent checkout role sources or binding differ');
+    }
     const rollout=await readRollout(thread);
     invariant(Array.isArray(rollout),'Invalid native rollout');
     invariant(rollout[0]?.type==='session_meta'&&rollout[0]?.payload?.id===thread.id,'Native rollout session ID mismatch');
@@ -79,26 +88,31 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
     invariant(contexts.every(e=>turnIds.has(e.payload?.turn_id)),'Foreign turn context in rollout');
     invariant(contexts.length>0,'Missing native child turn context');
     for(const e of contexts) {invariant(e.payload?.model===expected.model,'Rollout model mismatch');invariant(e.payload?.effort===expected.effort,'Rollout effort mismatch');}
-    return {status:'verified',model:thread.model,effort:thread.reasoningEffort,effort_verified:true,profile_identity:expected.profile_identity,native_identity:expected.native_identity,permissions:expected.permissions,source:'native-thread-read-and-rollout-with-reported-dispatch-id',task_correlated:true,task_payload_verified:false,task_payload_evidence:'Native delegated message is sealed; correlation uses child path and completed report nonce',fresh_context_verified:true,role_source_verified:plan.surface==='codex-agent',role_source_evidence:plan.surface==='codex-agent'?'native profile identity and adapter hash':'planned argument; delivery not exposed'};
+    return {status:'verified',model:thread.model,effort:thread.reasoningEffort,effort_verified:true,profile_identity:expected.profile_identity,native_identity:expected.native_identity,permissions:expected.permissions,source:'native-thread-read-and-rollout-with-reported-dispatch-id',task_correlated:true,task_payload_verified:false,task_payload_evidence:'Native delegated message is sealed; correlation uses child path and completed report nonce',fresh_context_verified:true,intended_parent_verified:false,parent_checkout_verified:plan.surface==='codex-agent',role_source_verified:plan.surface==='codex-agent',role_source_evidence:plan.surface==='codex-agent'?'Native profile identity and trusted local matching checkout/adapter hashes; loaded body is not a signed attestation':'planned argument; delivery not exposed'};
   }
   const events=Array.isArray(evidence)?evidence:evidence?.events;
   invariant(Array.isArray(events),'Missing Claude stream-json events');
-  const calls=events.filter(e=>e.type==='assistant'&&!e.parent_tool_use_id).flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_use'&&c.name==='Agent');
+  const allCalls=events.filter(e=>e.type==='assistant'&&!e.parent_tool_use_id).flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_use'&&c.name==='Agent'&&typeof c.input?.prompt==='string'&&c.input.prompt.split(/\r?\n/).some(line=>line===`DISPATCH_ID: ${plan.dispatchId}`));
+  invariant(allCalls.every(c=>typeof c.id==='string'&&c.id.length>0)&&new Set(allCalls.map(c=>c.id)).size===allCalls.length,'Missing or duplicate Claude Agent call ID');
+  const resultsFor=id=>events.filter(e=>e.type==='user'&&!e.parent_tool_use_id).flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_result'&&c.tool_use_id===id);
+  const denied=allCalls.filter(c=>!events.some(e=>e.type==='assistant'&&e.parent_tool_use_id===c.id)&&resultsFor(c.id).length>0&&resultsFor(c.id).every(r=>r.is_error===true&&typeof r.content==='string'&&r.content.startsWith('PreToolUse:Agent hook error: Role routing denied:')));
+  const calls=allCalls.filter(c=>!denied.includes(c));
   invariant(calls.length>0&&calls.every(c=>c.input?.subagent_type===expected.native_identity),'Claude Agent call identity mismatch');
-  invariant(calls.every(c=>typeof c.id==='string'&&c.id.length>0),'Missing Claude Agent call ID');
+  invariant(calls.every(c=>c.input&&Object.keys(c.input).every(k=>['subagent_type','description','prompt','model','effort','run_in_background'].includes(k))),'Claude Agent unexpected context argument');
+  invariant(calls.every(c=>c.input.run_in_background===undefined||c.input.run_in_background===false),'Claude Agent background dispatch is unsupported');
   invariant(calls.every(c=>c.input?.prompt===fresh.invocation.args.prompt&&(c.input.model===undefined||c.input.model===expected.requested_model)&&(c.input.effort===undefined||c.input.effort===expected.effort)),'Claude Agent prompt or binding mismatch');
   const end=events.filter(e=>e.type==='result').at(-1);
   invariant(end?.subtype==='success'&&!end.is_error&&end.modelUsage?.[expected.model]?.provider==='firstParty','Claude child model usage missing');
   for(const call of calls) {
     const children=events.filter(e=>e.type==='assistant'&&e.parent_tool_use_id===call.id);
     invariant(children.length>0&&children.every(e=>e.message?.model===expected.model),'Claude child message model mismatch');
-    const results=events.filter(e=>e.type==='user').flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_result'&&c.tool_use_id===call.id);
+    const results=resultsFor(call.id);
     invariant(results.length>0&&results.every(r=>!r.is_error),'Claude Agent tool result missing or failed');
     const childText=children.flatMap(e=>e.message?.content||[]).filter(c=>c.type==='text').at(-1)?.text;
     const handbacks=results.flatMap(r=>typeof r.content==='string'?[r.content]:(Array.isArray(r.content)?r.content.filter(c=>c.type==='text').map(c=>c.text):[])).map(text=>{const marker='The report follows:\n',at=text.indexOf(marker);if(at<0)return '';const lines=[];for(const line of text.slice(at+marker.length).split('\n')){if(!line.startsWith('  '))break;lines.push(line.slice(2));}return lines.join('\n');});
     invariant(reportHasId(childText,plan.dispatchId)||handbacks.some(text=>reportHasId(text,plan.dispatchId)),'Claude completed child report dispatch ID missing');
   }
-  return {status:'verified',model:expected.model,effort:expected.effort,effort_verified:false,profile_identity:'native',native_identity:expected.native_identity,permissions:expected.permissions,source:'trusted-local-Claude-stream-json-log',evidence_limitation:'Local log is not a signed attestation',task_correlated:true};
+  return {status:'verified',model:expected.model,effort:expected.effort,effort_verified:false,profile_identity:'native',native_identity:expected.native_identity,permissions:expected.permissions,source:'trusted-local-Claude-stream-json-log',evidence_limitation:'Local log is not a signed attestation',task_correlated:true,denied_dispatch_attempts:denied.length};
 }
 
 if(isMain(import.meta.url))cli(async()=>{

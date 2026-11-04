@@ -44,7 +44,7 @@ Patch title: **Arti SDD Protocol v0.4.1 — explicit worker routing**.
 
 The patch adds one small dispatch helper, with fresh-context dossiers and actual native child verification. It fixes generic-worker model inheritance, required native arguments and conflicting overrides. Claude and Codex native roles, both review directions and five desktop bindings have dated evidence. Desktop native profile selection and role-source delivery remain unobservable; Claude effective effort remains unobservable.
 
-The current core has 23 files, about 141 KB, a 581-word entry point and no runtime package dependencies. The v0.4.0 tag and ZIP stay fixed. Publish this patch only after its reviewed export and exact-commit CI pass under maintainer authority; packaging and local installation do not create a release.
+The current core has 23 files, about 143 KB, a 581-word entry point and no runtime package dependencies. The v0.4.0 tag and ZIP stay fixed. Publish this patch only after its reviewed export and exact-commit CI pass under maintainer authority; packaging and local installation do not create a release.
 
 ## Documentation included in the public tree
 

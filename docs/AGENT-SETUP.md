@@ -161,3 +161,5 @@ node "$arti_project/.agents/skills/arti-sdd-protocol/scripts/team.mjs" --repo "$
 Changing role sources, bindings, expected model, effort, package or client version invalidates matching evidence. Requalify after access/credential changes. These are trusted local records, not signed independent attestations. The release report proves the recorded release fixtures; it does not certify another account or platform automatically.
 
 See [VALIDATION.md](VALIDATION.md) for the rest of the matrix and [RELEASE.md](RELEASE.md#remaining-gaps-and-publication-actions) for publication gaps and support boundaries.
+
+Claude can omit unplanned Agent arguments from the PreToolUse hook input even when they appear in the recorded call. In a native `resume` probe, the hook did not prevent the call; the dispatch verifier rejected the recorded arguments after dispatch. Do not treat this as pre-execution enforcement. Verify the native call record before accepting the child result.

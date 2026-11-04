@@ -12,7 +12,7 @@ import { planDispatch,verifyDispatch } from '../.agents/skills/arti-sdd-protocol
 import { runReview,bindingFingerprint } from '../.agents/skills/arti-sdd-protocol/scripts/review.mjs';
 import { parseCharter,loadConfig } from '../.agents/skills/arti-sdd-protocol/scripts/schema.mjs';
 import { acquireClaim } from '../.agents/skills/arti-sdd-protocol/scripts/claim.mjs';
-import { claudeChildText,nativeObject,scoutSourceReads } from './native-proof.mjs';
+import { claudeChildText,nativeObject,scoutSourceReads,nativeTestRun } from './native-proof.mjs';
 import { config,seedTicket,mapping } from '../tests/harness.mjs';
 
 const phaseIndex=process.argv.indexOf('--phase');
@@ -101,7 +101,7 @@ async function nativeRoles(team,selected=team.enabled_roles) {
    verify=x=>{assert.equal(x.ready_ticket,'T004');assert.equal(x.accept_review,false);assert.ok(typeof x.lesson==='string'&&x.lesson.length>0);};
   } else if(role==='scout') {
    fs.writeFileSync(path.join(f.dir,'src/facts.js'),'export const MAX_RETRIES = 7;\n');fs.writeFileSync(path.join(f.dir,'src/secondary.js'),'export const CACHE_TTL = 13;\n');
-   prompt=`Locate MAX_RETRIES and CACHE_TTL in source, read shared memory, and return JSON {"max_retries":"number", "cache_ttl":"number", "locations":["relative path and line for each constant"], "lesson":"shared-memory lesson"}; supply actual numbers for the numeric fields. No file edits.`;
+   prompt=`Locate MAX_RETRIES and CACHE_TTL in source, read shared memory, and return one JSON object with max_retries and cache_ttl as JSON numbers (not strings), locations as an array of relative paths with line numbers, and lesson as a string. No file edits.`;
    verify=x=>{assert.equal(x.max_retries,7);assert.equal(x.cache_ttl,13);assert.ok(typeof x.lesson==='string'&&x.lesson.length>0);assert.ok(x.locations.some(l=>l.includes('src/facts.js:1')));assert.ok(x.locations.some(l=>l.includes('src/secondary.js:1')));};
   } else if(role==='implementer') {
    write=true;fs.writeFileSync(path.join(f.dir,'src/logic.cjs'),'exports.total = items => items.reduce((s,x) => s+x.price,0);\nexports.positive = xs => xs.filter(x=>x>=0);\n');fs.writeFileSync(path.join(f.dir,'src/logic.test.cjs'),"const a=require('node:assert/strict'),f=require('./logic.cjs');a.equal(f.total([{price:3,quantity:4}]),12);a.equal(f.total([]),0);a.deepEqual(f.positive([-1,0,2]),[2]);\n");
@@ -117,9 +117,9 @@ async function nativeRoles(team,selected=team.enabled_roles) {
    verify=x=>{assert.ok(typeof x.lesson==='string'&&x.lesson.length>0);assert.ok(x.defects.some(d=>/^src\/access\.cjs(?::\d+(?::\d+)?)?$/.test(d.file)));assert.ok(x.defects.some(d=>/^src\/math\.cjs(?::\d+(?::\d+)?)?$/.test(d.file)));};
   }
   commitFixture(f);const testFile=path.join(f.dir,'src/logic.test.cjs'),testHash=fs.existsSync(testFile)?digest(fs.readFileSync(testFile)):null;
-  const start=Date.now(),result=await native(host,role,f,prompt,{write}),answer=nativeObject(result.final);assert.ok(result.knowledgeEvidence.includes(f.lesson),'Shared memory was not retrieved or included in delegated context');verify(answer);if(role==='scout')scoutSourceReads(host,result.scoutEvidence,['src/facts.js','src/secondary.js'],f.dir);
+  const start=Date.now(),result=await native(host,role,f,prompt,{write}),answer=nativeObject(result.final);assert.ok(result.knowledgeEvidence.includes(f.lesson),'Shared memory was not retrieved or included in delegated context');verify(answer);if(role==='scout')scoutSourceReads(host,result.scoutEvidence,['src/facts.js','src/secondary.js'],f.dir);if(write)nativeTestRun(host,result.scoutEvidence,'node --test src/logic.test.cjs');
   const changed=[...git(f.dir,'diff','--name-only').split('\n'),...git(f.dir,'ls-files','--others','--exclude-standard').split('\n')].filter(Boolean);assert.ok(changed.every(p=>write&&p==='src/logic.cjs'),'Native role modified a protected file');if(testHash)assert.equal(digest(fs.readFileSync(testFile)),testHash);
-  const row={host,role,status:'passed',...result.proof,seconds:Math.round((Date.now()-start)/100)/10,checks:['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases','shared-memory',...(role==='scout'?['native-child-source-reads']:[]),write?'assigned-source-only-and-protected-tests':'no-product-mutations'],parent_permissions:write?'workspace-write':'read-only',native_permissions:host==='claude'?(write?'acceptEdits with exact test command permission and scope hooks':'plan with read-only tools'):(write?'workspace-write':'read-only')};report.native_runs.push(row);save();console.log(`PASS native ${host}/${role} (${row.seconds}s)`);
+  const row={host,role,status:'passed',...result.proof,seconds:Math.round((Date.now()-start)/100)/10,checks:['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases','shared-memory',...(role==='scout'?['native-child-source-reads']:[]),...(write?['native-child-test-execution']:[]),write?'assigned-source-only-and-protected-tests':'no-product-mutations'],parent_permissions:write?'workspace-write':'read-only',native_permissions:host==='claude'?(write?'acceptEdits with exact test command permission and scope hooks':'plan with read-only tools'):(write?'workspace-write':'read-only')};report.native_runs.push(row);save();console.log(`PASS native ${host}/${role} (${row.seconds}s)`);
  }
  }));
 }

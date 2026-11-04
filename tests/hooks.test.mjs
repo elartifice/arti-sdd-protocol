@@ -12,6 +12,10 @@ test('custom teams reject inherited generic roles and conflicting model or effor
  const call=(tool,input)=>evaluateHook('pre',{cwd:dir,tool_name:tool,tool_input:input});
  assert.equal(call('Agent',{subagent_type:'general-purpose'}).hookSpecificOutput.permissionDecision,'deny');
  assert.deepEqual(call('Agent',{subagent_type:'arti_scout'}),{});
+ assert.deepEqual(call('Agent',{subagent_type:'arti_scout',run_in_background:false}),{});
+ for(const value of [true,'false',null])assert.equal(call('Agent',{subagent_type:'arti_scout',run_in_background:value}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('Agent',{subagent_type:'arti_scout',description:'scout',prompt:'bounded',resume:'old-session'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('Agent',{subagent_type:'arti_scout',prompt:'bounded',other_context:'x'}).hookSpecificOutput.permissionDecision,'deny');
  assert.equal(call('Agent',{subagent_type:'arti_scout',model:'wrong'}).hookSpecificOutput.permissionDecision,'deny');
  assert.equal(call('spawn_agent',{agent_type:'default'}).hookSpecificOutput.permissionDecision,'deny');
  assert.equal(call('collaborationspawn_agent',{agent_type:'default',task_name:'probe'}).hookSpecificOutput.permissionDecision,'deny');
