@@ -3,7 +3,7 @@
   "kind": "release",
   "status": "passed",
   "version": "0.4.1",
-  "package_sha256": "1dd5e7fb4eca945146b4dd5ff29fb89b1d6e5ea35d4193b124aa87d92234147b",
+  "package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
   "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da",
   "platform": "darwin",
   "created_at": "2026-11-04T02:04:13.044Z",
@@ -632,7 +632,7 @@
     "current_verifier_replay": {
       "status": "passed",
       "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
-      "current_verifier_package_sha256": "1dd5e7fb4eca945146b4dd5ff29fb89b1d6e5ea35d4193b124aa87d92234147b",
+      "current_verifier_package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
       "changed_package_files": [
         ".agents/skills/arti-sdd-protocol/scripts/dispatch.mjs",
         ".agents/skills/arti-sdd-protocol/scripts/hooks.mjs"
@@ -640,8 +640,9 @@
       "native_codex_runs": 5,
       "desktop_codex_runs": 5,
       "claude_recorded_stream_runs": 5,
-      "method": "Historical Codex native thread reads and Claude streams replayed using current plans; Claude historical plans omitted the now-explicit foreground flag.",
-      "claude_implementer_note": "Original native implementer and handoff streams both pass current verifier; explicit run_in_background:false is accepted."
+      "method": "Fresh Codex native thread/read and local rollout replay, plus Claude recorded stream replay, of existing completed executions; no new model calls or full fixture execution on current package.",
+      "claude_implementer_note": "Original native implementer and handoff streams both pass current verifier; explicit run_in_background:false is accepted.",
+      "claude_runs": 5
     },
     "scout_previous_replay": {
       "execution_harness_sha256": "d538588027536e0e60ab17c81167cf45d0ebed0dde037abeedb3ceb45de705aa",
@@ -677,6 +678,19 @@
       "proof_helper_sha256": "e587ffdfd5722a3f2a702ddda351571d51666583f8902c22f38d6578262f0944",
       "method": "Replay of recorded native child tool calls and successful results; no new model calls.",
       "checks": 4
+    },
+    "claude_completion_only": {
+      "package_sha256": "bab85f2cc1943cd19d70888202436c857bc2baca26e03ff7136d3329c0ecc40d",
+      "current_verifier_package_sha256": "b345a7c74d1f684e9956d37a15f85fccdab123816d402a579bf11564f679ae6b",
+      "parent_model": "claude-opus-5-5",
+      "child_streamed_messages": 0,
+      "native_completion_verified": true,
+      "model": "claude-haiku-5-5",
+      "effort": "low",
+      "effort_verified": false,
+      "new_model_calls": 0,
+      "method": "Actual foreground native Claude Scout with no child assistant stream; verified using correlated native completion metadata and first-party usage. Recorded run replayed after correcting an over-strict private report-field assertion; original failure retained. Later verifier adds only historical async completion correlation.",
+      "execution_harness_sha256": "34cc974adc1f37ab65a9a77bb6634644f9447bb6ecead981812a2ee531d27445"
     }
   },
   "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf"

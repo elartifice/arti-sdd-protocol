@@ -77,3 +77,53 @@ test('native profile uses the same repository and matching parent checkout sourc
  const receipt=await check(linked);assert.equal(receipt.parent_checkout_verified,true);assert.equal(receipt.intended_parent_verified,false);assert.match(receipt.role_source_evidence,/not a signed attestation/);
  fs.appendFileSync(path.join(linked,'.codex/agents/arti_implementer.toml'),'# drift\n');await assert.rejects(()=>check(linked),/drift|differ/);
 });
+
+
+test('Claude completion-only native evidence proves the bound model and rejects conflicts',async t=>{
+ const dir=fixture(t),p=planDispatch(dir,options('claude-agent'));
+ const completed=()=>{
+  const events=claude(p).filter(e=>!e.parent_tool_use_id);
+  const event=events.find(e=>e.type==='user');
+  event.message.content[0].content='Completed.';
+  event.tool_use_result={status:'completed',agentType:p.expected.native_identity,agentId:'native-child-id',prompt:p.invocation.args.prompt,resolvedModel:p.expected.model,content:[{type:'text',text:`DISPATCH_ID: ${p.dispatchId}`}]};
+  return events;
+ };
+ const good=await verify(p,completed());assert.equal(good.status,'verified');assert.equal(good.effort_verified,false);
+ for(const mutate of [
+  e=>{delete e.find(x=>x.type==='user').tool_use_result;},
+  e=>{e.find(x=>x.type==='user').tool_use_result=null;},
+  e=>{e.find(x=>x.type==='user').tool_use_result.resolvedModel='wrong-model';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentType='wrong-role';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentId='';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.prompt='unrelated';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.status='running';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.content=[{type:'text',text:'missing nonce'}];},
+  e=>{e.find(x=>x.type==='user').message.content[0].tool_use_id='unrelated';},
+  e=>{e.find(x=>x.type==='user').message.content.push({type:'tool_result',tool_use_id:'other',content:'completed'});},
+  e=>{e.find(x=>x.type==='user').message.content[0].is_error=true;},
+  e=>{e.splice(1,0,{type:'assistant',parent_tool_use_id:'call1',message:{model:'wrong-model',content:[]}});},
+ ]) {const e=completed();mutate(e);await assert.rejects(verify(p,e));}
+ const streamed=claude(p),metadata=completed().find(x=>x.type==='user').tool_use_result;
+ streamed.find(x=>x.type==='user').tool_use_result={...metadata,resolvedModel:'wrong-model'};
+ await assert.rejects(verify(p,streamed),/completion binding/);
+});
+
+
+test('Claude historical launch metadata requires a completed streamed child',async t=>{
+ const p=planDispatch(fixture(t),options('claude-agent'));
+ const launched=()=>{const e=claude(p);e.find(x=>x.type==='user').tool_use_result={status:'async_launched',isAsync:true,agentId:'native-child-id',resolvedModel:p.expected.model};e.splice(-1,0,{type:'system',subtype:'task_notification',tool_use_id:'call1',task_id:'native-child-id',status:'completed'});return e;};
+ assert.equal((await verify(p,launched())).status,'verified');
+ for(const mutate of [
+  e=>{e.splice(1,1);},
+  e=>{e.find(x=>x.type==='user').tool_use_result.resolvedModel='wrong-model';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentType='wrong-role';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.prompt='unrelated';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.status='failed';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.isAsync=false;},
+  e=>{e.splice(e.findIndex(x=>x.type==='system'),1);},
+  e=>{e.find(x=>x.type==='system').status='failed';},
+  e=>{e.find(x=>x.type==='system').tool_use_id='unrelated';},
+  e=>{e.find(x=>x.type==='system').task_id='unrelated';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentId='';},
+ ]) {const e=launched();mutate(e);await assert.rejects(verify(p,e));}
+});

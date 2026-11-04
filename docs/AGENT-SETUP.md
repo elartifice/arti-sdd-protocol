@@ -26,7 +26,7 @@ Separate contexts are an efficiency mechanism, not a token guarantee: spawning a
 
 The [example team file](examples/team-2026-11-03.json) records separate bindings for each host, with `max_concurrent: 2`. The tested Claude requests use `opus`, `haiku` and `sonnet` aliases, while `effective_model` pins the observed IDs above. A changed alias resolution must be requalified. Codex uses explicit model IDs. Neither vendor's tier names nor effort labels establish equivalence.
 
-Claude child message/model-usage metadata established the actual model/provider. Its client did not expose effective effort: the report records the requested setting and `effort_verified: false`. Codex native activity and child-thread metadata supplied the role identity, model/provider and resolved effort. An “OK” response alone was insufficient.
+Claude child messages or a correlated native completion record, together with first-party model usage, established the actual model/provider. Its client did not expose effective effort: the report records the requested setting and `effort_verified: false`. Codex native activity and child-thread metadata supplied the role identity, model/provider and resolved effort. An “OK” response alone was insufficient.
 
 ## Each role has an observable Definition of Done
 
@@ -48,7 +48,7 @@ A generated agent file does not route a generic worker. Prepare every delegation
 
 | Surface | Dispatch | Observable proof |
 |---|---|---|
-| Claude Code | Native `Agent` selects `arti_<role>`, with the required description and exact dossier. | Actual Agent call, child message model and first-party model usage. Effort is the native role setting; effective effort is unavailable. |
+| Claude Code | Native `Agent` selects `arti_<role>`, with the required description and exact dossier. | Actual Agent call, child message or correlated completion model, and first-party model usage. Effort is the native role setting; effective effort is unavailable. |
 | Codex CLI | Native `spawn_agent` selects `agent_type: arti_<role>`, a unique task name and fresh context. | Child native role identity, model/provider and resolved reasoning effort. |
 | Codex desktop | `collaboration.spawn_agent` receives explicit `model`, `reasoning_effort`, `fork_turns: none`, unique task name and the full shared role source plus bounded dossier. | Child model/provider and resolved effort. This API has no named-profile selector; native role identity is labelled unsupported. Shared role text is sent in the planned argument, but its sealed delivery is not independently observable. |
 

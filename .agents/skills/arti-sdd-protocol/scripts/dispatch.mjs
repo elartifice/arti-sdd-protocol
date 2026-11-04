@@ -105,12 +105,28 @@ export async function verifyDispatch(plan,evidence,{readThread=(repo,id)=>codexR
   invariant(end?.subtype==='success'&&!end.is_error&&end.modelUsage?.[expected.model]?.provider==='firstParty','Claude child model usage missing');
   for(const call of calls) {
     const children=events.filter(e=>e.type==='assistant'&&e.parent_tool_use_id===call.id);
-    invariant(children.length>0&&children.every(e=>e.message?.model===expected.model),'Claude child message model mismatch');
+    const childText=children.flatMap(e=>e.message?.content||[]).filter(c=>c.type==='text').at(-1)?.text;
+    const completions=events.filter(e=>e.type==='user'&&!e.parent_tool_use_id&&Object.hasOwn(e,'tool_use_result')&&(e.message?.content||[]).some(c=>c.type==='tool_result'&&c.tool_use_id===call.id));
+    const completionReports=[];
+    for(const event of completions) {
+      const result=event.tool_use_result,matched=(event.message?.content||[]).filter(c=>c.type==='tool_result');
+      invariant(matched.length===1&&matched[0].tool_use_id===call.id&&result&&typeof result==='object'&&!Array.isArray(result)&&typeof result.agentId==='string'&&result.agentId.trim().length>0&&result.resolvedModel===expected.model,'Claude native completion binding mismatch');
+      // Earlier native logs launch asynchronously, then stream the completed child.
+      if(result.status==='async_launched') {
+        invariant(result.isAsync===true&&children.length>0&&reportHasId(childText,plan.dispatchId)&&(result.agentType===undefined||result.agentType===expected.native_identity)&&(result.prompt===undefined||result.prompt===fresh.invocation.args.prompt),'Claude native launch binding mismatch');
+        invariant(events.some(e=>e.type==='system'&&e.subtype==='task_notification'&&e.tool_use_id===call.id&&e.task_id===result.agentId&&e.status==='completed'),'Claude native task completion missing');
+        continue;
+      }
+      invariant(result.status==='completed'&&result.agentType===expected.native_identity&&result.prompt===fresh.invocation.args.prompt,'Claude native completion binding mismatch');
+      const reports=Array.isArray(result.content)?result.content.filter(c=>c.type==='text').map(c=>c.text):[];
+      invariant(reports.some(text=>reportHasId(text,plan.dispatchId)),'Claude native completion dispatch ID missing');
+      completionReports.push(...reports);
+    }
+    invariant((children.length>0||completions.length>0)&&children.every(e=>e.message?.model===expected.model),'Claude child message model mismatch');
     const results=resultsFor(call.id);
     invariant(results.length>0&&results.every(r=>!r.is_error),'Claude Agent tool result missing or failed');
-    const childText=children.flatMap(e=>e.message?.content||[]).filter(c=>c.type==='text').at(-1)?.text;
     const handbacks=results.flatMap(r=>typeof r.content==='string'?[r.content]:(Array.isArray(r.content)?r.content.filter(c=>c.type==='text').map(c=>c.text):[])).map(text=>{const marker='The report follows:\n',at=text.indexOf(marker);if(at<0)return '';const lines=[];for(const line of text.slice(at+marker.length).split('\n')){if(!line.startsWith('  '))break;lines.push(line.slice(2));}return lines.join('\n');});
-    invariant(reportHasId(childText,plan.dispatchId)||handbacks.some(text=>reportHasId(text,plan.dispatchId)),'Claude completed child report dispatch ID missing');
+    invariant(reportHasId(childText,plan.dispatchId)||handbacks.some(text=>reportHasId(text,plan.dispatchId))||completionReports.some(text=>reportHasId(text,plan.dispatchId)),'Claude completed child report dispatch ID missing');
   }
   return {status:'verified',model:expected.model,effort:expected.effort,effort_verified:false,profile_identity:'native',native_identity:expected.native_identity,permissions:expected.permissions,source:'trusted-local-Claude-stream-json-log',evidence_limitation:'Local log is not a signed attestation',task_correlated:true,denied_dispatch_attempts:denied.length};
 }
