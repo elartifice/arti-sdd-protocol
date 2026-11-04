@@ -27,3 +27,5 @@ Read-only native Codex roles were tested under a read-only parent; custom roles 
 Additional native routing probes cover Claude model and effort overrides, and Codex model/effort overrides, omitted native selectors and full-history forks. All received actual hook denials. Guard evidence is a supplemental batch against the same package; component harness hashes are recorded in qualification.json. Claude effective effort remains unobservable.
 
 Five Codex desktop role tasks also passed: see [desktop-qualification.json](desktop-qualification.json). Native state proves their model, resolved effort and fresh context. The desktop tool cannot select native profiles, and sealed role-source delivery is not independently observable.
+
+Scout qualification uses two additional native executions with withheld fixture answers. Both children read or content-searched the two seeded files. The original Codex component run encountered a search-output path parsing error after execution; the recorded native evidence was rechecked with the corrected parser, without new model calls. Execution and replay harness hashes are recorded in qualification.json.

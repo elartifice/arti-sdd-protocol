@@ -12,13 +12,13 @@ import { planDispatch,verifyDispatch } from '../.agents/skills/arti-sdd-protocol
 import { runReview,bindingFingerprint } from '../.agents/skills/arti-sdd-protocol/scripts/review.mjs';
 import { parseCharter,loadConfig } from '../.agents/skills/arti-sdd-protocol/scripts/schema.mjs';
 import { acquireClaim } from '../.agents/skills/arti-sdd-protocol/scripts/claim.mjs';
-import { claudeChildText,nativeObject } from './native-proof.mjs';
+import { claudeChildText,nativeObject,scoutSourceReads } from './native-proof.mjs';
 import { config,seedTicket,mapping } from '../tests/harness.mjs';
 
 const phaseIndex=process.argv.indexOf('--phase');
 const root=path.resolve('.'),phase=phaseIndex<0?'all':process.argv[phaseIndex+1];
 const targetIndex=process.argv.indexOf('--target'),target=targetIndex<0?null:path.resolve(process.argv[targetIndex+1]);let targetRoles={};
-assert.ok(['all','native','review','guard'].includes(phase),'Unknown qualification phase');
+assert.ok(['all','native','review','guard','scout'].includes(phase),'Unknown qualification phase');
 const runId=new Date().toISOString().replace(/[:.]/g,'-'),out=path.join(root,'.local-evidence/qualification',runId);
 fs.mkdirSync(out,{recursive:true,mode:0o700});
 const harnessDigest=()=>digest(['dev/qualify.mjs','dev/native-proof.mjs','tests/harness.mjs'].map(p=>[p,digest(fs.readFileSync(path.join(root,p)))]));
@@ -54,7 +54,7 @@ async function trustedFlags(dir) {
 }
 async function native(host,role,f,prompt,{write=false,assignedFiles=write?['src/logic.cjs']:[]}={}) {
  if(write)acquireClaim(f.dir,'T001',f.session??=crypto.randomUUID());
- const name=`${host}-${role}-${report.native_runs.length}`,b=report.team.bindings[host][role],parentModel=host==='claude'?(b.effective_model.startsWith('claude-sonnet-')?'opus':'sonnet'):(b.effective_model==='gpt-6.1-sol'?'gpt-6-astra':'gpt-6.1-sol'),parentEffort=b.effort==='high'?'medium':'high';let argv,result,proof,final,knowledgeEvidence='';
+ const name=`${host}-${role}-${report.native_runs.length}`,b=report.team.bindings[host][role],parentModel=host==='claude'?(b.effective_model.startsWith('claude-sonnet-')?'opus':'sonnet'):(b.effective_model==='gpt-6.1-sol'?'gpt-6-astra':'gpt-6.1-sol'),parentEffort=b.effort==='high'?'medium':'high';let argv,result,proof,final,knowledgeEvidence='',scoutEvidence;
  assert.notEqual(parentModel,b.model);assert.notEqual(parentEffort,b.effort);
  const route=planDispatch(f.dir,{host,role,surface:host==='claude'?'claude-agent':'codex-agent',task:prompt+(prompt.includes('src/logic.test.cjs')?'\nPermission contract: the only authorised Bash test command is exactly node --test src/logic.test.cjs with no shell suffix, echo, compound command, cd or redirection. The tool provides the exit status.':'')+'\n\nResponse contract: return only one JSON object containing the requested fields and dispatch_id from this dossier. No STATUS prefix, Markdown fences or trailing notes.',assignedFiles});
  writeJson(path.join(out,`${name}.plan.json`),route,0o600);
@@ -69,7 +69,7 @@ async function native(host,role,f,prompt,{write=false,assignedFiles=write?['src/
   const end=parsed.events.filter(e=>e.type==='result').at(-1);assert.ok(Object.keys(end.modelUsage||{}).includes(b.effective_model),`No native model usage for ${b.effective_model}`);
   const call=calls.find(x=>x.input?.subagent_type===`arti_${role}`),childMessages=parsed.events.filter(e=>e.type==='assistant'&&e.parent_tool_use_id===call.id);
   assert.ok(childMessages.length>0&&childMessages.every(e=>e.message?.model===b.effective_model),'Missing or mixed actual child model evidence');assert.equal(end.modelUsage[b.effective_model].provider,'firstParty');
-  final=claudeChildText(parsed.events,call.id);
+  final=claudeChildText(parsed.events,call.id);scoutEvidence={events:parsed.events,callId:call.id};
   knowledgeEvidence=final;
   assert.notEqual(parsed.model,b.effective_model,'Parent model must differ from child');
   const routed=await verifyDispatch(route,parsed.events);assert.equal(routed.task_correlated,true);writeJson(path.join(out,`${name}.dispatch.json`),routed,0o600);
@@ -85,23 +85,23 @@ async function native(host,role,f,prompt,{write=false,assignedFiles=write?['src/
   assert.equal(activities.length,1,'Expected exactly one native Codex role invocation');const activity=activities[0];
   assert.equal(activity.model,b.effective_model);assert.equal(activity.reasoningEffort,b.effort);
   const child=await codexRpc(f.dir,'thread/read',{threadId:activity.agentThreadId,includeTurns:true});writeJson(path.join(out,`${name}.child.json`),child,0o600);
-  assert.equal(child.thread.agentRole,`arti_${role}`,'Native Codex profile differs; display labels are not role identity');assert.equal(child.thread.parentThreadId,thread);assert.equal(child.thread.model,b.effective_model);assert.equal(child.thread.reasoningEffort,b.effort);assert.equal(child.thread.modelProvider,'openai');knowledgeEvidence=JSON.stringify(child.thread);
+  assert.equal(child.thread.agentRole,`arti_${role}`,'Native Codex profile differs; display labels are not role identity');assert.equal(child.thread.parentThreadId,thread);assert.equal(child.thread.model,b.effective_model);assert.equal(child.thread.reasoningEffort,b.effort);assert.equal(child.thread.modelProvider,'openai');knowledgeEvidence=JSON.stringify(child.thread);scoutEvidence=child;
   const routed=await verifyDispatch(route,{threadId:child.thread.id});assert.equal(routed.task_correlated,true);writeJson(path.join(out,`${name}.dispatch.json`),routed,0o600);
   final=child.thread.turns.flatMap(t=>t.items).filter(x=>x.type==='agentMessage'&&x.phase==='final_answer').at(-1)?.text;
   proof={source:'native-subAgentActivity-and-thread-agentRole',model:activity.model,effort:activity.reasoningEffort,effort_verified:true,effort_evidence:'native-resolved-reasoningEffort',agent:`arti_${role}`,thread_id:thread,child_thread_id:activity.agentThreadId};
  }
  assert.ok(final&&!final.includes('BLOCKED:'),`Native ${host}/${role} did not finish`);
- return {final,proof,process:result,knowledgeEvidence};
+ return {final,proof,process:result,knowledgeEvidence,scoutEvidence};
 }
-async function nativeRoles(team) {
- await Promise.all(['claude','codex'].map(async host=>{for(const role of team.enabled_roles) {
+async function nativeRoles(team,selected=team.enabled_roles) {
+ await Promise.all(['claude','codex'].map(async host=>{for(const role of selected) {
   const f=fixture(team,{review:'disabled'});let prompt,verify,write=false;
   if(role==='coordinator') {
    prompt=`Two independent checks: T004 depends on completed T003 and is ready; T005 depends on unfinished T002. A required review receipt says not-run. Read shared memory. Return JSON {"ready_ticket":"...","accept_review":false,"lesson":"..."}. Do not edit files or spawn another agent.`;
    verify=x=>{assert.equal(x.ready_ticket,'T004');assert.equal(x.accept_review,false);assert.ok(typeof x.lesson==='string'&&x.lesson.length>0);};
   } else if(role==='scout') {
    fs.writeFileSync(path.join(f.dir,'src/facts.js'),'export const MAX_RETRIES = 7;\n');fs.writeFileSync(path.join(f.dir,'src/secondary.js'),'export const CACHE_TTL = 13;\n');
-   prompt=`Locate MAX_RETRIES and CACHE_TTL in source, read shared memory, and return JSON {"max_retries":7,"cache_ttl":13,"locations":["relative/file:line", "relative/file:line"],"lesson":"..."}. No file edits.`;
+   prompt=`Locate MAX_RETRIES and CACHE_TTL in source, read shared memory, and return JSON {"max_retries":"number", "cache_ttl":"number", "locations":["relative path and line for each constant"], "lesson":"shared-memory lesson"}; supply actual numbers for the numeric fields. No file edits.`;
    verify=x=>{assert.equal(x.max_retries,7);assert.equal(x.cache_ttl,13);assert.ok(typeof x.lesson==='string'&&x.lesson.length>0);assert.ok(x.locations.some(l=>l.includes('src/facts.js:1')));assert.ok(x.locations.some(l=>l.includes('src/secondary.js:1')));};
   } else if(role==='implementer') {
    write=true;fs.writeFileSync(path.join(f.dir,'src/logic.cjs'),'exports.total = items => items.reduce((s,x) => s+x.price,0);\nexports.positive = xs => xs.filter(x=>x>=0);\n');fs.writeFileSync(path.join(f.dir,'src/logic.test.cjs'),"const a=require('node:assert/strict'),f=require('./logic.cjs');a.equal(f.total([{price:3,quantity:4}]),12);a.equal(f.total([]),0);a.deepEqual(f.positive([-1,0,2]),[2]);\n");
@@ -117,9 +117,9 @@ async function nativeRoles(team) {
    verify=x=>{assert.ok(typeof x.lesson==='string'&&x.lesson.length>0);assert.ok(x.defects.some(d=>/^src\/access\.cjs(?::\d+(?::\d+)?)?$/.test(d.file)));assert.ok(x.defects.some(d=>/^src\/math\.cjs(?::\d+(?::\d+)?)?$/.test(d.file)));};
   }
   commitFixture(f);const testFile=path.join(f.dir,'src/logic.test.cjs'),testHash=fs.existsSync(testFile)?digest(fs.readFileSync(testFile)):null;
-  const start=Date.now(),result=await native(host,role,f,prompt,{write}),answer=nativeObject(result.final);assert.ok(result.knowledgeEvidence.includes(f.lesson),'Shared memory was not retrieved or included in delegated context');verify(answer);
+  const start=Date.now(),result=await native(host,role,f,prompt,{write}),answer=nativeObject(result.final);assert.ok(result.knowledgeEvidence.includes(f.lesson),'Shared memory was not retrieved or included in delegated context');verify(answer);if(role==='scout')scoutSourceReads(host,result.scoutEvidence,['src/facts.js','src/secondary.js'],f.dir);
   const changed=[...git(f.dir,'diff','--name-only').split('\n'),...git(f.dir,'ls-files','--others','--exclude-standard').split('\n')].filter(Boolean);assert.ok(changed.every(p=>write&&p==='src/logic.cjs'),'Native role modified a protected file');if(testHash)assert.equal(digest(fs.readFileSync(testFile)),testHash);
-  const row={host,role,status:'passed',...result.proof,seconds:Math.round((Date.now()-start)/100)/10,checks:['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases','shared-memory',write?'assigned-source-only-and-protected-tests':'no-product-mutations'],parent_permissions:write?'workspace-write':'read-only',native_permissions:host==='claude'?(write?'acceptEdits with exact test command permission and scope hooks':'plan with read-only tools'):(write?'workspace-write':'read-only')};report.native_runs.push(row);save();console.log(`PASS native ${host}/${role} (${row.seconds}s)`);
+  const row={host,role,status:'passed',...result.proof,seconds:Math.round((Date.now()-start)/100)/10,checks:['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases','shared-memory',...(role==='scout'?['native-child-source-reads']:[]),write?'assigned-source-only-and-protected-tests':'no-product-mutations'],parent_permissions:write?'workspace-write':'read-only',native_permissions:host==='claude'?(write?'acceptEdits with exact test command permission and scope hooks':'plan with read-only tools'):(write?'workspace-write':'read-only')};report.native_runs.push(row);save();console.log(`PASS native ${host}/${role} (${row.seconds}s)`);
  }
  }));
 }
@@ -229,6 +229,7 @@ async function main() {
  report.team_fingerprint=teamFingerprint(fixture(report.team).dir,report.team,target?loadConfig(path.join(target,'arti_sdd/config.json')).hosts:['claude','codex']);save();
  if(phase==='all'||phase==='native'){await nativeRoles(report.team);await hookTrials(report.team);await routingGuardTrials(report.team);await resumeTrials(report.team);await handoffTrials(report.team);await chatTrials(report.team);}
  if(phase==='guard')await routingGuardTrials(report.team);
+ if(phase==='scout')await nativeRoles(report.team,['scout']);
  if(phase==='all'||phase==='review')await reviewTrials(report.team);
  if(phase==='all')await dispatchTrials(report.team);
  assert.equal(packageDigest(),sourceHash,'Package changed while qualification was running');

@@ -42,7 +42,7 @@
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
       "agent": "arti_scout",
-      "seconds": 14.9,
+      "seconds": 19.4,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -51,6 +51,7 @@
         "resolved-model",
         "role-task-cases",
         "shared-memory",
+        "native-child-source-reads",
         "no-product-mutations"
       ],
       "parent_permissions": "read-only",
@@ -114,7 +115,7 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_scout",
-      "seconds": 35.5,
+      "seconds": 14.9,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -123,6 +124,7 @@
         "resolved-model",
         "role-task-cases",
         "shared-memory",
+        "native-child-source-reads",
         "no-product-mutations"
       ],
       "parent_permissions": "read-only",
@@ -613,6 +615,14 @@
       "harness_sha256": "54d7c44464d060b92c72bd16f7c436dfee4bd59426211e55cb22bdc6c2727240",
       "finished_at": "2026-11-04T02:47:40.418Z",
       "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf"
+    },
+    "scout": {
+      "execution_harness_sha256": "d538588027536e0e60ab17c81167cf45d0ebed0dde037abeedb3ceb45de705aa",
+      "replay_harness_sha256": "4a1942880fa382b70481d2a8667e14397d5ecc90df2c6c22c1d0c9abecfa17e8",
+      "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
+      "team_fingerprint": "3e3bdeaa0a1389848c7686da94f453da8ff3acb6214e9e0f78100e49990ad2ca",
+      "original_report_sha256": "bb6914b47a56e63fecc893bf0f0937ead01f725ae83556d0d797cd0a0fbd56a7",
+      "method": "Recorded native executions replayed after correcting search-output path parsing; both child source reads checked; no new model calls."
     }
   }
 }
