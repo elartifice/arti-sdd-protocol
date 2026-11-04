@@ -6,7 +6,7 @@
 
 Arti is a lightweight skill for spec-driven development (SDD). Use it in chat to turn an idea into a portable project blueprint, or give it to a coding agent to start or organise a repository. Claude Code and Codex share instructions and project knowledge. An optional custom team routes focused tasks to explicit models, keeping worker investigations out of the main conversation and reserving expensive reasoning for the work that needs it.
 
-The installable core is 23 files, about 143 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
+The installable core is 23 files, about 146 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
 
 ## What is SDD?
 
@@ -14,7 +14,7 @@ Spec-driven development means agreeing on the intended behaviour and how to reco
 
 Arti turns that idea into a working loop: a charter describes the project; milestones and tickets divide the work; each ticket has a bounded scope and an observable Definition of Done (DoD); checks and the chosen review policy supply evidence before work is closed.
 
-![Five steps flowing down: agree the outcome, cut a scoped ticket, give agents focus, demand evidence, then land the work and share lessons. Failed checks return to implementation.](docs/assets/workflow.svg)
+![The delivery loop flows down from charter to ticket contracts, dependency-ready claims and parallel work in separate territories. Each ticket is implemented, checked and reviewed independently, then lands under a serial lock. Failed checks loop back to repair; landing returns to the next unblocked ticket.](docs/assets/workflow.svg)
 
 ## From vibe coding to work you can follow
 
@@ -41,15 +41,16 @@ Each worker receives the relevant ticket, file scope, rules, lessons and accepta
 
 ![Agent reporting hierarchy: the coordinator sits above scout, implementer, reviewer and conditional escalation subagents. Cyan arrows send tasks down; purple arrows return evidence up. Role icons and Claude/ChatGPT reviewer marks identify the roles and providers.](docs/assets/agent-architecture.svg)
 
-Estimated cost from **11,134 recorded requests across 17 historical ticket-linked captures**, priced by model, token type and context tier:
+A fixed-token replay of **11,134 requests across 17 historical ticket-linked captures** separates recorded model choice from the effect of correct role routing:
 
-| Local observation | Result |
-|---|---|
-| Recorded model mix versus Opus/Astra throughout | **57.6% lower** estimated API cost: $1,079.47 versus $2,545.80, a $1,466.34 difference. |
-| Claude captures / Codex captures | **1.0% / 73.7% lower**, respectively; individual captures range from 0% to 88.2%. |
-| Average worker input per request | **42.1% smaller** than coordinator input in this sample. |
+| Estimate | Unknown worker roles kept as recorded | If unknown workers are standard implementers |
+|---|---:|---:|
+| Fix worker bindings; preserve coordinator choices | **4.2% less captured cost** — $1,034.46 | **14.7% less** — $921.08 |
+| Apply the full audited per-host profile | **19.8% less captured cost** — $865.86 | **30.3% less** — $752.47 |
 
-Most cost reduction here comes from choosing Sol for entire Codex threads. Workers usually used the same model as their coordinator; using cheaper worker models contributed only **1.8%** against that narrower reference. The 57.6% figure describes the observed model mix against an all-flagship alternative, not a saving caused by delegation alone. External review costs are incomplete, and API-equivalent costs are not subscription bills. See the [token counts, per-capture results and reproducible calculation](docs/COSTS.md).
+Both columns compare with the **$1,079.47 recorded mix**. Role intent is recoverable for **52.7% of worker requests**; the second column makes an explicit implementation assumption for the rest. These are price-only counterfactuals, not observed bills or a matched-quality benchmark. Reviewers retain their stronger models. The full-profile comparison also changes coordinator choices, so its benefit is not all from worker delegation.
+
+Against the original all-Opus/Astra reference of $2,545.80, the implementation-assumption/full-profile case is **70.4% lower**; the recorded historical mix was already 57.6% lower. That larger reference must not be confused with the extra saving from fixing routing. Worker input was 42.1% smaller per request than coordinator input in the historical sample, but total token reduction from the corrected setup has not been measured. See the [token counts, coverage, assumptions and reproducible calculation](docs/COSTS.md).
 
 Separate contexts help protect the main conversation from noisy logs, but spawning agents adds requests, and a fork may copy existing history. The host's context-window capacity is unchanged. Keep dossiers and return reports short, and measure the whole workload. See the vendor guidance for [Claude subagents](https://code.claude.com/docs/en/sub-agents) and [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
@@ -70,6 +71,14 @@ Example requests:
 > Use Arti SDD to set up this repository from its charter. Preserve existing instructions and work, preview the changes, and implement the setup choices I have authorised.
 
 > Review this existing repository's working protocol. Organise its tickets, shared knowledge and Claude/Codex setup while preserving existing work.
+
+## See the work on a board
+
+Markdown tickets and a shared backlog provide the baseline. An agent can maintain a compact index or build a visual board to make readiness, dependencies, ownership, file territory and missing verification easier to scan, particularly when several agents work in parallel. Arti can guide that project-specific extension while the ticket files, claims and evidence remain authoritative.
+
+![Example local board: blocked, ready, working, review and done columns, with two active agents in separate territories and an expanded ticket showing its contract and evidence. Illustrative UI with fictional data.](docs/assets/board-example.svg)
+
+The image is an **illustrative optional extension**, not a bundled application. Read the [board guide and acceptance checks](docs/BOARD.md) to build and verify a local view without adding a web stack to the skill.
 
 ## One shared project contract
 
@@ -107,7 +116,7 @@ Review and trust Codex project hooks with `/hooks` before relying on them. `chec
 
 A custom team also needs an explicit `--team` file for both plan and apply. The [dated example mapping](docs/examples/team-2026-11-03.json) reproduces the release profile; it is not a default or proof of access on your account. Follow the [qualification procedure](docs/AGENT-SETUP.md#qualify-your-project) before relying on it.
 
-For a user-level installation, keep one reviewed copy under `~/.agents/skills/arti-sdd-protocol` and link that individual skill from both `~/.claude/skills` and `~/.codex/skills`. Preserve any real directories when creating links. Ordinary project setup does not change global configuration.
+For a user-level installation, keep one reviewed copy under `~/.agents/skills/arti-sdd-protocol` and link that individual skill from both `~/.claude/skills` and `~/.codex/skills`. Preserve any real directories when creating links. Ordinary project setup does not change global configuration. Updating that shared user copy makes it available to both hosts on their next skill load; hosts handle duplicate skill names differently, and installed runtime snapshots remain project-specific. See [how updates propagate, and the proposed notification approach](docs/UPDATES.md).
 
 ## What has actually been verified?
 
@@ -117,7 +126,7 @@ The version 0.4.1 qualification, dated **2026-11-04**, covers macOS 26.6.2 arm64
 - Both review directions passed three security-defect trials, three quantity-calculation-defect trials and a clean control, followed by an actual production author-to-reviewer dispatch.
 - Both clients denied actual generic dispatch and conflicting model/effort requests; Codex also denied full-history forks and missing native selectors. Both passed allowed/denied edit probes, persisted-session resumes, fresh cross-host handoffs and chat-only charters.
 - All five Codex desktop bindings passed separate real task, native model/effort and fresh-context checks. Native profile selection and independent role-source delivery are unavailable on that surface.
-- The deterministic suite passed 86 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
+- The deterministic suite passed 90 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
 
 The [native report](docs/QUALIFICATION.md) and [machine-readable evidence](docs/qualification.json) bind those results to the installable package digest. The [validation guide](docs/VALIDATION.md) states their boundaries.
 

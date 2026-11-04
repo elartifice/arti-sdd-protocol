@@ -2,6 +2,7 @@
 
 ## 0.4.1
 
+- Explain the charter-to-ticket delivery loop, optional board design and update propagation; reprice historical tokens under explicit corrected-routing scenarios.
 - Production dispatch plans select the configured role and model/effort on Claude, Codex CLI and Codex desktop; unsupported or missing routes fail closed.
 - Fresh desktop workers receive shared role instructions, the repository root and bounded task/file context.
 - Claude completion-only records are verified when the client omits child messages; historical launches require a correlated native completion notification.

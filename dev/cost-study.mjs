@@ -76,4 +76,72 @@ export function costStudy(data = JSON.parse(fs.readFileSync(new URL('../docs/cos
   return { as_of: data.as_of, samples, ...result };
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) console.log(JSON.stringify(costStudy(), null, 2));
+export function promptTier(model, band) {
+  requireValue(['up-to-100k', '100k-to-272k', 'over-272k'].includes(band), 'unknown prompt band');
+  return model === 'claude-haiku-5-5' && band !== 'up-to-100k' ? 'over-100k'
+    : model.startsWith('gpt-') && band === 'over-272k' ? 'over-272k' : 'standard';
+}
+
+export function routingTarget(group, scenario, data) {
+  requireValue(['observed', 'all_flagship', 'identified_worker_fix', 'worker_fix_assuming_implementation',
+    'full_identified_profile', 'full_profile_assuming_implementation'].includes(scenario), 'unknown routing scenario');
+  const host = group.provider === 'anthropic' ? 'claude-code' : 'codex';
+  const models = data.role_models[host];
+  if (scenario === 'observed') return group.model;
+  if (scenario === 'all_flagship') return host === 'claude-code' ? 'claude-opus-5-5' : 'gpt-6-astra';
+  if (group.context === 'coordinator') return scenario.startsWith('full_') ? models.conductor : group.model;
+  if (group.role !== 'unclassified') {
+    requireValue(Object.hasOwn(models, group.role), 'unmapped declared role');
+    return models[group.role];
+  }
+  return scenario.endsWith('assuming_implementation') ? models.worker : group.model;
+}
+
+export function routingStudy(data = JSON.parse(fs.readFileSync(new URL('../docs/routing-cost-study.json', import.meta.url)))) {
+  const names = ['observed', 'all_flagship', 'identified_worker_fix', 'worker_fix_assuming_implementation',
+    'full_identified_profile', 'full_profile_assuming_implementation'];
+  requireValue(data.schema_version === 1 && Array.isArray(data.groups) && data.groups.length > 0, 'invalid routing dataset');
+  const scenarios = Object.fromEntries(names.map(name => [name, { totals_usd: { all: 0, claude: 0, codex: 0, workers: 0 }, samples_usd: {} }]));
+  const counts = { requests: 0, coordinator_requests: 0, worker_requests: 0, identified_worker_requests: 0, unclassified_worker_requests: 0 };
+  const roles = {}, role_basis = {}, input_tokens = { coordinator: 0, worker: 0 };
+  for (const group of data.groups) {
+    requireValue(['anthropic', 'openai'].includes(group.provider), 'unknown routing provider');
+    requireValue(['coordinator', 'worker'].includes(group.context), 'unknown routing context');
+    requireValue(Number.isSafeInteger(group.requests) && group.requests > 0, 'invalid routing request count');
+    requireValue(typeof group.model === 'string' && (group.provider === 'anthropic') === group.model.startsWith('claude-'), 'routing provider mismatch');
+    requireValue(['coordinator-context', 'declared-role', 'named-task-intent', 'unclassified'].includes(group.role_basis), 'unknown role evidence');
+    requireValue(group.context !== 'coordinator' || (group.role === 'conductor' && group.role_basis === 'coordinator-context'), 'invalid coordinator identity');
+    requireValue((group.role === 'unclassified') === (group.role_basis === 'unclassified'), 'inconsistent role evidence');
+    counts.requests += group.requests; counts[group.context + '_requests'] += group.requests;
+    if (group.context === 'worker') counts[group.role === 'unclassified' ? 'unclassified_worker_requests' : 'identified_worker_requests'] += group.requests;
+    roles[group.role] = (roles[group.role] ?? 0) + group.requests;
+    role_basis[group.role_basis] = (role_basis[group.role_basis] ?? 0) + group.requests;
+    for (const field of fields) requireValue(Number.isSafeInteger(group[field]) && group[field] >= 0, `invalid routing ${field}`);
+    input_tokens[group.context] += fields.slice(0, -1).reduce((n, field) => n + group[field], 0);
+    for (const name of names) {
+      const model = routingTarget(group, name, data);
+      requireValue(typeof model === 'string' && (group.provider === 'anthropic') === model.startsWith('claude-'), 'cross-provider routing');
+      const price = priceGroup({ ...group, model, tier: promptTier(model, group.prompt_band) }, model, data.rates_usd_per_million);
+      const row = scenarios[name], cohort = group.provider === 'anthropic' ? 'claude' : 'codex';
+      row.totals_usd.all += price; row.totals_usd[cohort] += price;
+      if (group.context === 'worker') row.totals_usd.workers += price;
+      row.samples_usd[group.sample] = (row.samples_usd[group.sample] ?? 0) + price;
+    }
+  }
+  const result = { counts, roles, role_basis, input_tokens, scenarios };
+  function verify(actual, expected, name = '') {
+    for (const [key, value] of Object.entries(expected)) {
+      if (value && typeof value === 'object') verify(actual?.[key], value, `${name}${key}.`);
+      else requireValue(Number.isFinite(value) && Math.abs(actual?.[key] - value) < 1e-8, `published routing ${name}${key} drifted`);
+    }
+  }
+  verify(result, data.expected);
+  const observed = scenarios.observed.totals_usd.all, baseline = scenarios.all_flagship.totals_usd.all;
+  for (const row of Object.values(scenarios)) {
+    row.versus_observed = comparison(row.totals_usd.all, observed);
+    row.versus_all_flagship = comparison(row.totals_usd.all, baseline);
+  }
+  return { as_of: data.as_of, token_savings_claimed: false, ...result };
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) console.log(JSON.stringify(process.argv.includes('--routing') ? routingStudy() : costStudy(), null, 2));
