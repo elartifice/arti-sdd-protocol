@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1
+
+- Explain the charter-to-ticket delivery loop, optional board design and update propagation; reprice historical tokens under explicit corrected-routing scenarios.
+- Production dispatch plans select the configured role and model/effort on Claude, Codex CLI and Codex desktop; unsupported or missing routes fail closed.
+- Fresh desktop workers receive shared role instructions, the repository root and bounded task/file context.
+- Claude completion-only records are verified when the client omits child messages; historical launches require a correlated native completion notification.
+- Native evidence checks correlate each child to a unique dispatch and verify its model, provider and observable effort; Claude effective effort remains unobservable.
+- Native hooks reject generic inherited-model dispatch and conflicting overrides, including Codex's actual hook tool spelling.
+- Live qualification exercises the production dispatch helper, native generic-route denials and all five desktop role bindings. Existing v0.4.0 archives and tags remain fixed.
+
 ## 0.4.0
 
 - One lightweight, agent-neutral skill replaces the divergent installer and guide as the public package.

@@ -1,0 +1,152 @@
+{
+  "version": "0.4.1",
+  "date": "2026-11-04",
+  "package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
+  "surface": "Codex desktop collaboration.spawn_agent",
+  "status": "passed",
+  "runs": [
+    {
+      "role": "coordinator",
+      "status": "verified",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ],
+      "task_payload_verified": false,
+      "task_payload_evidence": "Native delegated message is sealed; correlation uses child path and completed report nonce"
+    },
+    {
+      "role": "scout",
+      "status": "verified",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ],
+      "task_payload_verified": false,
+      "task_payload_evidence": "Native delegated message is sealed; correlation uses child path and completed report nonce"
+    },
+    {
+      "role": "implementer",
+      "status": "verified",
+      "model": "gpt-6.1-terra",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ],
+      "task_payload_verified": false,
+      "task_payload_evidence": "Native delegated message is sealed; correlation uses child path and completed report nonce"
+    },
+    {
+      "role": "reviewer",
+      "status": "verified",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ],
+      "task_payload_verified": false,
+      "task_payload_evidence": "Native delegated message is sealed; correlation uses child path and completed report nonce"
+    },
+    {
+      "role": "escalation",
+      "status": "verified",
+      "model": "gpt-6-astra",
+      "effort": "high",
+      "effort_verified": true,
+      "profile_identity": "unsupported",
+      "native_identity": null,
+      "permissions": "inherited from parent",
+      "source": "native-thread-read-and-rollout-with-reported-dispatch-id",
+      "task_correlated": true,
+      "fresh_context_verified": true,
+      "role_source_verified": false,
+      "role_source_evidence": "planned argument; delivery not exposed",
+      "checks": [
+        "actual-desktop-spawn",
+        "explicit-model-and-effort",
+        "fresh-context",
+        "native-child-metadata",
+        "dispatch-id-correlation",
+        "role-behavior",
+        "assigned-scope"
+      ],
+      "task_payload_verified": false,
+      "task_payload_evidence": "Native delegated message is sealed; correlation uses child path and completed report nonce"
+    }
+  ],
+  "boundaries": [
+    "Native named profile selection unsupported",
+    "Parent permissions inherited",
+    "Desktop hook enforcement not proven",
+    "Role source requested in planned argument; delivery not independently exposed",
+    "Codex checker fetches native state itself; supplied thread/rollout JSON rejected",
+    "Dispatch marker correlates task; native metadata establishes model and effort"
+  ],
+  "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
+  "verifier_replay": {
+    "status": "passed",
+    "method": "Fresh Codex native thread/read and local rollout replay, plus Claude recorded stream replay, of existing completed executions; no new model calls or full fixture execution on current package."
+  }
+}

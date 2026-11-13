@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { costStudy } from './cost-study.mjs';
+import { costStudy, routingStudy } from './cost-study.mjs';
 const root = path.resolve('.agents/skills/arti-sdd-protocol');
 const files = [];
 function walk(dir) { for (const entry of fs.readdirSync(dir, { withFileTypes: true })) { const p = path.join(dir, entry.name); if (entry.isSymbolicLink()) throw new Error(`Package symlink: ${p}`); if (entry.isDirectory()) walk(p); else files.push(p); } }
@@ -17,4 +17,5 @@ const skill = fs.readFileSync(path.join(root,'SKILL.md'),'utf8');
 if (!/^---\nname: arti-sdd-protocol\ndescription: [^\n]+\n/m.test(skill)) throw new Error('Invalid entry point');
 if (!fs.existsSync(path.join(root,'LICENSE'))) throw new Error('Missing package licence');
 costStudy();
+routingStudy();
 console.log(JSON.stringify({ status:'passed', files:files.length, bytes, entry_words:skill.split(/\s+/).length, version:JSON.parse(fs.readFileSync(path.join(root,'package.json'))).version }));

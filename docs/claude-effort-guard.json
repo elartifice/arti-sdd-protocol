@@ -1,0 +1,13 @@
+{
+  "version": "0.4.1",
+  "date": "2026-11-04",
+  "status": "passed",
+  "client": "Claude Code 2.1.310",
+  "checks": [
+    "actual-Agent-effort-override-attempt",
+    "native-hook-denial-for-conflicting-effort"
+  ],
+  "configured_effort": "low",
+  "attempted_effort": "high",
+  "effective_effort_observable": false
+}

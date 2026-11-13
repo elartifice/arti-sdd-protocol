@@ -1,8 +1,44 @@
-# Counted tokens, public prices: the expanded local cost study
+# Counted tokens, public prices and corrected routing
 
 The custom-agent design lets a coordinator delegate bounded work and choose models per role. Separate worker contexts keep detailed investigation out of the main conversation, while shared files retain decisions and lessons. See the [reporting hierarchy](assets/agent-architecture.svg). Spawning also creates requests; forks can copy history, so delegation does not guarantee fewer tokens. See [Claude subagents](https://code.claude.com/docs/en/sub-agents) and [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents).
 
-## Result
+## What correct routing could change
+
+The routing repair changes which model receives a task; it does not itself prove a lower token count. This replay keeps **the same 11,134 requests, every token category and the recorded prompt lengths**. Prices were rechecked on **2026-11-04**. No replacement-model request was executed for this estimate.
+
+| Fixed-token comparison | Estimated captured cost | Below recorded mix | Below original all-Opus/Astra reference |
+|---|---:|---:|---:|
+| Recorded model mix | $1,079.47 | 0.0% | 57.6% |
+| Correct identified worker roles; keep unknowns unchanged | $1,034.46 | 4.2% | 59.4% |
+| Correct workers; assume unknowns are implementers | $921.08 | 14.7% | 63.8% |
+| Full coordinator/identified-role profile; keep unknowns unchanged | $865.86 | 19.8% | 66.0% |
+| Full profile; assume unknowns are implementers | $752.47 | 30.3% | 70.4% |
+
+The recorded mix is $1,079.47. The original all-Opus/Astra reference remains $2,545.80 for comparability: those were the highest models in the selected historical captures. A later escalation-model change does not silently raise that reference. The original 57.6% result and the projected 70.4% case answer a different question from the additional saving caused by fixing routing.
+
+**Role intent is identifiable for 52.7% of worker requests.** The implementation-assumption rows assign the remaining workers to Sonnet/Terra. That is a sensitivity case, not a finding that every unidentified task can safely use those models. Identified reviewers retain the configured stronger model; a native task name establishes intended role, not proof that its role body loaded. Here “worker” means any captured native descendant, including reviewers; it does not mean every request was routine implementation. The recovered roles include 1,582 reviewer requests, which must not all be repriced as cheap implementers.
+
+| Worker-role evidence | Requests | Share of worker requests | Recorded worker cost |
+|---|---:|---:|---:|
+| Explicit routing header or native selector | 555 | 15.4% | $26.14 |
+| Canonical role in a native task name | 1,341 | 37.3% | $83.54 |
+| Unknown role intent | 1,700 | 47.3% | $156.20 |
+
+The policy is the audited project's current per-host profile: Opus/Sol coordinator, Haiku/Luna scout and mechanical worker, Sonnet/Terra implementer and doc reviewer, Opus/Sol redteam and QA, and conditional Fable/Astra escalation. This is a project profile, independently configured from the portable example profile. Coordinator choices change only in the two full-profile rows. Some historical coordinator requests were already cheaper; applying the profile can increase those requests' price. No favourable cases are selected or adverse ones dropped.
+
+The worker-only price comparison changes from $265.88 recorded versus $270.65 at their coordinator's rate (**1.8% lower**) to $107.49 under the implementation assumption (**60.3% lower**). The whole captured-workload difference from that worker change is **14.7%**, because coordinator costs remain in the total. The full-profile case adds coordinator model choice, reaching **30.3% below recorded captured cost**. It must not be presented as a measured benefit caused entirely by subagents.
+
+Replacement pricing is applied **per request before aggregation**, including Haiku's over-100K tier and OpenAI's over-272K tier. A long Opus request rerouted to Haiku uses Haiku's long-prompt rate. Effort changes can affect token use in practice; public model rates are not a separate effort multiplier in this fixed-token calculation.
+
+External CLI reviews remain incompletely captured and excluded from every column. Changed models could affect output length, cache hits, retry count, quality and acceptance. Those effects were not tested, so this is not an end-to-end ticket bill, subscription saving or matched-quality benchmark.
+
+The anonymous role/prompt-band aggregates and per-capture scenario totals are in [routing-cost-study.json](routing-cost-study.json). Recompute them independently with:
+
+```sh
+node dev/cost-study.mjs --routing
+```
+
+## Observed historical result
 
 **The recorded model mix prices at $1,079.47 versus $2,545.80 on the project's highest used models throughout: an estimated $1,466.34, or 57.6%, reduction.** This covers 11,134 requests in 17 historical ticket-linked captures from one project, including captured coordinators and native descendants. The source project and transcripts stay private.
 
@@ -38,6 +74,8 @@ The **57.6% headline measures the recorded model mix against always using the pr
 | Combined | 165,736 tokens | 286,202 tokens | 42.1% |
 
 Input includes uncached input, cache reads and cache writes. Roles did different work; this is an observation, not a controlled compression test. Configured context-window capacity is unchanged, and total token reduction was not measured.
+
+The historical requests contain 595,985,063 worker-input tokens out of 2,753,376,994 input tokens in total. A purely illustrative **25% reduction in worker input** would mean approximately 149 million fewer input tokens, or **5.4% of all captured input**; a 50% reduction would mean approximately 298 million, or **10.8%**. These are arithmetic budget sensitivities, not measured outcomes or predictions. The routing estimates above claim **zero token reduction** and add none of this hypothetical benefit to their prices.
 
 ## How captures were selected
 
@@ -95,8 +133,11 @@ Standard global USD per million tokens:
 | Claude Haiku 5.5, input ≤100K | $0.10 | $0.01 | $0.125 | $0.20 | $0.50 |
 | GPT-6.1 Sol, input ≤272K | $2.00 | $0.10 | — | — | $10.00 |
 | GPT-6 Astra, input ≤272K | $10.00 | $1.00 | — | — | $50.00 |
+| GPT-6.1 Terra, input ≤272K | $1.00 | $0.05 | — | — | $5.00 |
+| GPT-6 Luna, input ≤272K | $0.10 | $0.01 | — | — | $0.50 |
+| Claude Fable 5.1 | $10.00 | $0.25 | $12.50 | $20.00 | $50.00 |
 
-Sources: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [Sol pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Astra pricing](https://developers.openai.com/api/docs/models/gpt-6-astra). Haiku requests above 100K input use 5× its listed rates. OpenAI requests above 272K input use 2× input/cache rates and 1.5× output rates for the full request. Those tiers are applied per request before aggregation. All captured Codex cache-write counters are zero; the dashes do not mean OpenAI has no write pricing. API repricing is separate from subscription accounting.
+Sources, rechecked 2026-11-04: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [Sol pricing](https://developers.openai.com/api/docs/models/gpt-6.1-sol), [Astra pricing](https://developers.openai.com/api/docs/models/gpt-6-astra), [Terra pricing](https://developers.openai.com/api/docs/models/gpt-6.1-terra) and [Luna pricing](https://developers.openai.com/api/docs/models/gpt-6-luna). Haiku requests above 100K input use 5× its listed rates. OpenAI requests above 272K input use 2× input/cache rates and 1.5× output rates for the full request. Those tiers are applied per request before aggregation. All captured Codex cache-write counters are zero; the dashes do not mean OpenAI has no write pricing. API repricing is separate from subscription accounting.
 
 ```text
 cost = sum(tokens_of_each_type × public_rate_for_that_model_and_tier) / 1,000,000
@@ -117,4 +158,4 @@ Recompute from the [anonymous aggregate data](cost-study.json), without credenti
 node dev/cost-study.mjs
 ```
 
-`npm run check` verifies the independently calculated published totals. The helper and dataset stay outside the installable skill. A stronger future benchmark would capture every coordinator, worker and cross-lab review request and compare representative tickets under the same quality gate, including retries, latency and acceptance outcomes.
+`npm run check` verifies both studies against independently calculated published totals. The helper and dataset stay outside the installable skill. A stronger future benchmark would capture every coordinator, worker and cross-lab review request and compare representative tickets under the same quality gate, including retries, latency and acceptance outcomes.

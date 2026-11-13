@@ -1,0 +1,130 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { planDispatch,verifyDispatch } from '../.agents/skills/arti-sdd-protocol/scripts/dispatch.mjs';
+import { git } from '../.agents/skills/arti-sdd-protocol/scripts/lib.mjs';
+import { planSetup,applySetup } from '../.agents/skills/arti-sdd-protocol/scripts/setup.mjs';
+import {config,repo,temp,mapping,invoke} from './harness.mjs';
+
+function fixture(t) {const dir=repo(t),c=config(),team=mapping();c.decisions.team='custom';team.bindings.codex.implementer={model:'gpt-6.1-terra',effective_model:'gpt-6.1-terra',effort:'high'};applySetup(planSetup(dir,c,{team}));return dir;}
+const options=(surface,role='implementer')=>({host:surface==='claude-agent'?'claude':'codex',surface,role,task:'Do the bounded task',assignedFiles:role==='implementer'?['src/a.mjs']:[]});
+function codex(plan) {return {thread:{model:plan.expected.model,reasoningEffort:plan.expected.effort,modelProvider:'openai',id:'child',parentThreadId:'parent',cwd:plan.repo,turns:[{id:'child-turn',status:'completed',items:[{type:'agentMessage',text:`DISPATCH_ID: ${plan.dispatchId}`}]}],agentRole:plan.expected.native_identity},rollout:[{type:'session_meta',payload:{id:'child',parent_thread_id:'parent',agent_path:`/root/${plan.invocation.args.task_name}`} },{type:'response_item',payload:{type:'message',role:'user',content:[{type:'input_text',text:plan.invocation.args.message}]}},{type:'turn_context',payload:{turn_id:'child-turn',model:plan.expected.model,effort:plan.expected.effort}}]};}
+function claude(plan) {return [{type:'assistant',message:{content:[{type:'tool_use',name:'Agent',id:'call1',input:{subagent_type:plan.expected.native_identity,prompt:plan.invocation.args.prompt}}]}},{type:'assistant',parent_tool_use_id:'call1',message:{model:plan.expected.model,content:[{type:'text',text:`STATUS: DONE\nDISPATCH_ID: ${plan.dispatchId}`}]}},{type:'user',message:{content:[{type:'tool_result',tool_use_id:'call1',content:'completed'}]}},{type:'result',subtype:'success',modelUsage:{[plan.expected.model]:{provider:'firstParty'}}},{type:'system',subtype:'task_notification',tool_use_id:'call1',task_id:'native-child-id',status:'completed'}];}
+const verify=(p,e)=>p.host==='codex'?verifyDispatch(p,{threadId:'child'},{readThread:async(_repo,id)=>({thread:id==='parent'?{id:'parent',cwd:e.thread.cwd}:e.thread}),readRollout:async()=>e.rollout}):verifyDispatch(p,e);
+test('each surface selects its bound native invocation and truthful boundary',async t=>{
+ const dir=fixture(t);
+ for(const surface of ['claude-agent','codex-agent','codex-collaboration']) {
+  const p=planDispatch(dir,options(surface)),result=await verify(p,surface==='claude-agent'?claude(p):codex(p));
+  assert.equal(result.status,'verified');assert.equal(result.task_correlated,true);assert.match(surface==='claude-agent'?p.invocation.args.prompt:p.invocation.args.message,/ROUTING: implementer because/);assert.ok((surface==='claude-agent'?p.invocation.args.prompt:p.invocation.args.message).includes(`REPOSITORY: ${dir}\nAssigned paths resolve relative to REPOSITORY.`));if(surface==='codex-collaboration')assert.match(p.invocation.args.task_name,/^arti_implementer_[0-9a-f]{8}$/);else assert.equal(p.invocation.args[surface==='claude-agent'?'subagent_type':'agent_type'],'arti_implementer');
+  if(surface==='codex-collaboration'){assert.equal(result.fresh_context_verified,true);assert.equal(result.role_source_verified,false);assert.equal(result.role_source_evidence,'planned argument; delivery not exposed');assert.equal(p.invocation.args.fork_turns,'none');assert.equal(p.invocation.args.model,'gpt-6.1-terra');assert.equal(p.invocation.args.reasoning_effort,'high');assert.match(p.invocation.args.message,/SHARED ROLE SOURCE/);assert.equal(result.profile_identity,'unsupported');}
+  if(surface!=='claude-agent'){assert.equal(result.task_payload_verified,false);assert.match(result.task_payload_evidence,/sealed/);}
+  if(surface==='codex-agent')assert.equal(result.role_source_verified,true);
+  if(surface==='claude-agent'){assert.equal(p.invocation.args.run_in_background,false);assert.equal(result.effort_verified,false);assert.ok(p.invocation.args.description);assert.match(result.evidence_limitation,/not a signed attestation/);}
+ }
+});
+test('scope, invalid options and drift fail closed',async t=>{
+ const dir=fixture(t),p=planDispatch(dir,options('codex-agent'));
+ for(const patch of [{task:''},{assignedFiles:[]},{assignedFiles:['../outside']},{assignedFiles:['src//a']},{assignedFiles:['src/./a']},{assignedFiles:['src/']},{assignedFiles:['src\\a']},{assignedFiles:['/absolute']},{assignedFiles:['C:relative']},{model:'other'},{host:'claude'},{surface:'other'},{role:'unknown'}])assert.throws(()=>planDispatch(dir,{...options('codex-agent'),...patch}));
+ assert.throws(()=>planDispatch(dir,{...options('codex-agent','scout'),assignedFiles:['src/a']}),/Read-only/);
+ assert.equal(planDispatch(dir,options('codex-agent','scout')).assignedFiles.length,0);
+ const tampered=structuredClone(p);tampered.invocation.args.agent_type='other';await assert.rejects(()=>verify(tampered,codex(p)),/plan or source/);
+ const teamPath=path.join(dir,'.agents/team.json'),original=fs.readFileSync(teamPath,'utf8'),team=JSON.parse(original);team.bindings.codex.implementer.effort='low';fs.writeFileSync(teamPath,JSON.stringify(team,null,2)+'\n');await assert.rejects(()=>verify(p,codex(p)),/drift|fingerprint/);fs.writeFileSync(teamPath,original);
+ const native=path.join(dir,'.codex/agents/arti_implementer.toml'),nativeOriginal=fs.readFileSync(native,'utf8');fs.appendFileSync(native,'# drift\n');await assert.rejects(()=>verify(p,codex(p)),/drift/);fs.writeFileSync(native,nativeOriginal);
+ fs.appendFileSync(path.join(dir,'.agents/roles/implementer.md'),'drift');await assert.rejects(()=>verify(p,codex(p)),/drift/);
+});
+test('native evidence must show the correct model, effort and identity',async t=>{
+ const dir=fixture(t),p=planDispatch(dir,options('codex-agent'));
+ for(const change of [e=>e.thread.forkedFromId='parent',e=>e.rollout[0].payload.forked_from_id='parent',e=>e.rollout.push({type:'session_meta',payload:{id:'foreign'}}),e=>e.thread.model='wrong',e=>e.thread.reasoningEffort='low',e=>e.thread.agentRole='wrong',e=>e.thread.modelProvider='wrong',e=>e.thread.turns=[],e=>e.thread.turns.push({id:'next',status:'inProgress',items:[]}),e=>e.thread.turns.push({id:'next',status:'failed',items:[]}),e=>e.thread.turns.push({id:'next',status:'completed',items:[{type:'agentMessage',text:'no nonce'}]}),e=>e.rollout[0].payload.id='other',e=>e.rollout[0].payload.agent_path='/root/wrong',e=>e.rollout[0].payload.parent_thread_id='wrong',e=>e.thread.turns[0].items[0].text='DISPATCH_ID: another',e=>e.rollout[2].payload.effort='low',e=>e.rollout[2].payload.model='wrong',e=>e.rollout[2].payload.turn_id='parent-turn']){const e=codex(p);change(e);await assert.rejects(()=>verify(p,e));}
+ await assert.rejects(()=>verifyDispatch(p,codex(p)),/only threadId/);
+ await assert.rejects(()=>verifyDispatch(p,{threadId:'child',thread:codex(p).thread}),/only threadId/);
+ const fixtureEvidence=codex(p);let readArgs;await verifyDispatch(p,{threadId:'child'},{readThread:async(...args)=>{if(args[1]==='child')readArgs=args;return {thread:args[1]==='parent'?{id:'parent',cwd:dir}:fixtureEvidence.thread};},readRollout:async()=>fixtureEvidence.rollout});assert.deepEqual(readArgs,[dir,'child']);
+ await assert.rejects(()=>verifyDispatch(p,{threadId:'other'},{readThread:async()=>({thread:fixtureEvidence.thread}),readRollout:async()=>fixtureEvidence.rollout}),/thread ID mismatch/);
+ const inherited=codex(p);inherited.rollout.push({type:'turn_context',payload:{turn_id:'parent-turn',model:'other-model',effort:'low'}});await assert.rejects(()=>verify(p,inherited),/Foreign turn context/);
+ const other=planDispatch(dir,options('codex-agent'));assert.notEqual(p.dispatchId,other.dispatchId);const desktop=planDispatch(dir,options('codex-collaboration')),desktopOther=planDispatch(dir,options('codex-collaboration'));assert.notEqual(desktop.invocation.args.task_name,desktopOther.invocation.args.task_name);await assert.rejects(()=>verify(p,codex(other)),/path|dispatch ID/);const jsonReport=codex(p);jsonReport.thread.turns[0].items[0].text=JSON.stringify({dispatch_id:p.dispatchId});assert.equal((await verify(p,jsonReport)).task_correlated,true);assert.equal(p.invocation.args.fork_turns,'none');assert.match(p.invocation.args.task_name,/^arti_implementer_[0-9a-f]{8}$/);
+ const fenced=codex(p);fenced.thread.turns[0].items[0].text='STATUS: DONE\nMODIFIED_FILES: none\nVERIFY_RECEIPT: passed\n\n```json\n'+JSON.stringify({dispatch_id:p.dispatchId})+'\n```';assert.equal((await verify(p,fenced)).task_correlated,true);const badFenced=structuredClone(fenced);badFenced.thread.turns[0].items[0].text+='\n```json\n'+JSON.stringify({dispatch_id:p.dispatchId})+'\n```';await assert.rejects(()=>verify(p,badFenced),/dispatch ID/);
+ const desktopPlan=planDispatch(dir,options('codex-collaboration'));
+ for(const mutate of [e=>e.thread.agentRole='arti_implementer',e=>e.thread.model='gpt-6.1-sol',e=>e.thread.reasoningEffort='low',e=>e.thread.forkedFromId='parent',e=>e.rollout[0].payload.agent_path='/root/arti_implementer_deadbeef',e=>e.rollout[0].payload.parent_thread_id='other',e=>e.rollout.push({type:'turn_context',payload:{turn_id:'foreign',model:e.thread.model,effort:e.thread.reasoningEffort}})]){const e=codex(desktopPlan);mutate(e);await assert.rejects(()=>verify(desktopPlan,e));}
+ const c=planDispatch(dir,options('claude-agent'));
+ for(const change of [e=>e[0].message.content[0].input.subagent_type='wrong',e=>e[1].message.model='wrong',e=>delete e[3].modelUsage[c.expected.model],e=>e[1].parent_tool_use_id='other',e=>e[2].message.content[0].is_error=true,e=>e[2].message.content=[],e=>e[1].message.content[0].text='Agent launched in background',e=>e[0].message.content[0].input.prompt='another task',e=>e[0].message.content[0].input.resume='old-session',e=>e[0].message.content[0].input.other_context='old',e=>e[0].message.content[0].input.model='wrong',e=>e[0].message.content[0].input.effort='low']){const e=claude(c);change(e);await assert.rejects(()=>verify(c,e));}
+ const structured=claude(c);structured[1].message.content[0].text='STATUS: DONE\nMODIFIED_FILES: none\nVERIFY_RECEIPT: passed\n\n```json\n'+JSON.stringify({dispatch_id:c.dispatchId})+'\n```';assert.equal((await verify(c,structured)).task_correlated,true);
+ const unrelated=claude(c),otherClaude=planDispatch(dir,options('claude-agent','scout'));unrelated.unshift({type:'assistant',message:{content:[{type:'tool_use',name:'Agent',id:'other-call',input:otherClaude.invocation.args}]}},{type:'assistant',parent_tool_use_id:'other-call',message:{model:otherClaude.expected.model,content:[{type:'text',text:'other task'}]}},{type:'user',message:{content:[{type:'tool_result',tool_use_id:'other-call',is_error:false,content:'complete'}]}});assert.equal((await verify(c,unrelated)).status,'verified');const wrongOnly=claude(c);wrongOnly[0].message.content[0].input.prompt=otherClaude.invocation.args.prompt;await assert.rejects(()=>verify(c,wrongOnly));const altered=claude(c);altered[0].message.content[0].input.prompt+=' changed';await assert.rejects(()=>verify(c,altered),/prompt or binding/);
+ const retry=claude(c);retry.unshift({type:'assistant',message:{content:[{type:'tool_use',name:'Agent',id:'denied',input:{...c.invocation.args,run_in_background:false}}]}},{type:'user',message:{content:[{type:'tool_result',tool_use_id:'denied',is_error:true,content:'PreToolUse:Agent hook error: Role routing denied: unexpected argument'}]}});assert.equal((await verify(c,retry)).denied_dispatch_attempts,1);const deniedOnly=retry.filter(e=>e.type!=='assistant'||e.message?.content?.[0]?.id!=='call1');await assert.rejects(()=>verify(c,deniedOnly));const fakeDenied=structuredClone(retry);fakeDenied[1].message.content[0].content='other error';await assert.rejects(()=>verify(c,fakeDenied));
+ const foreground=claude(c);foreground[0].message.content[0].input.run_in_background=false;assert.equal((await verify(c,foreground)).status,'verified');for(const value of [true,'false',null]){const bad=claude(c);bad[0].message.content[0].input.run_in_background=value;await assert.rejects(()=>verify(c,bad),/background/);}
+ const handback=claude(c);handback[1].message.content[0].text='working';handback[2].message.content[0].content=`[Subagent hand-back] Metadata. The report follows:\n  STATUS: DONE\n  DISPATCH_ID: ${c.dispatchId}\nagentId: native`;assert.equal((await verify(c,handback)).task_correlated,true);
+ await assert.rejects(()=>verify(c,{model:c.expected.model,agent:'arti_implementer'}));
+});
+test('CLI plans repeated assignments and verifies trusted local Claude events',async t=>{
+ const dir=fixture(t),task=path.join(dir,'task.txt'),plan=path.join(dir,'plan.json'),evidence=path.join(dir,'evidence.json');fs.writeFileSync(task,'Do work');
+ const run=invoke('dispatch.mjs',['plan','--repo',dir,'--host','claude','--surface','claude-agent','--role','implementer','--task-file',task,'--assigned','a','--assigned','b']);assert.equal(run.code,0,run.stderr);const p=JSON.parse(run.stdout);assert.deepEqual(p.assignedFiles,['a','b']);fs.writeFileSync(plan,run.stdout);fs.writeFileSync(evidence,JSON.stringify(claude(p)));
+ assert.equal(invoke('dispatch.mjs',['verify','--plan',plan,'--evidence',evidence]).code,0);assert.notEqual(invoke('dispatch.mjs',['verify','--plan',plan]).code,0);
+});
+test('native rollout lookup rejects symlink escape',async t=>{
+ const dir=fixture(t),p=planDispatch(dir,options('codex-agent')),native=codex(p),base=path.join(dir,'codex-home'),sessions=path.join(base,'sessions'),outside=path.join(dir,'outside.jsonl');fs.mkdirSync(sessions,{recursive:true});
+ const raw=native.rollout.map(e=>JSON.stringify(e)).join('\n')+'\n',rollout=path.join(sessions,'child.jsonl');fs.writeFileSync(rollout,raw);native.thread.path=rollout;
+ const planFile=path.join(dir,'plan.json'),threadFile=path.join(dir,'thread.json');fs.writeFileSync(planFile,JSON.stringify(p));fs.writeFileSync(threadFile,JSON.stringify(native.thread));
+ const script=`import fs from 'node:fs';import {verifyDispatch} from ${JSON.stringify(new URL('../.agents/skills/arti-sdd-protocol/scripts/dispatch.mjs',import.meta.url).href)};await verifyDispatch(JSON.parse(fs.readFileSync(process.argv[1])),{threadId:'child'},{readThread:async(_repo,id)=>({thread:id==='parent'?{id:'parent',cwd:JSON.parse(fs.readFileSync(process.argv[2])).cwd}:JSON.parse(fs.readFileSync(process.argv[2]))})});`;
+ const {spawnSync}=await import('node:child_process');const run=()=>spawnSync(process.execPath,['--input-type=module','-e',script,planFile,threadFile],{env:{...process.env,CODEX_HOME:base},encoding:'utf8'});
+ assert.equal(run().status,0);fs.writeFileSync(outside,raw);fs.unlinkSync(rollout);fs.symlinkSync(outside,rollout);assert.notEqual(run().status,0);
+});
+
+test('native profile uses the same repository and matching parent checkout sources',async t=>{
+ const dir=fixture(t),p=planDispatch(dir,options('codex-agent')),e=codex(p),foreign=repo(t);
+ for(const name of ['.agents','.codex','.claude','arti_sdd'])fs.cpSync(path.join(dir,name),path.join(foreign,name),{recursive:true});
+ const check=(cwd,parentCwd=cwd)=>verifyDispatch(p,{threadId:'child'},{readThread:async(_repo,id)=>({thread:id==='parent'?{id:'parent',cwd:parentCwd}:{...e.thread,cwd}}),readRollout:async()=>e.rollout});
+ await assert.rejects(()=>check(foreign),/another repository/);await assert.rejects(()=>check(dir,foreign),/checkout differ/);
+ git(dir,'add','.');git(dir,'commit','-qm','installed');const linked=path.join(temp(t),'linked');git(dir,'worktree','add','-qb','linked-check',linked);
+ const receipt=await check(linked);assert.equal(receipt.parent_checkout_verified,true);assert.equal(receipt.intended_parent_verified,false);assert.match(receipt.role_source_evidence,/not a signed attestation/);
+ fs.appendFileSync(path.join(linked,'.codex/agents/arti_implementer.toml'),'# drift\n');await assert.rejects(()=>check(linked),/drift|differ/);
+});
+
+
+test('Claude completion-only native evidence proves the bound model and rejects conflicts',async t=>{
+ const dir=fixture(t),p=planDispatch(dir,options('claude-agent'));
+ const completed=()=>{
+  const events=claude(p).filter(e=>!e.parent_tool_use_id);
+  const event=events.find(e=>e.type==='user');
+  event.message.content[0].content='Completed.';
+  event.tool_use_result={status:'completed',agentType:p.expected.native_identity,agentId:'native-child-id',prompt:p.invocation.args.prompt,resolvedModel:p.expected.model,content:[{type:'text',text:`DISPATCH_ID: ${p.dispatchId}`}]};
+  return events;
+ };
+ const good=await verify(p,completed());assert.equal(good.status,'verified');assert.equal(good.effort_verified,false);
+ for(const mutate of [e=>{e.splice(e.findIndex(x=>x.type==='system'),1);},e=>{e.find(x=>x.type==='system').status='failed';},e=>{e.find(x=>x.type==='system').tool_use_id='other';},e=>{e.find(x=>x.type==='system').task_id='';}]){const e=claude(p);mutate(e);await assert.rejects(verify(p,e),/task completion/);}
+ for(const mutate of [
+  e=>{delete e.find(x=>x.type==='user').tool_use_result;},
+  e=>{e.find(x=>x.type==='user').tool_use_result=null;},
+  e=>{e.find(x=>x.type==='user').tool_use_result.resolvedModel='wrong-model';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentType='wrong-role';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentId='';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.prompt='unrelated';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.status='running';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.content=[{type:'text',text:'missing nonce'}];},
+  e=>{e.find(x=>x.type==='user').message.content[0].tool_use_id='unrelated';},
+  e=>{e.find(x=>x.type==='user').message.content.push({type:'tool_result',tool_use_id:'other',content:'completed'});},
+  e=>{e.find(x=>x.type==='user').message.content[0].is_error=true;},
+  e=>{e.splice(1,0,{type:'assistant',parent_tool_use_id:'call1',message:{model:'wrong-model',content:[]}});},
+ ]) {const e=completed();mutate(e);await assert.rejects(verify(p,e));}
+ const streamed=claude(p),metadata=completed().find(x=>x.type==='user').tool_use_result;
+ streamed.find(x=>x.type==='user').tool_use_result={...metadata,resolvedModel:'wrong-model'};
+ await assert.rejects(verify(p,streamed),/completion binding/);
+});
+
+
+test('Claude historical launch metadata requires a completed streamed child',async t=>{
+ const p=planDispatch(fixture(t),options('claude-agent'));
+ const launched=()=>{const e=claude(p);e.find(x=>x.type==='user').tool_use_result={status:'async_launched',isAsync:true,agentId:'native-child-id',resolvedModel:p.expected.model};return e;};
+ assert.equal((await verify(p,launched())).status,'verified');
+ for(const mutate of [
+  e=>{e.splice(1,1);},
+  e=>{e.find(x=>x.type==='user').tool_use_result.resolvedModel='wrong-model';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentType='wrong-role';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.prompt='unrelated';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.status='failed';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.isAsync=false;},
+  e=>{e.splice(e.findIndex(x=>x.type==='system'),1);},
+  e=>{e.find(x=>x.type==='system').status='failed';},
+  e=>{e.find(x=>x.type==='system').tool_use_id='unrelated';},
+  e=>{e.find(x=>x.type==='system').task_id='unrelated';},
+  e=>{e.find(x=>x.type==='user').tool_use_result.agentId='';},
+ ]) {const e=launched();mutate(e);await assert.rejects(verify(p,e));}
+});

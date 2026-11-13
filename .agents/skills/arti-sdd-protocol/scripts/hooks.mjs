@@ -3,12 +3,39 @@ import path from 'node:path';
 import os from 'node:os';
 import { invariant,repoInfo,readJson,readText,sessionId,redact,isMain,digest } from './lib.mjs';
 import { activeTicket,checkPaths,extractPatch,mapPath } from './scope.mjs';
+import { binding,validateTeam,teamOperations } from './team.mjs';
 
 const deny=reason=>({hookSpecificOutput:{hookEventName:'PreToolUse',permissionDecision:'deny',permissionDecisionReason:`Arti: ${redact(reason)}`}});
 const context=(event,text)=>({hookSpecificOutput:{hookEventName:event,additionalContext:text}});
+export function checkRoleDispatch(repo,tool,value) {
+  const desktop=tool==='collaboration.spawn_agent';
+  if(tool==='collaborationspawn_agent')tool='spawn_agent'; // Native Codex hook spelling.
+  if(!/(?:^|\.)(?:Agent|spawn_agent)$/.test(tool))return;
+  const {root}=repoInfo(repo),config=readJson(path.join(root,'arti_sdd/config.json'));
+  if(config.decisions.team!=='custom')return;
+  const team=validateTeam(readJson(path.join(root,'.agents/team.json')),config.hosts);
+  for(const o of teamOperations(root,team,config.hosts))if(o.kind!=='seed')invariant(fs.existsSync(path.join(root,o.path))&&readText(path.join(root,o.path))===o.content,`Role adapter drift: ${o.path}`);
+  const claude=tool.split('.').at(-1)==='Agent';
+  if(claude)invariant(value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).every(k=>['subagent_type','description','prompt','model','effort','run_in_background'].includes(k)),'Role routing: Claude unexpected context argument');
+  if(claude&&value.run_in_background!==undefined)invariant(value.run_in_background===false,'Role routing: Claude background dispatch is unsupported');
+  if(!claude&&!desktop)invariant(typeof value?.agent_type==='string','Role routing: native Codex requires configured agent_type');
+  const name=claude?value?.subagent_type:desktop?value?.task_name:value?.agent_type;
+  const role=typeof name==='string'?(team.enabled_roles.find(r=>name===`arti_${r}`||(desktop&&new RegExp(`^arti_${r}_[a-f0-9]{8}$`).test(name)))||''):'';
+  invariant(team.enabled_roles.includes(role),'Role routing: select a configured arti_<role>; generic inherited-model dispatch is not a configured role');
+  const b=binding(team,claude?'claude':'codex',role);
+  if(desktop) {
+    invariant(value.fork_turns==='none'&&value.model===b.model&&value.reasoning_effort===b.effort,'Role routing: desktop needs a fresh context and explicit configured model/effort');
+    invariant(typeof value.message==='string'&&value.message.includes(readText(path.join(root,`.agents/roles/${role}.md`))),'Role routing: desktop dispatch is missing the shared role instructions');
+  } else {
+    if(!claude)invariant(value.fork_turns==='none','Role routing: Codex named roles require a fresh context');
+    if(value.model!==undefined)invariant([b.model,b.effective_model].includes(value.model),'Role routing: model override differs from the configured role');
+    for(const key of ['effort','reasoning_effort'])if(value[key]!==undefined)invariant(value[key]===b.effort,'Role routing: effort override differs from the configured role');
+  }
+}
 export function evaluateHook(action,input,env=process.env) {
   try {
     invariant(input&&typeof input==='object','Malformed hook input');
+    if(action==='pre')checkRoleDispatch(input.cwd||process.cwd(),String(input.tool_name||''),input.tool_input);
     if(action==='start') {
       if(env.ARTI_HEADLESS_REVIEW==='1')return {};
       const info=repoInfo(input.cwd||process.cwd());
@@ -90,7 +117,7 @@ export function ownedHooks(text) {
 export function mergeHooks(text='{}') {
   const obj=JSON.parse(text),old=ownedHooks(text);obj.hooks??={};
   for(const event of Object.keys(old))obj.hooks[event]=obj.hooks[event].filter(b=>!old[event].includes(b)&&!b.hooks.some(h=>h.command?.includes('ARTI_SDD_HOOK_VERSION=1')));
-  for(const [event,action,matcher]of [['SessionStart','start',''],['PreToolUse','pre','Edit|Write|MultiEdit|NotebookEdit|apply_patch|Bash'],['Stop','stop','']]) {
+  for(const [event,action,matcher]of [['SessionStart','start',''],['PreToolUse','pre','Edit|Write|MultiEdit|NotebookEdit|apply_patch|Bash|Agent|spawn_agent|collaboration.spawn_agent|collaborationspawn_agent'],['Stop','stop','']]) {
     (obj.hooks[event]??=[]).push({matcher,hooks:[{type:'command',command:hookCommand(action),timeout:10}]});
   }
   return JSON.stringify(obj,null,2)+'\n';

@@ -1,6 +1,6 @@
 # Claude Code and Codex agent setup
 
-This is the **tested release profile**, dated 2026-11-03, for the exact clients and package in [QUALIFICATION.md](QUALIFICATION.md). Projects choose and qualify their own bindings. The host's primary chat model remains the user's choice; configuring a named coordinator profile does not reset it.
+This is the **tested release profile**, dated 2026-11-04, for the exact clients and package in [QUALIFICATION.md](QUALIFICATION.md). Projects choose and qualify their own bindings. The host's primary chat model remains the user's choice; configuring a named coordinator profile does not reset it.
 
 Projects can choose single-agent work. This custom profile enables five roles; ordinary work need not invoke all of them, and escalation is reserved for repeated failure.
 
@@ -26,7 +26,7 @@ Separate contexts are an efficiency mechanism, not a token guarantee: spawning a
 
 The [example team file](examples/team-2026-11-03.json) records separate bindings for each host, with `max_concurrent: 2`. The tested Claude requests use `opus`, `haiku` and `sonnet` aliases, while `effective_model` pins the observed IDs above. A changed alias resolution must be requalified. Codex uses explicit model IDs. Neither vendor's tier names nor effort labels establish equivalence.
 
-Claude child message/model-usage metadata established the actual model/provider. Its client did not expose effective effort: the report records the requested setting and `effort_verified: false`. Codex native activity and child-thread metadata supplied the role identity, model/provider and resolved effort. An “OK” response alone was insufficient.
+Claude child messages or a correlated native completion record, together with first-party model usage, established the actual model/provider. Its client did not expose effective effort: the report records the requested setting and `effort_verified: false`. Codex native activity and child-thread metadata supplied the role identity, model/provider and resolved effort. An “OK” response alone was insufficient.
 
 ## Each role has an observable Definition of Done
 
@@ -38,7 +38,27 @@ Claude child message/model-usage metadata established the actual model/provider.
 | Reviewer | Identify both the ownership-check defect and the quantity-calculation defect; cite the files; retrieve shared knowledge; make no product edits. Repeated external trials also require clean controls. |
 | Escalation | Fix null handling and numeric-zero handling from a repeated-failure dossier; avoid rejected approaches, preserve assertions and stay within the assigned source file. |
 
+For the native inheritance control, each parent uses a different model and requested effort from the tested child. Codex native metadata must resolve to the child setting; Claude still has no effective-effort telemetry.
+
 Every enabled role also had to be discovered and actually invoked through its native custom-agent mechanism. Generated files alone did not satisfy the gate. These bounded fixtures establish suitability for those tasks, not a general model benchmark.
+
+## Dispatch the configured role
+
+A generated agent file does not route a generic worker. Prepare every delegation with the installed `scripts/dispatch.mjs plan` helper, using a private task file and explicit assigned paths for writable roles. Execute its emitted tool arguments and verify the child with `dispatch.mjs verify` before accepting its result. The helper refuses missing bindings and stale adapters.
+
+| Surface | Dispatch | Observable proof |
+|---|---|---|
+| Claude Code | Native `Agent` selects `arti_<role>`, with the required description and exact dossier. | Actual Agent call, child message or correlated completion model, and first-party model usage. Effort is the native role setting; effective effort is unavailable. |
+| Codex CLI | Native `spawn_agent` selects `agent_type: arti_<role>`, a unique task name and fresh context. | Child native role identity, model/provider and resolved reasoning effort. |
+| Codex desktop | `collaboration.spawn_agent` receives explicit `model`, `reasoning_effort`, `fork_turns: none`, unique task name and the full shared role source plus bounded dossier. | Child model/provider and resolved effort. This API has no named-profile selector; native role identity is labelled unsupported. Shared role text is sent in the planned argument, but its sealed delivery is not independently observable. |
+
+Use a canonical real path for Codex project trust; an aliased path can leave project roles undiscovered. The dossier includes the absolute repository path, current scope/approval and assigned files. Preserve exact allowed test commands, including restrictions on compound shell commands. A fresh fork carries no prior conversation, so include the relevant decisions and knowledge explicitly.
+
+Codex seals dispatched message text in its stored tool call. The Codex evidence file contains only `{ "threadId": "<native-child-id>" }`; the checker fetches native state itself and refuses supplied thread/rollout JSON. Claude checks a trusted local stream log, without a signed-attestation claim. Verification correlates the unique native child path and parent ID with a dispatch marker in the child's final report, then checks model and effort independently using native metadata. The marker is not model evidence. Claude evidence retains the exact Agent prompt. These are trusted local receipts, not signed attestations.
+
+The [separate desktop qualification](desktop-qualification.json) records five actual role tasks with native model/effort evidence, protected checks and assigned-scope verification. Its native profile identity remains unsupported.
+
+Supported native hooks deny generic role requests and conflicting model/effort overrides; the live suite checks actual hook denials on both clients. Desktop hook coverage is not claimed: that route requires explicit arguments and the post-execution check. Codex roles inherit parent permissions on both surfaces; a role label or fresh context does not create a smaller sandbox.
 
 ## Shared sources and host adapters
 
@@ -141,3 +161,5 @@ node "$arti_project/.agents/skills/arti-sdd-protocol/scripts/team.mjs" --repo "$
 Changing role sources, bindings, expected model, effort, package or client version invalidates matching evidence. Requalify after access/credential changes. These are trusted local records, not signed independent attestations. The release report proves the recorded release fixtures; it does not certify another account or platform automatically.
 
 See [VALIDATION.md](VALIDATION.md) for the rest of the matrix and [RELEASE.md](RELEASE.md#remaining-gaps-and-publication-actions) for publication gaps and support boundaries.
+
+Claude can omit unplanned Agent arguments from the PreToolUse hook input even when they appear in the recorded call. In a native `resume` probe, the hook did not prevent the call; the dispatch verifier rejected the recorded arguments after dispatch. Do not treat this as pre-execution enforcement. Verify the native call record before accepting the child result.

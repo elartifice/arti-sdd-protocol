@@ -38,6 +38,14 @@ Copy-ready release text:
 
 The published v0.4.0 release contains `arti-sdd-protocol-0.4.0.zip` and `SHA256SUMS`. Documentation on `main` may improve after a release; its tag and installable archive remain fixed. Release copy can link to the current overview graphics and cost study while retaining links to the exact release qualification.
 
+## Routing patch v0.4.1
+
+Patch title: **Arti SDD Protocol v0.4.1 — explicit worker routing**.
+
+The patch adds one small dispatch helper, with fresh-context dossiers and actual native child verification. It fixes generic-worker model inheritance, required native arguments and conflicting overrides. Claude and Codex native roles, both review directions and five desktop bindings have dated evidence. Desktop native profile selection and role-source delivery remain unobservable; Claude effective effort remains unobservable.
+
+The current core has 23 files, about 146 KB, a 581-word entry point and no runtime package dependencies. The v0.4.0 tag and ZIP stay fixed. Publish this patch only after its reviewed export and exact-commit CI pass under maintainer authority; packaging and local installation do not create a release.
+
 ## Documentation included in the public tree
 
 | File | Purpose |
@@ -45,14 +53,16 @@ The published v0.4.0 release contains `arti-sdd-protocol-0.4.0.zip` and `SHA256S
 | [README.md](../README.md) | Explain SDD, the problems addressed, the three entry routes and setup. |
 | [AGENT-SETUP.md](AGENT-SETUP.md) | Model/effort table, role DoDs, shared sources, diagrams and both review proofs. |
 | [workflow](assets/workflow.svg) and [agent architecture](assets/agent-architecture.svg) | Editable, colourful top-to-bottom graphics with accessible descriptions. |
-| [COSTS.md](COSTS.md) and [cost-study.json](cost-study.json) | Anonymous historical token aggregates, dollar/percentage estimates, baselines and coverage limits. |
+| [COSTS.md](COSTS.md), [historical data](cost-study.json) and [routing projection](routing-cost-study.json) | Counted tokens, observed prices, corrected-routing assumptions, baselines and coverage limits. |
+| [BOARD.md](BOARD.md) and [board UI example](assets/board-example.svg) | Markdown planning and an illustrative optional graphical extension with acceptance checks. |
+| [UPDATES.md](UPDATES.md) | Shared user installation versus project snapshots; proposed notification-first updates. |
 | [team example](examples/team-2026-11-03.json) | Dated explicit bindings matching the tested release profile; new projects still qualify their own setup. |
 | [QUALIFICATION.md](QUALIFICATION.md) and [qualification.json](qualification.json) | Actual dated results and installable package digest. |
 | [VALIDATION.md](VALIDATION.md) | Deterministic coverage, native boundaries and deferred capabilities. |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Contributor workflow and appropriate checks. |
 | [LICENSE](../LICENSE) | MIT and required notice. |
 
-The workflow and agent hierarchy are self-contained SVGs under `docs/assets`, with text and accessible descriptions kept editable. The hierarchy shows tasks down and reports back up to one coordinator, with role icons and provider marks on the reviewer. No external fonts, scripts or tracking are embedded. [Vendor-mark sources and ownership](assets/BRAND-MARKS.md) are recorded separately from the MIT grant for original work. Supporting shared-source and review diagrams use Mermaid. Check the overview graphics at README width and verify their paths in the published tree.
+The workflow and agent hierarchy are self-contained SVGs under `docs/assets`, with text and accessible descriptions kept editable. The hierarchy shows tasks down and reports back up to one coordinator, with role icons and provider marks on the reviewer. No external fonts, scripts or tracking are embedded. [Vendor-mark sources and ownership](assets/BRAND-MARKS.md) are recorded separately from the MIT grant for original work. Supporting shared-source and review diagrams use Mermaid. The main workflow shows a ticket contract, parallel disjoint work, per-ticket validation, serial landing and the next-ready-ticket loop. The board illustration uses fictional data and does not imply a bundled application. Check the overview graphics at README width and verify their paths in the published tree.
 
 ## First release and future versions
 
@@ -71,7 +81,7 @@ Initial publication uses fresh history from the reviewed export. Once that publi
 
 These are declared scope limits, not pending claims of support:
 
-- Live host support is limited to the exact macOS Claude Code/Codex CLI versions in the report. Linux/Windows journeys, additional agents and separate desktop/IDE surfaces need their own evidence.
+- Live host support is limited to the exact macOS Claude Code/Codex versions and surfaces in the reports. Codex desktop model/effort routing has separate bounded task evidence; its tool cannot select native profiles and its hook coverage is unproven. Linux/Windows journeys and additional agents/IDE surfaces need their own evidence.
 - Claude effective effort is not observable in the tested client. Codex native roles inherit parent permissions; hooks are not a complete shell security boundary.
 - The fixture results do not establish general vendor/model equivalence or availability on another account. Requalify changed bindings, aliases, role sources, package or clients.
 - Remote claims protect ticket IDs; cross-clone work on different tickets still needs coordinator-assigned disjoint territory.
@@ -90,7 +100,7 @@ node dev/package.mjs --require-qualified
 The output is:
 
 ```text
-dist/arti-sdd-protocol-0.4.0.zip    Installable skill only
+dist/arti-sdd-protocol-0.4.1.zip    Installable skill only
 dist/public-repository/           Allowlisted source and documentation
 dist/manifest.json                Package/archive hashes and every public source hash
 ```

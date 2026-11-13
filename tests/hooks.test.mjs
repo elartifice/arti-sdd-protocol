@@ -6,7 +6,34 @@ import { evaluateHook,hookCommand } from '../.agents/skills/arti-sdd-protocol/sc
 import { planSetup,applySetup,checkSetup } from '../.agents/skills/arti-sdd-protocol/scripts/setup.mjs';
 import { acquireClaim,landingLock } from '../.agents/skills/arti-sdd-protocol/scripts/claim.mjs';
 import { command,git,repoInfo } from '../.agents/skills/arti-sdd-protocol/scripts/lib.mjs';
-import { repo,config,seedTicket,temp,commitPlanning } from './harness.mjs';
+import { repo,config,seedTicket,temp,commitPlanning,mapping } from './harness.mjs';
+test('custom teams reject inherited generic roles and conflicting model or effort overrides',t=>{
+ const dir=repo(t),c=config(),team=mapping();c.decisions.team='custom';applySetup(planSetup(dir,c,{team}));
+ const call=(tool,input)=>evaluateHook('pre',{cwd:dir,tool_name:tool,tool_input:input});
+ assert.equal(call('Agent',{subagent_type:'general-purpose'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.deepEqual(call('Agent',{subagent_type:'arti_scout'}),{});
+ assert.deepEqual(call('Agent',{subagent_type:'arti_scout',run_in_background:false}),{});
+ for(const value of [true,'false',null])assert.equal(call('Agent',{subagent_type:'arti_scout',run_in_background:value}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('Agent',{subagent_type:'arti_scout',description:'scout',prompt:'bounded',resume:'old-session'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('Agent',{subagent_type:'arti_scout',prompt:'bounded',other_context:'x'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('Agent',{subagent_type:'arti_scout',model:'wrong'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('spawn_agent',{agent_type:'default'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('collaborationspawn_agent',{agent_type:'default',task_name:'probe'}).hookSpecificOutput.permissionDecision,'deny');
+ assert.deepEqual(call('collaborationspawn_agent',{agent_type:'arti_implementer',task_name:'probe',fork_turns:'none'}),{});
+ assert.deepEqual(call('spawn_agent',{agent_type:'arti_implementer',fork_turns:'none'}),{});
+ assert.equal(call('spawn_agent',{agent_type:'arti_implementer',fork_turns:'none',reasoning_effort:'low'}).hookSpecificOutput.permissionDecision,'deny');
+ for(const value of [{agent_type:'arti_implementer',fork_turns:'all'},{agent_type:'arti_implementer',model:team.bindings.codex.implementer.model}])assert.equal(call('collaborationspawn_agent',value).hookSpecificOutput.permissionDecision,'deny');
+ const blocks=JSON.parse(fs.readFileSync(path.join(dir,'.claude/settings.json'),'utf8')).hooks.PreToolUse;
+ for(const spelling of ['Agent','spawn_agent','collaboration.spawn_agent','collaborationspawn_agent'])assert.ok(blocks.some(b=>new RegExp('^(?:'+b.matcher+')$').test(spelling)),`Missing matcher ${spelling}`);
+ const b=team.bindings.codex.scout,body=fs.readFileSync(path.join(dir,'.agents/roles/scout.md'),'utf8');
+ const desktop={task_name:'arti_scout_1234abcd',fork_turns:'none',model:b.model,reasoning_effort:b.effort,message:body};
+ assert.deepEqual(call('collaboration.spawn_agent',desktop),{});
+ assert.equal(call('collaborationspawn_agent',desktop).hookSpecificOutput.permissionDecision,'deny');
+ assert.equal(call('spawn_agent',desktop).hookSpecificOutput.permissionDecision,'deny');
+ for(const patch of [{fork_turns:'all'},{model:'wrong'},{reasoning_effort:'low'},{message:'just pretend to be scout'}])assert.equal(call('collaboration.spawn_agent',{...desktop,...patch}).hookSpecificOutput.permissionDecision,'deny');
+ fs.appendFileSync(path.join(dir,'.codex/agents/arti_scout.toml'),'# drift');
+ assert.equal(call('spawn_agent',{agent_type:'arti_scout'}).hookSpecificOutput.permissionDecision,'deny');
+});
 test('host-compatible guard allows assigned writes and denies missing claim, bad paths and shell patches',t=>{
  const dir=repo(t);seedTicket(dir);const input={cwd:dir,session_id:'one',tool_name:'Write',tool_input:{file_path:'src/allowed.js'}};
  assert.equal(evaluateHook('pre',input).hookSpecificOutput.permissionDecision,'deny');
