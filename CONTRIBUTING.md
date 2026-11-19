@@ -36,3 +36,5 @@ Changing the installable package invalidates the matching release digest. Requal
 ## Before a release
 
 Follow the [publication guide](docs/RELEASE.md). Build the allowlisted export, check the actual tree/history and archive, and retain the hashes. Hosted CI and support claims must reflect work that actually ran. Publishing or creating a remote requires an explicit maintainer request.
+
+For project-specific adoption and portable bug reports, follow [owner-led adoption and feedback](docs/ADOPTION.md). The shared-skill implementation does not automatically change downstream installations.

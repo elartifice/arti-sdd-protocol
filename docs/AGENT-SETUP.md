@@ -1,8 +1,8 @@
 # Claude Code and Codex agent setup
 
-This is the **tested release profile**, dated 2026-11-04, for the exact clients and package in [QUALIFICATION.md](QUALIFICATION.md). Projects choose and qualify their own bindings. The host's primary chat model remains the user's choice; configuring a named coordinator profile does not reset it.
+This is the **tested release profile**, dated 2026-11-17, for the exact clients and package in [QUALIFICATION.md](QUALIFICATION.md). Projects choose and qualify their own bindings. The host's primary chat model remains the user's choice; configuring a named coordinator profile does not reset it.
 
-Projects can choose single-agent work. This custom profile enables five roles; ordinary work need not invoke all of them, and escalation is reserved for repeated failure.
+Projects can choose single-agent work. This custom profile enables six roles; ordinary work need not invoke all of them, and escalation is reserved for repeated failure.
 
 ## Why split work into custom agents?
 
@@ -10,7 +10,7 @@ A coordinator keeps the ticket, decisions and next step. It gives a worker the r
 
 ![Reporting hierarchy: selected subagents sit below one coordinator, with tasks down and short reports up. Each has a role icon; the reviewer shows Claude and ChatGPT/OpenAI identification marks.](assets/agent-architecture.svg)
 
-All four subagents report directly to the coordinator. Cyan arrows carry tasks and relevant context down; purple arrows carry results, checks and risks back up. The worker cards are choices, not a required sequence, and escalation is conditional. They do not spawn one another automatically. Same-lab and cross-lab review follow the policy chosen by the project. The named coordinator binding does not override the primary chat model. The ChatGPT/OpenAI mark identifies the provider; its external reviews run through Codex CLI. See [mark sources and attribution](assets/BRAND-MARKS.md).
+The four worker types shown report directly to the coordinator. The optional researcher, also reporting to the coordinator, is omitted from this overview graphic. Cyan arrows carry tasks and relevant context down; purple arrows carry results, checks and risks back up. The worker cards are choices, not a required sequence, and escalation is conditional. They do not spawn one another automatically. Same-lab and cross-lab review follow the policy chosen by the project. The named coordinator binding does not override the primary chat model. The ChatGPT/OpenAI mark identifies the provider; its external reviews run through Codex CLI. See [mark sources and attribution](assets/BRAND-MARKS.md).
 
 Separate contexts are an efficiency mechanism, not a token guarantee: spawning adds requests, forks can inherit history, and long handbacks add context. The [expanded local study](COSTS.md) prices 11,134 requests across 17 historical captures. The observed model mix is 57.6% below an all-Opus/Astra alternative; worker inputs average 42.1% smaller. Most cost reduction comes from whole-thread model choice. The narrower worker-versus-coordinator price comparison saves 1.8%, because most historical workers inherited the coordinator's model. These older workflows do not benchmark the released role profile; the study states coverage and external-review gaps.
 
@@ -23,8 +23,9 @@ Separate contexts are an efficiency mechanism, not a token guarantee: spawning a
 | Implementer | `claude-sonnet-5-5` | `high` | `gpt-6.1-terra` | `high` |
 | Reviewer | `claude-opus-5-5` | `high` | `gpt-6.1-sol` | `high` |
 | Escalation | `claude-opus-5-5` | `high` | `gpt-6-astra` | `high` |
+| Researcher (optional) | `claude-sonnet-5-5` | `high` | `gpt-6.1-terra` | `high` |
 
-The [example team file](examples/team-2026-11-03.json) records separate bindings for each host, with `max_concurrent: 2`. The tested Claude requests use `opus`, `haiku` and `sonnet` aliases, while `effective_model` pins the observed IDs above. A changed alias resolution must be requalified. Codex uses explicit model IDs. Neither vendor's tier names nor effort labels establish equivalence.
+The [example team file](examples/team-2026-11-17.json) records separate bindings for each host, with `max_concurrent: 2`. The tested Claude requests use `opus`, `haiku` and `sonnet` aliases, while `effective_model` pins the observed IDs above. A changed alias resolution must be requalified. Codex uses explicit model IDs. Neither vendor's tier names nor effort labels establish equivalence.
 
 Claude child messages or a correlated native completion record, together with first-party model usage, established the actual model/provider. Its client did not expose effective effort: the report records the requested setting and `effort_verified: false`. Codex native activity and child-thread metadata supplied the role identity, model/provider and resolved effort. An “OK” response alone was insufficient.
 
@@ -37,6 +38,8 @@ Claude child messages or a correlated native completion record, together with fi
 | Implementer | Fix quantity multiplication and the positive-number filter within the assigned source file; retain the assertions and pass the actual command. |
 | Reviewer | Identify both the ownership-check defect and the quantity-calculation defect; cite the files; retrieve shared knowledge; make no product edits. Repeated external trials also require clean controls. |
 | Escalation | Fix null handling and numeric-zero handling from a repeated-failure dossier; avoid rejected approaches, preserve assertions and stay within the assigned source file. |
+
+The researcher fixture also requires a sourced report using supplied context, source availability and uncertainty, without product mutations. Claude exposes only web tools for that role; Codex inherits the parent’s permissions, so web-only role prose is not an isolation boundary. The coordinator runs the pinned 90-day collector outside the web-only researcher; see [the optional research adapter](../extras/research/README.md).
 
 For the native inheritance control, each parent uses a different model and requested effort from the tested child. Codex native metadata must resolve to the child setting; Claude still has no effective-effort telemetry.
 
@@ -56,7 +59,7 @@ Use a canonical real path for Codex project trust; an aliased path can leave pro
 
 Codex seals dispatched message text in its stored tool call. The Codex evidence file contains only `{ "threadId": "<native-child-id>" }`; the checker fetches native state itself and refuses supplied thread/rollout JSON. Claude checks a trusted local stream log, without a signed-attestation claim. Verification correlates the unique native child path and parent ID with a dispatch marker in the child's final report, then checks model and effort independently using native metadata. The marker is not model evidence. Claude evidence retains the exact Agent prompt. These are trusted local receipts, not signed attestations.
 
-The [separate desktop qualification](desktop-qualification.json) records five actual role tasks with native model/effort evidence, protected checks and assigned-scope verification. Its native profile identity remains unsupported.
+The [historical v0.4.1 desktop qualification](desktop-qualification.json) records five actual role tasks. It does not qualify this v0.5.0 package or the optional researcher on Desktop. Native profile identity remains unsupported; requalify applicable desktop behavior for this package.
 
 Supported native hooks deny generic role requests and conflicting model/effort overrides; the live suite checks actual hook denials on both clients. Desktop hook coverage is not claimed: that route requires explicit arguments and the post-execution check. Codex roles inherit parent permissions on both surfaces; a role label or fresh context does not create a smaller sandbox.
 
@@ -141,7 +144,7 @@ Regression tests reject missing CLI/authentication/model evidence, malformed bin
 
 ## Qualify your project
 
-Use the [example mapping](examples/team-2026-11-03.json) as a dated starting point after confirming model access. Set the charter's team to `custom`, settle review policy explicitly, and supply the mapping with `--team` to both setup plan and apply.
+Use the [example mapping](examples/team-2026-11-17.json) as a dated starting point after confirming model access. Set the charter's team to `custom`, settle review policy explicitly, and supply the mapping with `--team` to both setup plan and apply.
 
 From this public source repository, test the installed project's exact role sources and bindings in disposable fixtures:
 

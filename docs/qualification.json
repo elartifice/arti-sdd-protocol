@@ -2,11 +2,11 @@
   "schema_version": 1,
   "kind": "release",
   "status": "passed",
-  "version": "0.4.1",
-  "package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
-  "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da",
+  "version": "0.5.0",
+  "package_sha256": "e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0",
+  "harness_sha256": "11ea0d9a10ffe8895712e90424fff64f421154e7d6019389542af810dd377cc8",
   "platform": "darwin",
-  "created_at": "2026-11-04T02:04:13.044Z",
+  "created_at": "2026-11-17T00:06:15.975Z",
   "native_runs": [
     {
       "host": "claude",
@@ -18,7 +18,7 @@
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
       "agent": "arti_coordinator",
-      "seconds": 19.4,
+      "seconds": 14.9,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -30,7 +30,7 @@
         "no-product-mutations"
       ],
       "parent_permissions": "read-only",
-      "native_permissions": "plan with read-only tools"
+      "native_permissions": "default with read-only tools and scope guards"
     },
     {
       "host": "claude",
@@ -42,7 +42,7 @@
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
       "agent": "arti_scout",
-      "seconds": 18,
+      "seconds": 15.1,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -55,7 +55,7 @@
         "no-product-mutations"
       ],
       "parent_permissions": "read-only",
-      "native_permissions": "plan with read-only tools"
+      "native_permissions": "default with read-only tools and scope guards"
     },
     {
       "host": "codex",
@@ -67,7 +67,7 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_coordinator",
-      "seconds": 40.2,
+      "seconds": 49.4,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -91,7 +91,7 @@
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
       "agent": "arti_implementer",
-      "seconds": 25.7,
+      "seconds": 19.7,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -100,11 +100,35 @@
         "resolved-model",
         "role-task-cases",
         "shared-memory",
-        "assigned-source-only-and-protected-tests",
-        "native-child-test-execution"
+        "native-child-test-execution",
+        "assigned-source-only-and-protected-tests"
       ],
       "parent_permissions": "workspace-write",
       "native_permissions": "acceptEdits with exact test command permission and scope hooks"
+    },
+    {
+      "host": "claude",
+      "role": "reviewer",
+      "status": "passed",
+      "source": "native-Agent-tool-child-message-and-modelUsage",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "effort_verified": false,
+      "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
+      "agent": "arti_reviewer",
+      "seconds": 31.5,
+      "checks": [
+        "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
+        "resolved-model",
+        "role-task-cases",
+        "shared-memory",
+        "no-product-mutations"
+      ],
+      "parent_permissions": "read-only",
+      "native_permissions": "default with read-only tools and scope guards"
     },
     {
       "host": "codex",
@@ -116,7 +140,7 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_scout",
-      "seconds": 36.5,
+      "seconds": 41,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -133,15 +157,15 @@
     },
     {
       "host": "claude",
-      "role": "reviewer",
+      "role": "escalation",
       "status": "passed",
       "source": "native-Agent-tool-child-message-and-modelUsage",
       "model": "claude-opus-5-5",
       "effort": "high",
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
-      "agent": "arti_reviewer",
-      "seconds": 31.7,
+      "agent": "arti_escalation",
+      "seconds": 37.9,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -150,10 +174,11 @@
         "resolved-model",
         "role-task-cases",
         "shared-memory",
-        "no-product-mutations"
+        "native-child-test-execution",
+        "assigned-source-only-and-protected-tests"
       ],
-      "parent_permissions": "read-only",
-      "native_permissions": "plan with read-only tools"
+      "parent_permissions": "workspace-write",
+      "native_permissions": "acceptEdits with exact test command permission and scope hooks"
     },
     {
       "host": "codex",
@@ -165,7 +190,7 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_implementer",
-      "seconds": 37.6,
+      "seconds": 43.1,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -174,23 +199,23 @@
         "resolved-model",
         "role-task-cases",
         "shared-memory",
-        "assigned-source-only-and-protected-tests",
-        "native-child-test-execution"
+        "native-child-test-execution",
+        "assigned-source-only-and-protected-tests"
       ],
       "parent_permissions": "workspace-write",
       "native_permissions": "workspace-write"
     },
     {
       "host": "claude",
-      "role": "escalation",
+      "role": "researcher",
       "status": "passed",
       "source": "native-Agent-tool-child-message-and-modelUsage",
-      "model": "claude-opus-5-5",
+      "model": "claude-sonnet-5-5",
       "effort": "high",
       "effort_verified": false,
       "effort_evidence": "requested native-role-setting; effective effort not exposed by client",
-      "agent": "arti_escalation",
-      "seconds": 25.3,
+      "agent": "arti_researcher",
+      "seconds": 39.2,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -198,12 +223,11 @@
         "parent-binding-differs",
         "resolved-model",
         "role-task-cases",
-        "shared-memory",
-        "assigned-source-only-and-protected-tests",
-        "native-child-test-execution"
+        "supplied-dossier",
+        "no-product-mutations"
       ],
-      "parent_permissions": "workspace-write",
-      "native_permissions": "acceptEdits with exact test command permission and scope hooks"
+      "parent_permissions": "read-only",
+      "native_permissions": "default with read-only tools and scope guards"
     },
     {
       "host": "codex",
@@ -215,7 +239,7 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_reviewer",
-      "seconds": 72.6,
+      "seconds": 56.1,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -239,7 +263,7 @@
       "effort_verified": true,
       "effort_evidence": "native-resolved-reasoningEffort",
       "agent": "arti_escalation",
-      "seconds": 45.6,
+      "seconds": 44.4,
       "checks": [
         "native-invocation",
         "dispatch-plan",
@@ -248,11 +272,35 @@
         "resolved-model",
         "role-task-cases",
         "shared-memory",
-        "assigned-source-only-and-protected-tests",
-        "native-child-test-execution"
+        "native-child-test-execution",
+        "assigned-source-only-and-protected-tests"
       ],
       "parent_permissions": "workspace-write",
       "native_permissions": "workspace-write"
+    },
+    {
+      "host": "codex",
+      "role": "researcher",
+      "status": "passed",
+      "source": "native-subAgentActivity-and-thread-agentRole",
+      "model": "gpt-6.1-terra",
+      "effort": "high",
+      "effort_verified": true,
+      "effort_evidence": "native-resolved-reasoningEffort",
+      "agent": "arti_researcher",
+      "seconds": 39.1,
+      "checks": [
+        "native-invocation",
+        "dispatch-plan",
+        "task-correlated",
+        "parent-binding-differs",
+        "resolved-model",
+        "role-task-cases",
+        "supplied-dossier",
+        "no-product-mutations"
+      ],
+      "parent_permissions": "read-only",
+      "native_permissions": "read-only"
     }
   ],
   "review_runs": [
@@ -265,9 +313,9 @@
       "model": "gpt-6.1-sol",
       "effort": "high",
       "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "1a95dc54588780d7ff395adc7c9b069cc2eab02b43067806231bcfa427a6775a",
+      "snapshot_sha256": "91efdc286fc3b1cb26ee8055a4da9f7bdd5aaf90dbb83a93038a013059fa7dbb",
       "findings": 1,
-      "seconds": 7.7
+      "seconds": 11.3
     },
     {
       "author": "codex",
@@ -278,9 +326,9 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "8e5fcce03869aa0bbf542f0ccafe4d5efc2ea94c13d128b6cd54ae2f108ae6c8",
-      "findings": 2,
-      "seconds": 11.8
+      "snapshot_sha256": "9da072f6c4e96137b168975ebe79513c1de1a30d7c862b3629f710bc396a320c",
+      "findings": 3,
+      "seconds": 15.6
     },
     {
       "author": "claude",
@@ -291,9 +339,9 @@
       "model": "gpt-6.1-sol",
       "effort": "high",
       "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "b3a42fb592ba680b43118913f32d8aae1a525a296fc9d984b8e4e56f7540d0e8",
+      "snapshot_sha256": "43e9567f85d46548bcce13e5f7d7f56918af67565792f1e7dcd246d1da31c0db",
       "findings": 1,
-      "seconds": 7
+      "seconds": 10.8
     },
     {
       "author": "claude",
@@ -304,100 +352,87 @@
       "model": "gpt-6.1-sol",
       "effort": "high",
       "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "6eb5653a89f5db169c97416b2ea275f1ffa87d806036ba4934c77ffc64439228",
+      "snapshot_sha256": "9fe1a319750d1f9340d135e7ec839928cdf8b2f3cb0c6e63c09f048d2e5d42f5",
       "findings": 1,
-      "seconds": 7.4
-    },
-    {
-      "author": "codex",
-      "reviewer": "claude",
-      "fixture": "security",
-      "iteration": 2,
-      "status": "passed",
-      "model": "claude-opus-5-5",
-      "effort": "high",
-      "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "092baca8c2638ca1cc37a1d9497cee3610b381592efa1bf0595c159814cc0333",
-      "findings": 2,
-      "seconds": 11.2
-    },
-    {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "quantity",
-      "iteration": 1,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "abe974a52f50d86f29358a9442f9f21b24632d5e347c02b4dd8ce79729605dd5",
-      "findings": 1,
-      "seconds": 7.5
-    },
-    {
-      "author": "codex",
-      "reviewer": "claude",
-      "fixture": "security",
-      "iteration": 3,
-      "status": "passed",
-      "model": "claude-opus-5-5",
-      "effort": "high",
-      "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "0899554e46d022d8cdfe18c968113571c3000f6eeb0315a4998aaacb5e7807ab",
-      "findings": 2,
       "seconds": 11.6
     },
     {
-      "author": "claude",
-      "reviewer": "codex",
-      "fixture": "quantity",
-      "iteration": 2,
-      "status": "passed",
-      "model": "gpt-6.1-sol",
-      "effort": "high",
-      "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "09b39435155d26b7138d0ff98fb8e3b6a524b60ac4db722e3ecf44cbb8dc0c7a",
-      "findings": 1,
-      "seconds": 7.9
-    },
-    {
       "author": "codex",
       "reviewer": "claude",
-      "fixture": "quantity",
-      "iteration": 1,
+      "fixture": "security",
+      "iteration": 2,
       "status": "passed",
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "e825b1df2bdf5b74865317a681281391a9abd8593f9696ae8fa472d738fddf94",
+      "snapshot_sha256": "c6ad43610a5cceb2dc02b81fe8674e6eaba9bf9e54fd7e6ad5d703f2de4b7913",
       "findings": 2,
-      "seconds": 10.7
+      "seconds": 19.1
     },
     {
       "author": "claude",
       "reviewer": "codex",
       "fixture": "quantity",
-      "iteration": 3,
+      "iteration": 1,
       "status": "passed",
       "model": "gpt-6.1-sol",
       "effort": "high",
       "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "5cbf47c0e811bcd6966262ea09656cd4eb4130cb7a1dec2cb16ad5c769e13165",
+      "snapshot_sha256": "738276251c0ff2a1649c7bc43efd52e13cc9e285d0b3226e3033bfef880accac",
       "findings": 1,
       "seconds": 8.9
     },
     {
       "author": "codex",
       "reviewer": "claude",
-      "fixture": "quantity",
-      "iteration": 2,
+      "fixture": "security",
+      "iteration": 3,
       "status": "passed",
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "afe0e787602718fd504819f42c68e6ee6a049e67381401b40f58c9de6596d66a",
+      "snapshot_sha256": "00cf710f6b84ad97f5b7b2149ece691170b5d21ee5f8612ca4d75bb700aa6916",
+      "findings": 3,
+      "seconds": 17.4
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "quantity",
+      "iteration": 2,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "a940e7c081bf07080856107d00f68b1d4ee11a9a3c352336d07629657c336e4d",
+      "findings": 1,
+      "seconds": 12.8
+    },
+    {
+      "author": "codex",
+      "reviewer": "claude",
+      "fixture": "quantity",
+      "iteration": 1,
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cli_version": "2.1.310 (Claude Code)",
+      "snapshot_sha256": "00add41adf502cbb3d14f038cc8db3eea87aaeab0115d0ddb6c8360d664a40e5",
       "findings": 2,
-      "seconds": 7.5
+      "seconds": 12.5
+    },
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "fixture": "quantity",
+      "iteration": 3,
+      "status": "passed",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "cli_version": "codex-cli 0.166.0",
+      "snapshot_sha256": "068415ca7ad2769284ea4efcc286b3290fd08089191c54fe852012c501dfdb7e",
+      "findings": 1,
+      "seconds": 14
     },
     {
       "author": "claude",
@@ -408,9 +443,22 @@
       "model": "gpt-6.1-sol",
       "effort": "high",
       "cli_version": "codex-cli 0.166.0",
-      "snapshot_sha256": "e7c7d65b87628d5b79b97760222723b2fd570da419f42441ccd8f3929ab4473d",
+      "snapshot_sha256": "a8d869fec6150da31c0531f02688cad4198c5c47942026eb9265bd479947d5c6",
       "findings": 0,
-      "seconds": 7.5
+      "seconds": 8
+    },
+    {
+      "author": "codex",
+      "reviewer": "claude",
+      "fixture": "quantity",
+      "iteration": 2,
+      "status": "passed",
+      "model": "claude-opus-5-5",
+      "effort": "high",
+      "cli_version": "2.1.310 (Claude Code)",
+      "snapshot_sha256": "0d1cb0156154aea55f483c09912103052ada699c892c27e00a721d4906ac5da1",
+      "findings": 2,
+      "seconds": 13
     },
     {
       "author": "codex",
@@ -421,9 +469,9 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "5e866e2c58569ea3a5e269560231b31785b7aad10796862bec4f70a99d1c139c",
-      "findings": 2,
-      "seconds": 10.4
+      "snapshot_sha256": "d8af07ea645d5097eab8ca92de94809ae1f7622b3ec05afc47413fdbd8c12870",
+      "findings": 3,
+      "seconds": 15.7
     },
     {
       "author": "codex",
@@ -434,11 +482,12 @@
       "model": "claude-opus-5-5",
       "effort": "high",
       "cli_version": "2.1.310 (Claude Code)",
-      "snapshot_sha256": "f2a269ad06a4483818343c7690d60a7466b22586d90951b46e9110035c692ece",
+      "snapshot_sha256": "f301ecaed331c546d6704189aa42183ef87194283dbf862968a429e00367f833",
       "findings": 0,
-      "seconds": 9
+      "seconds": 11.6
     }
   ],
+  "review_retries": [],
   "hook_runs": [
     {
       "host": "claude",
@@ -459,19 +508,6 @@
   ],
   "handoffs": [
     {
-      "author": "claude",
-      "reader": "codex",
-      "status": "passed",
-      "checks": [
-        "durable-topic-written",
-        "index-linked",
-        "fresh-other-host-read",
-        "approval-preserved",
-        "no-private-transcript"
-      ],
-      "permissions": "native edit permission plus scope guard"
-    },
-    {
       "author": "codex",
       "reader": "claude",
       "status": "passed",
@@ -483,20 +519,22 @@
         "no-private-transcript"
       ],
       "permissions": "explicit write grant to .agents/memory only"
+    },
+    {
+      "author": "claude",
+      "reader": "codex",
+      "status": "passed",
+      "checks": [
+        "durable-topic-written",
+        "index-linked",
+        "fresh-other-host-read",
+        "approval-preserved",
+        "no-private-transcript"
+      ],
+      "permissions": "native edit permission plus scope guard"
     }
   ],
   "chat_runs": [
-    {
-      "host": "codex",
-      "status": "passed",
-      "checks": [
-        "portable-charter",
-        "explicit-false-retained",
-        "review-undecided",
-        "no-repository-writes"
-      ],
-      "model": "gpt-6.1-sol"
-    },
     {
       "host": "claude",
       "status": "passed",
@@ -507,6 +545,17 @@
         "no-repository-writes"
       ],
       "model": "claude-opus-5-5"
+    },
+    {
+      "host": "codex",
+      "status": "passed",
+      "checks": [
+        "portable-charter",
+        "explicit-false-retained",
+        "review-undecided",
+        "no-repository-writes"
+      ],
+      "model": "gpt-6.1-sol"
     }
   ],
   "dispatch_runs": [
@@ -599,99 +648,161 @@
       "effort_override_surface": "actual native effort override denied"
     }
   ],
+  "continuation_runs": [
+    {
+      "host": "claude",
+      "status": "passed",
+      "conditions": [
+        "timer",
+        "prerequisite-merge"
+      ],
+      "checks": [
+        "actual-persisted-session-probe",
+        "timer-registration",
+        "prerequisite-registration",
+        "monitor-process-restart",
+        "no-premature-prerequisite-work",
+        "running-monitor-heartbeat",
+        "same-native-session-resumed",
+        "failing-to-passing-acceptance",
+        "duplicate-monitor-no-replay",
+        "verified-merge-and-closeout"
+      ],
+      "monitor_lifetime": "explicit process; no global service installed"
+    },
+    {
+      "host": "codex",
+      "status": "passed",
+      "conditions": [
+        "timer",
+        "prerequisite-merge"
+      ],
+      "checks": [
+        "actual-persisted-session-probe",
+        "timer-registration",
+        "prerequisite-registration",
+        "monitor-process-restart",
+        "no-premature-prerequisite-work",
+        "running-monitor-heartbeat",
+        "same-native-session-resumed",
+        "failing-to-passing-acceptance",
+        "duplicate-monitor-no-replay",
+        "verified-merge-and-closeout"
+      ],
+      "monitor_lifetime": "explicit process; no global service installed"
+    }
+  ],
+  "naming_runs": [
+    {
+      "host": "claude",
+      "status": "passed",
+      "route": "claude-agent-sdk-metadata-only",
+      "checks": [
+        "claim-native-readback",
+        "completion-refused-before-closeout",
+        "observed-merge-and-closeout",
+        "exact-single-checkmark",
+        "repeat-idempotence",
+        "metadata-only-no-model-turn",
+        "persisted-readback"
+      ]
+    },
+    {
+      "host": "codex",
+      "status": "passed",
+      "route": "codex-app-server-metadata-only",
+      "checks": [
+        "claim-native-readback",
+        "completion-refused-before-closeout",
+        "observed-merge-and-closeout",
+        "exact-single-checkmark",
+        "repeat-idempotence",
+        "metadata-only-no-model-turn",
+        "persisted-readback"
+      ]
+    }
+  ],
+  "lifecycle_runs": [
+    {
+      "host": "claude",
+      "status": "passed",
+      "checks": [
+        "fresh-native-session",
+        "bounded-draft-without-claim",
+        "unapproved-draft-not-claimed",
+        "no-product-edits"
+      ]
+    },
+    {
+      "host": "codex",
+      "status": "passed",
+      "checks": [
+        "fresh-native-session",
+        "bounded-draft-without-claim",
+        "unapproved-draft-not-claimed",
+        "no-product-edits"
+      ]
+    }
+  ],
+  "correction_runs": [
+    {
+      "author": "claude",
+      "reviewer": "codex",
+      "status": "passed",
+      "mode": "baseline-plus-delta",
+      "checks": [
+        "seeded-baseline-defect-found",
+        "exact-delta-and-ancestor",
+        "canonical-complete-baseline",
+        "cross-direction-known-findings",
+        "intermediate-ancestor-findings",
+        "explicit-interaction-coverage",
+        "actual-regression-check"
+      ]
+    },
+    {
+      "author": "codex",
+      "reviewer": "claude",
+      "status": "passed",
+      "mode": "baseline-plus-delta",
+      "checks": [
+        "seeded-baseline-defect-found",
+        "exact-delta-and-ancestor",
+        "canonical-complete-baseline",
+        "cross-direction-known-findings",
+        "intermediate-ancestor-findings",
+        "explicit-interaction-coverage",
+        "actual-regression-check"
+      ]
+    }
+  ],
+  "parallel_runs": [
+    {
+      "status": "passed",
+      "hosts": [
+        "claude",
+        "codex"
+      ],
+      "checks": [
+        "two-real-native-chats",
+        "simultaneous-disjoint-worktrees",
+        "two-active-claims",
+        "exclusive-source-outputs",
+        "overlap-rejected-without-global-serialization"
+      ]
+    }
+  ],
+  "board_runs": [],
   "clients": {
     "claude": "2.1.310 (Claude Code)",
     "codex": "codex-cli 0.166.0"
   },
   "runtime": {
     "node": "v25.8.1",
-    "git": "git version 2.53.0",
+    "git": "git version 2.54.0 (Apple Git-157)",
     "macos": "26.6.2",
     "arch": "arm64"
   },
-  "team_fingerprint": "3e3bdeaa0a1389848c7686da94f453da8ff3acb6214e9e0f78100e49990ad2ca",
-  "finished_at": "2026-11-04T02:13:45.401Z",
-  "component_evidence": {
-    "native_and_review": {
-      "harness_sha256": "1c526100b96092a6b14ae43eaf044c53e447e1c2c2f6a86b11ce13ce6a5734da"
-    },
-    "routing_guards": {
-      "package_sha256": "a22c272549ab127fa66d0e23e1180bdd5bba644c2625cc559dbff823258bc82f",
-      "harness_sha256": "8c4df2718538a4b63eb21e5037731bcffec2a7c70c8394ded3ab5814f18049ee",
-      "finished_at": "2026-11-04T03:50:25.886Z",
-      "method": "Eight native pre-execution hook denial probes.",
-      "hook_delta": "Current hook also accepts explicit run_in_background:false; prior native denial probes ran against the preceding package."
-    },
-    "scout": {
-      "package_sha256": "a22c272549ab127fa66d0e23e1180bdd5bba644c2625cc559dbff823258bc82f",
-      "harness_sha256": "3d1745e2818001fc28846ee73e591f3ce3f30d969ea0e5ee421a718ef53d67f2",
-      "finished_at": "2026-11-04T03:49:02.264Z",
-      "method": "Two current-package native Scout tasks; seeded answers withheld and actual child source reads verified.",
-      "hook_delta": "Current hook also accepts explicit run_in_background:false; no invocation generation changed."
-    },
-    "current_verifier_replay": {
-      "status": "passed",
-      "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
-      "current_verifier_package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
-      "changed_package_files": [
-        ".agents/skills/arti-sdd-protocol/scripts/dispatch.mjs",
-        ".agents/skills/arti-sdd-protocol/scripts/hooks.mjs"
-      ],
-      "native_codex_runs": 5,
-      "desktop_codex_runs": 5,
-      "claude_recorded_stream_runs": 5,
-      "method": "Fresh Codex native thread/read and local rollout replay, plus Claude recorded stream replay, of existing completed executions; no new model calls or full fixture execution on current package.",
-      "claude_implementer_note": "Original native implementer and handoff streams both pass current verifier; explicit run_in_background:false is accepted.",
-      "claude_runs": 5
-    },
-    "scout_previous_replay": {
-      "execution_harness_sha256": "d538588027536e0e60ab17c81167cf45d0ebed0dde037abeedb3ceb45de705aa",
-      "replay_harness_sha256": "4a1942880fa382b70481d2a8667e14397d5ecc90df2c6c22c1d0c9abecfa17e8",
-      "package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
-      "team_fingerprint": "3e3bdeaa0a1389848c7686da94f453da8ff3acb6214e9e0f78100e49990ad2ca",
-      "original_report_sha256": "bb6914b47a56e63fecc893bf0f0937ead01f725ae83556d0d797cd0a0fbd56a7",
-      "method": "Recorded native executions replayed after correcting search-output path parsing; both child source reads checked; no new model calls."
-    },
-    "claude_resume_postdispatch": {
-      "package_sha256": "a22c272549ab127fa66d0e23e1180bdd5bba644c2625cc559dbff823258bc82f",
-      "post_dispatch_rejection": true,
-      "pre_execution_hook_prevention": false,
-      "method": "Actual native Agent call stream rejected by verifier; host omitted resume in PreToolUse input."
-    },
-    "claude_foreground_producer": {
-      "status": "passed",
-      "package_sha256": "ff786c5f2a2f81f4cd27545574a7a82947c293ad6df249e3ab78fc3957ebb051",
-      "model": "claude-haiku-5-5",
-      "effort": "low",
-      "effort_verified": false,
-      "checks": [
-        "actual-generated-foreground-argument",
-        "completed-child",
-        "native-child-source-reads",
-        "no-product-mutations"
-      ],
-      "method": "Actual native run replayed with unique fenced JSON extraction; report also contained explanatory notes."
-    },
-    "native_child_tests": {
-      "status": "passed",
-      "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf",
-      "proof_helper_sha256": "e587ffdfd5722a3f2a702ddda351571d51666583f8902c22f38d6578262f0944",
-      "method": "Replay of recorded native child tool calls and successful results; no new model calls.",
-      "checks": 4
-    },
-    "claude_completion_only": {
-      "package_sha256": "bab85f2cc1943cd19d70888202436c857bc2baca26e03ff7136d3329c0ecc40d",
-      "current_verifier_package_sha256": "839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03",
-      "parent_model": "claude-opus-5-5",
-      "child_streamed_messages": 0,
-      "native_completion_verified": true,
-      "model": "claude-haiku-5-5",
-      "effort": "low",
-      "effort_verified": false,
-      "new_model_calls": 0,
-      "method": "Actual foreground native Claude Scout with no child assistant stream; verified using correlated native completion metadata and first-party usage. Recorded run replayed after correcting an over-strict private report-field assertion; original failure retained. Later verifier adds native completion correlation to historical streamed cases.",
-      "execution_harness_sha256": "34cc974adc1f37ab65a9a77bb6634644f9447bb6ecead981812a2ee531d27445"
-    }
-  },
-  "execution_package_sha256": "0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf"
+  "team_fingerprint": "1417a50289c9f87f2d4f2620ab7efecbde115a9eaf8f79e15d9b1a1dad79cd37",
+  "finished_at": "2026-11-17T00:20:13.184Z"
 }

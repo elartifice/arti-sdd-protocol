@@ -6,7 +6,7 @@
 
 Arti is a lightweight skill for spec-driven development (SDD). Use it in chat to turn an idea into a portable project blueprint, or give it to a coding agent to start or organise a repository. Claude Code and Codex share instructions and project knowledge. An optional custom team routes focused tasks to explicit models, keeping worker investigations out of the main conversation and reserving expensive reasoning for the work that needs it.
 
-The installable core is 23 files, about 146 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
+The installable core is 33 files, about 229 KB, with a short entry point and no runtime package dependencies. Detailed guides and qualification tools stay in this source repository.
 
 ## What is SDD?
 
@@ -35,7 +35,7 @@ These mechanisms are designed to reduce coordination mistakes and false confiden
 
 ## A small team, with a reason for every role
 
-The coordinator owns the plan and decisions. A scout finds facts, an implementer changes scoped files, a reviewer challenges the result, and an escalation role receives a failure dossier after repeated failure. Invoke the roles the task needs; a small change can stay with one agent.
+The coordinator owns the plan and decisions. A scout finds repository facts, an implementer changes scoped files, a reviewer challenges the result, and an escalation role receives a failure dossier after repeated failure. An optional researcher combines a pinned 90-day multi-source collector with native web investigation, reporting unavailable sources honestly. Invoke the roles the task needs; a small change can stay with one agent.
 
 Each worker receives the relevant ticket, file scope, rules, lessons and acceptance checks, then returns a compact result with evidence. The dispatcher resolves the per-host binding before each call and verifies the real child session afterward. Codex desktop receives explicit model and effort arguments with a fresh context; native CLI roles use their generated profile. Detailed investigation stays in its worker context. Cheaper scout/implementation models can reduce cost while stronger review and escalation remain available. Shared role instructions generate Claude and Codex definitions from one source.
 
@@ -74,11 +74,11 @@ Example requests:
 
 ## See the work on a board
 
-Markdown tickets and a shared backlog provide the baseline. An agent can maintain a compact index or build a visual board to make readiness, dependencies, ownership, file territory and missing verification easier to scan, particularly when several agents work in parallel. Arti can guide that project-specific extension while the ticket files, claims and evidence remain authoritative.
+Choose Markdown planning or GitHub-first Issues during setup. The optional GitHub Projects adapter provides a persistent hosted board, including a portfolio across explicitly selected repositories. Bookmark one stable URL: it stays available between ticket sessions and needs no local server. Issues hold the selected ticket contracts; private claims, checks and review receipts still govern execution and verified completion.
 
 ![Example local board: blocked, ready, working, review and done columns, with two active agents in separate territories and an expanded ticket showing its contract and evidence. Illustrative UI with fictional data.](docs/assets/board-example.svg)
 
-The image is an **illustrative optional extension**, not a bundled application. Read the [board guide and acceptance checks](docs/BOARD.md) to build and verify a local view without adding a web stack to the skill.
+The image is an **illustrative UI with fictional data**, not a screenshot of a running application. Read the [board guide and acceptance checks](docs/BOARD.md) for the hosted adapter or an optional local view. GitHub card position cannot grant a claim or certify completion.
 
 ## One shared project contract
 
@@ -114,25 +114,32 @@ node "$arti_skill/scripts/check.mjs" --repo "$arti_target"
 
 Review and trust Codex project hooks with `/hooks` before relying on them. `check.mjs --repo "$arti_target" --native codex` inspects native hook trust; a generated hook file alone does not prove enforcement. Use real edit probes when qualifying an integration.
 
-A custom team also needs an explicit `--team` file for both plan and apply. The [dated example mapping](docs/examples/team-2026-11-03.json) reproduces the release profile; it is not a default or proof of access on your account. Follow the [qualification procedure](docs/AGENT-SETUP.md#qualify-your-project) before relying on it.
+A custom team also needs an explicit `--team` file for both plan and apply. The [dated example mapping](docs/examples/team-2026-11-17.json) reproduces the release profile; it is not a default or proof of access on your account. Follow the [qualification procedure](docs/AGENT-SETUP.md#qualify-your-project) before relying on it.
 
 For a user-level installation, keep one reviewed copy under `~/.agents/skills/arti-sdd-protocol` and link that individual skill from both `~/.claude/skills` and `~/.codex/skills`. Preserve any real directories when creating links. Ordinary project setup does not change global configuration. Updating that shared user copy makes it available to both hosts on their next skill load; hosts handle duplicate skill names differently, and installed runtime snapshots remain project-specific. See [how updates propagate, and the proposed notification approach](docs/UPDATES.md).
 
+## What’s new in v0.5.0
+
+Version 0.5.0 adds GitHub-first ticket contracts, persistent hosted Projects, concise once-per-session orientation, fresh-session drafts, explicit dependency/territory readiness, current-command provenance, acceptance-first and corrective reviews, native title readback, a 90-day researcher and optional automatic continuation. Exact qualification and support limits are recorded in the [validation guide](docs/VALIDATION.md). Owner-led adoption and sanitized upstream feedback are described in [ADOPTION.md](docs/ADOPTION.md). No downstream installation is updated automatically.
+
 ## What has actually been verified?
 
-The version 0.4.1 qualification, dated **2026-11-04**, covers macOS 26.6.2 arm64, Claude Code 2.1.310 and Codex CLI 0.166.0:
+The v0.5.0 native profile, dated **2026-11-17**, covers macOS 26.6.2 arm64, Claude Code 2.1.310 and Codex CLI 0.166.0. The hosted-board component passed on **2026-11-19** against the unchanged core and client versions:
 
-- All five native roles ran on both hosts with actual invocation/model evidence and role-specific task checks.
-- Both review directions passed three security-defect trials, three quantity-calculation-defect trials and a clean control, followed by an actual production author-to-reviewer dispatch.
-- Both clients denied actual generic dispatch and conflicting model/effort requests; Codex also denied full-history forks and missing native selectors. Both passed allowed/denied edit probes, persisted-session resumes, fresh cross-host handoffs and chat-only charters.
-- All five Codex desktop bindings passed separate real task, native model/effort and fresh-context checks. Native profile selection and independent role-source delivery are unavailable on that surface.
-- The deterministic suite passed 90 tests on Node 22.23.4 and 25.8.1, including exported-source checks, real Git races, worktrees, recovery and linked helper execution.
+- All six native roles ran on both hosts with actual invocation/model evidence and role-specific task checks.
+- Both review directions passed three security-defect trials, three quantity-calculation-defect trials and a clean control, followed by actual production author-to-reviewer dispatches and corrective reviews.
+- Both clients passed actual dispatch/edit guard probes, persisted-session resumes, shared handoffs, chat charters, fresh-session drafts and concurrent disjoint ticket work.
+- Timer and prerequisite monitors resumed the original native sessions through verified fixture landing. Native title readback and compaction retained the bound task and approval.
+- Both hosts executed the actual GitHub board helper; the same private hosted Project remained available after fixture landing and worktree removal. Live Issue closeout and CRLF body readback also passed.
+- All 174 deterministic tests passed on Node 22/25 source and the Node 24 exported source, including real Git races, recovery and linked helpers. The exported-source run had no Claude, Codex or GitHub CLI on PATH.
+
+The separate [historical desktop qualification](docs/desktop-qualification.json) covers five v0.4.1 role bindings. It does not qualify the v0.5.0 package, researcher, native profiles, hooks or continuation on Desktop; requalify that surface before relying on it.
 
 The [native report](docs/QUALIFICATION.md) and [machine-readable evidence](docs/qualification.json) bind those results to the installable package digest. The [validation guide](docs/VALIDATION.md) states their boundaries.
 
 Claude's client exposes requested effort without effective-effort telemetry. Codex custom roles inherit parent permissions; their role files do not create separate sandboxes. Scope hooks cover supported file tools and patches; arbitrary shell writes require final scope verification. Required missing or stale review evidence blocks completion.
 
-Other coding agents can read the shared files and run helpers with explicit manual checks. Other native integrations and Linux/Windows host journeys remain unqualified. Graphical boards, recording, deployment, issue mirrors and backup automation are documented extensions outside this core. The [GitHub Actions matrix](https://github.com/elartifice/arti-sdd-protocol/actions/workflows/check.yml) checks deterministic behaviour on macOS/Linux and Node 22/24; native host qualification remains the separate dated evidence above.
+Other coding agents can read the shared files and run helpers with explicit manual checks. Other native integrations and Linux/Windows host journeys remain unqualified. The optional GitHub Projects and continuation adapters live in the source distribution; recording, deployment and backup automation remain unimplemented extensions. The [GitHub Actions matrix](https://github.com/elartifice/arti-sdd-protocol/actions/workflows/check.yml) checks deterministic behaviour on macOS/Linux and Node 22/24; native host qualification remains the separate dated evidence above.
 
 ## Contribute and share
 

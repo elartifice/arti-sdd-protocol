@@ -44,7 +44,9 @@ Patch title: **Arti SDD Protocol v0.4.1 — explicit worker routing**.
 
 The patch adds one small dispatch helper, with fresh-context dossiers and actual native child verification. It fixes generic-worker model inheritance, required native arguments and conflicting overrides. Claude and Codex native roles, both review directions and five desktop bindings have dated evidence. Desktop native profile selection and role-source delivery remain unobservable; Claude effective effort remains unobservable.
 
-The current core has 23 files, about 146 KB, a 581-word entry point and no runtime package dependencies. The v0.4.0 tag and ZIP stay fixed. Publish this patch only after its reviewed export and exact-commit CI pass under maintainer authority; packaging and local installation do not create a release.
+The v0.4.1 core had 23 files, about 146 KB, a 581-word entry point and no runtime package dependencies. The v0.4.0 tag and ZIP stay fixed. Publish this patch only after its reviewed export and exact-commit CI pass under maintainer authority; packaging and local installation do not create a release.
+
+The v0.5.0 core has **33 files, 229335 bytes and a 583-word entry point**. All 12 native role cases, 14 defect/control reviews, both production review directions and corrective cases passed. Both native continuation routes and the hosted board lifecycle passed; see the exact dated [qualification](QUALIFICATION.md) and [adapter results](qualification-adapters.json).
 
 ## Documentation included in the public tree
 
@@ -56,7 +58,7 @@ The current core has 23 files, about 146 KB, a 581-word entry point and no runti
 | [COSTS.md](COSTS.md), [historical data](cost-study.json) and [routing projection](routing-cost-study.json) | Counted tokens, observed prices, corrected-routing assumptions, baselines and coverage limits. |
 | [BOARD.md](BOARD.md) and [board UI example](assets/board-example.svg) | Markdown planning and an illustrative optional graphical extension with acceptance checks. |
 | [UPDATES.md](UPDATES.md) | Shared user installation versus project snapshots; proposed notification-first updates. |
-| [team example](examples/team-2026-11-03.json) | Dated explicit bindings matching the tested release profile; new projects still qualify their own setup. |
+| [team example](examples/team-2026-11-17.json) | Dated explicit bindings matching the tested release profile; new projects still qualify their own setup. |
 | [QUALIFICATION.md](QUALIFICATION.md) and [qualification.json](qualification.json) | Actual dated results and installable package digest. |
 | [VALIDATION.md](VALIDATION.md) | Deterministic coverage, native boundaries and deferred capabilities. |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Contributor workflow and appropriate checks. |
@@ -85,7 +87,7 @@ These are declared scope limits, not pending claims of support:
 - Claude effective effort is not observable in the tested client. Codex native roles inherit parent permissions; hooks are not a complete shell security boundary.
 - The fixture results do not establish general vendor/model equivalence or availability on another account. Requalify changed bindings, aliases, role sources, package or clients.
 - Remote claims protect ticket IDs; cross-clone work on different tickets still needs coordinator-assigned disjoint territory.
-- Optional graphical board, recording, deployment, tracker-mirror and backup implementations are deferred. No functionality is promised from those modules in this release.
+- Recording, deployment and backup modules remain deferred. v0.5.0 adds an optional GitHub Projects adapter and native continuation monitor in the source distribution; those are separate from the dependency-free core archive. Qualify the selected adapter and account access before relying on it.
 
 ## Build and inspect locally
 
@@ -100,7 +102,7 @@ node dev/package.mjs --require-qualified
 The output is:
 
 ```text
-dist/arti-sdd-protocol-0.4.1.zip    Installable skill only
+dist/arti-sdd-protocol-0.5.0.zip    Installable skill only
 dist/public-repository/           Allowlisted source and documentation
 dist/manifest.json                Package/archive hashes and every public source hash
 ```
@@ -110,3 +112,16 @@ The qualification gate compares the installable package digest. Documentation ou
 The build audits the exact archive and source payloads. `ARTI_PRIVATE_TERMS_FILE` can point to a private JSON list of account/project terms for an additional scan. Raw logs, private evidence, real implementation tickets, fixture paths and historical source variants stay outside the public tree. Review a fresh Git-history preview of that tree before any later upload.
 
 The live matrix uses existing authentication and quota. Native Codex test parents persist because the tested client cannot spawn custom agents from an ephemeral parent; those sessions remain for the owner to manage. No build or qualification command creates a remote or uploads a release.
+
+
+## v0.5.0 reliability release
+
+Release title: **Arti SDD Protocol v0.5.0 — reliable tickets, hosted boards and verified continuation**.
+
+Release description:
+
+> Keep the charter-to-ticket workflow small while making execution observable. Choose Markdown or GitHub-first ticket contracts, keep a persistent hosted Projects board, create bounded drafts in fresh sessions, explain real dependencies and concurrent territory, and resume authorized work through optional verified native monitors. Final review follows current acceptance; corrective review binds a complete baseline to the exact delta and checks interactions. Claude and Codex share role sources, project knowledge and explicit bindings; the optional researcher uses a pinned 90-day multi-source collector and reports source gaps honestly.
+
+The Claude metadata naming fallback uses the optional official Agent SDK, qualified at version 0.3.325. It does not provision an API key or call a model. The installable skill remains dependency-free; source-only adapters and the collector are installed only when selected. Existing released archives/tags remain unchanged. Do not silently update global or downstream copies.
+
+Before publication, inspect the combined native report, optional adapter receipts, exported-source tests and privacy audit. Build only the allowlisted tree; no private implementation history, tickets or raw logs. Hosted CI must pass on the exact public release commit before tagging. The maintainer explicitly authorized v0.5.0 publication on 2026-11-19, including CI repairs and landed issue/board updates. Downstream adoption and global installation remain separate owner actions. The adoption guide closes its documentation issue when published; new downstream reports are tracked as individual sanitized issues.

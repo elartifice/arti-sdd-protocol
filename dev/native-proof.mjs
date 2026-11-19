@@ -63,3 +63,21 @@ export function nativeTestRun(host,evidence,expectedCommand) {
  } else throw new Error('Unsupported child test evidence host');
  throw new Error('Successful exact native child test execution not observed');
 }
+
+// Read the exact primary-session command result, never an assistant's recap.
+export function exactNativeCommand(raw,cmd) {
+ const quotes=["'"+cmd.replaceAll("'","'\\''")+"'","'"+cmd.replaceAll("'","'\"'\"'")+"'",'"'+cmd.replace(/[\\"$`]/g,c=>'\\'+c)+'"'];
+ return raw===cmd||['/bin/zsh -lc ','/bin/bash -lc ','/bin/sh -c '].some(prefix=>quotes.some(q=>raw===prefix+q));
+}
+export function nativeCommandOutput(host,events,cmd) {
+ if(!Array.isArray(events)||typeof cmd!=='string'||!cmd.trim())throw new Error('Missing native command evidence');
+ if(host==='claude') {
+  const calls=events.filter(e=>e.type==='assistant'&&!e.parent_tool_use_id).flatMap(e=>e.message?.content||[]).filter(c=>c.type==='tool_use'&&c.name==='Bash'&&c.input?.command===cmd);
+  const results=events.filter(e=>e.type==='user'&&!e.parent_tool_use_id).flatMap(e=>(e.message?.content||[]).filter(c=>c.type==='tool_result'&&c.is_error===false&&calls.some(call=>call.id===c.tool_use_id)).map(c=>({event:e,result:c})));
+  if(calls.length===1&&results.length===1&&results[0].event.tool_use_result?.interrupted===false&&typeof results[0].event.tool_use_result.stdout==='string')return results[0].event.tool_use_result.stdout;
+ } else if(host==='codex') {
+  const items=events.filter(e=>e.type==='item.completed'&&e.item?.type==='command_execution'&&exactNativeCommand(e.item.command,cmd)).map(e=>e.item);
+  if(items.length===1&&items[0].status==='completed'&&items[0].exit_code===0&&typeof items[0].aggregated_output==='string')return items[0].aggregated_output;
+ } else throw new Error('Unsupported native command host');
+ throw new Error('Exact successful native command output not observed');
+}

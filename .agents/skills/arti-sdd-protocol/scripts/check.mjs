@@ -15,7 +15,7 @@ export async function codexRpc(repo,method,params,{config=[]}={}) {
   const request=(name,value)=>new Promise((resolve,reject)=>{const id=next++,timer=setTimeout(()=>{pending.delete(id);reject(new Error(`Codex ${name} timed out`));},15000);pending.set(id,{resolve,reject,timer});child.stdin.write(JSON.stringify({id,method:name,params:value})+'\n');});
   child.on('error',error=>{for(const p of pending.values()){clearTimeout(p.timer);p.reject(error);}pending.clear();});
   child.on('close',()=>{for(const p of pending.values()){clearTimeout(p.timer);p.reject(new Error('Codex app-server closed before verification'));}pending.clear();});
-  try {await request('initialize',{clientInfo:{name:'arti-protocol-check',version},capabilities:{experimentalApi:true}});return await request(method,params);}finally{child.kill('SIGTERM');}
+  try {await request('initialize',{clientInfo:{name:'arti-protocol-check',version},capabilities:{experimentalApi:true}});child.stdin.write(JSON.stringify({method:'initialized',params:{}})+'\n');return await request(method,params);}finally{child.kill('SIGTERM');}
 }
 export async function inspectCodexHooks(repo,options={}) {
   const {root}=repoInfo(repo),result=await codexRpc(root,'hooks/list',{cwds:[root]},options);

@@ -1,8 +1,7 @@
 # Native qualification
 
-Date: 2026-11-04
-Current package SHA256: 839fe99f6083b276a7114e0a544cc50be369d7ad3cef4cf6cd083e9810099c03
-Execution package SHA256: 0f9c26d16f3a4c889afb4ff4982521d106653fc36c5a25a795c232ae747b2caf
+Date: 2026-11-17
+Package SHA256: e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0
 
 Platform: macOS 26.6.2 arm64; 2.1.310 (Claude Code); codex-cli 0.166.0; Node v25.8.1.
 
@@ -14,35 +13,19 @@ This qualifies the named role tasks and stated permission boundaries, not genera
 | claude | scout | claude-haiku-5-5 | low | passed |
 | codex | coordinator | gpt-6.1-sol | high | passed |
 | claude | implementer | claude-sonnet-5-5 | high | passed |
-| codex | scout | gpt-6-luna | high | passed |
 | claude | reviewer | claude-opus-5-5 | high | passed |
-| codex | implementer | gpt-6.1-terra | high | passed |
+| codex | scout | gpt-6-luna | high | passed |
 | claude | escalation | claude-opus-5-5 | high | passed |
+| codex | implementer | gpt-6.1-terra | high | passed |
+| claude | researcher | claude-sonnet-5-5 | high | passed |
 | codex | reviewer | gpt-6.1-sol | high | passed |
 | codex | escalation | gpt-6-astra | high | passed |
+| codex | researcher | gpt-6.1-terra | high | passed |
 
 Cross-lab trials: 14; two distinct seeded defects reviewed three times in each direction, plus a clean control per direction. Production author dispatches: 2, using the qualified opposite lab and canonical production receipts. Native edit and generic-dispatch guards: both hosts actually attempt the forbidden tool call and receive the audited denial. Resumes: 2; shared handoffs: 2; chat charters: 2.
 
 Read-only native Codex roles were tested under a read-only parent; custom roles inherit parent permissions. Claude uses native tool permissions and scope hooks, without an OS-sandbox claim. Hook guards do not parse arbitrary shell writes; verified candidate scope remains required.
 
-Additional native routing probes cover Claude model and effort overrides, and Codex model/effort overrides, omitted native selectors and full-history forks. All received actual hook denials. Guard evidence is a supplemental batch against the immediately preceding package; component harness hashes are recorded in qualification.json. Claude effective effort remains unobservable.
+Workflow reliability: both native timer/reset and prerequisite-merge continuations resumed their original sessions and reached actual fixture landing; monitor restart, duplicate suppression and persisted naming passed. Both corrective-review cases included a finding from each lab and an intermediate revision before the final exact-delta review. Fresh-session draft creation passed on both hosts, and concurrent Claude/Codex worktrees completed disjoint tickets while overlapping territory was refused.
 
-Five Codex desktop role tasks also passed: see [desktop-qualification.json](desktop-qualification.json). Native state proves their model, resolved effort and fresh context. The desktop tool cannot select native profiles, and sealed role-source delivery is not independently observable.
-
-Scout qualification uses two native executions on the immediately preceding package with withheld fixture answers. Both children read or content-searched the seeded files. An earlier component encountered a search-output parser error; its original report and correction remain in private evidence.
-
-The original native qualification executed on the execution package above. The current package changes the dispatcher verifier and dispatch hook. Two Scout tasks and eight ordinary routing guard probes ran on the immediately preceding package; the final package also verifies confirmed hook-denied attempts and explicitly generates a foreground Claude call. The other eight role tasks and cross-lab trials retain their original execution provenance. The current verifier was replayed against fresh native thread reads and saved rollouts for five Codex CLI roles and five desktop roles, and replayed recorded Claude streams for five roles; the full qualification was not rerun on the current package. The delegated message is sealed, so task correlation checks the native child path and completed report nonce; it does not verify delivery of the task payload.
-
-In a separate Claude experiment, the native Agent call stream included an unplanned `resume` argument, while the host omitted it from the PreToolUse hook input. The hook therefore did not prevent that call. The verifier rejected the recorded call after dispatch; pre-execution prevention for this argument is not established. The failed hook probe remains in private evidence.
-
-The original Claude implementer and handoff executions explicitly requested `run_in_background: false`; both pass the current verifier. This foreground setting cannot resume prior context.
-
-A Claude Scout execution on the immediately preceding package confirmed the generated `run_in_background: false` argument, the expected child model, completion and source reads. Its answer was verified from the recorded run after the initial private harness rejected trailing explanatory notes. For the five historical Claude replays, the current plans were reconstructed with the same dispatch IDs and tasks; their original plans omitted this now-generated flag.
-
-The verifier now scopes Claude calls to the dispatch ID, allowing multiple unrelated worker calls in one coordinator log. Saved recordings of the original implementer and escalation tasks on both hosts were also checked for a successful exact test command executed by the child; a parent-run test or child claim alone is insufficient.
-
-Native Codex verifier replay also reads the observed parent: child and parent checkouts must agree and belong to the planned Git repository, with matching current team and adapter sources. This supports a coordinator in the main checkout targeting a linked worktree. The receipt does not attest an intended parent ID or the encrypted loaded role body; it describes inference from native identity and checked local sources. Desktop native profile identity remains unsupported.
-
-The final verifier also accepts a correlated native Claude completion record when the client omits all child assistant messages. It checks the exact Agent result, completed status, native identity, original prompt, resolved model, report nonce and first-party model usage. Conflicting streamed or completion models fail. Historical async launch records additionally need a native completed notification matching both the tool call and child ID; a launch record alone is insufficient. Streamed records without completion metadata also require a native completed notification for the exact call.
-
-A supplemental foreground Scout ran with the release profile on execution package bab85f2cc1943cd19d70888202436c857bc2baca26e03ff7136d3329c0ecc40d: Opus parent, actual Haiku child, no streamed child messages, successful native completion metadata. The saved run passes the current verifier. Its private report-field parser was corrected after requiring a literal value where the task allowed an explanatory sentence; no model call was repeated for that correction. Five historical Claude role recordings and ten Codex native/desktop threads also pass current replay. These are component checks, not a new full matrix execution on the current package.
+This native profile passed in a fresh complete run without transport retries. An earlier complete attempt stopped on a Claude request timeout; its failed report remains private and was not accepted. On 2026-11-19, the separate hosted Projects component passed real API readback and native Claude/Codex helper execution, actual fixture landing, claim release and worktree removal, with the same hosted Project still accessible afterward. Its bounded readback retry and exact native tool-output proof have regression coverage. The core digest and client versions are unchanged; this component probe does not claim that every role was rerun on November 19. See [adapter qualification](qualification-adapters.json).

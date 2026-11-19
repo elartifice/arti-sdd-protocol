@@ -3,12 +3,21 @@ import path from 'node:path';
 import { invariant,skillRoot,readJson,readText,digest,repoInfo,args,isMain,cli,packageDigest,command,writeJson } from './lib.mjs';
 
 export const roles=readJson(path.join(skillRoot,'assets/roles.json'));
+export function validateRoleTools(role){
+  invariant(roles[role],`Unknown role ${role}`);
+  const tools=roles[role].tools,known=['Read','Glob','Grep','Agent','Edit','Write','Bash','WebSearch','WebFetch'];
+  invariant(Array.isArray(tools)&&tools.every(t=>known.includes(t)),`Unknown tools in ${role}`);
+  if(tools.some(t=>['WebSearch','WebFetch'].includes(t)))invariant(roles[role].permission==='web-only'&&tools.every(t=>['WebSearch','WebFetch'].includes(t)),`Mixed web/local tools in ${role}`);
+}
 export function validateTeam(team,hosts) {
   invariant(team&&team.schema_version===2,'Team needs named-role schema_version 2; migrate tier IDs explicitly');
   for(const k of Object.keys(team))invariant(['schema_version','enabled_roles','bindings','max_concurrent'].includes(k),`Unknown team key ${k}`);
   invariant(Array.isArray(team.enabled_roles)&&team.enabled_roles.length>0&&new Set(team.enabled_roles).size===team.enabled_roles.length,'enabled_roles must be a unique nonempty list');
   invariant(Number.isInteger(team.max_concurrent)&&team.max_concurrent>=1&&team.max_concurrent<=4,'max_concurrent must be 1..4');
-  for(const role of team.enabled_roles)invariant(Object.hasOwn(roles,role),`Unknown role ${role}; do not reuse old tier IDs`);
+  for(const role of team.enabled_roles){
+    invariant(Object.hasOwn(roles,role),`Unknown role ${role}; do not reuse old tier IDs`);
+    validateRoleTools(role);
+  }
   invariant(team.bindings&&typeof team.bindings==='object','Missing per-host bindings');
   for(const host of hosts.filter(h=>h!=='other')) {
     invariant(team.bindings[host],'Missing host bindings');
@@ -29,18 +38,21 @@ export function binding(team,host,role) {
 }
 export function roleText(role,base=roles[role]?.instructions) {
   invariant(roles[role],`Unknown role ${role}`);
+  if(role==='researcher')return `Role: researcher\n\nUse only the coordinator-supplied sanitized project/ticket/knowledge dossier and collector digest. Do not read local files. Preserve the supplied approval and scope.\n\n${base}\n`;
   return `Role: ${role}\n\nRead AGENTS.md, .agents/memory/INDEX.md and the active ticket/spec before work. Shared knowledge is the durable project source; host-private memory is not a substitute. Preserve user scope and authorisation. Never read secret files or print credentials.\n\n${base}\n\nUse only real tools available in this host. Never bypass an enforced denial. For read-only work in Codex, the parent must be read-only or use the separately restricted CLI runner; role instructions alone do not create a sandbox.\n\nUnless a structured JSON response was requested, start your report with STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED; MODIFIED_FILES: paths or none; VERIFY_RECEIPT: actual command/result or NOT_RUN.\n`;
 }
 export function nativeRole(host,role,b,text) {
+  validateRoleTools(role);
   const def=roles[role],name=`arti_${role}`;
-  if(host==='claude')return `---\nname: ${name}\ndescription: ${JSON.stringify(def.description)}\nmodel: ${b.model}\neffort: ${b.effort}\ntools: ${def.tools.join(', ')}\ndisallowedTools: ${role==='coordinator'?'Edit, Write':'Agent'}\nmaxTurns: ${def.max_turns}\n---\n\n${text}`;
+  if(host==='claude')return `---\nname: ${name}\ndescription: ${JSON.stringify(def.description)}\nmodel: ${b.model}\neffort: ${b.effort}\ntools: ${def.tools.join(', ')}\ndisallowedTools: ${role==='researcher'?'Agent, Read, Glob, Grep, Bash, Edit, Write':role==='coordinator'?'Edit, Write':'Agent'}\nmaxTurns: ${def.max_turns}\n---\n\n${text}`;
   return `name = ${JSON.stringify(name)}\ndescription = ${JSON.stringify(def.description)}\nmodel = ${JSON.stringify(b.model)}\nmodel_reasoning_effort = ${JSON.stringify(b.effort)}\ndeveloper_instructions = ${JSON.stringify(text)}\n\n[features]\napps = false\nplugins = false\nmemories = false\nrequest_permissions_tool = false\n`;
 }
+function regularTeamText(repo,relative){const file=path.resolve(repo,relative);invariant(fs.realpathSync(file)===file&&fs.lstatSync(file).isFile(),'Canonical role/adapter paths must be regular files, without links: '+relative);invariant(fs.statSync(file).size<=512*1024,'Role/adapter source exceeds the bounded context limit');return readText(file);}
 export function teamOperations(repo,team,hosts) {
   validateTeam(team,hosts);const operations=[];
   operations.push({path:'.agents/team.json',content:JSON.stringify(team,null,2)+'\n',kind:'config'});
   for(const role of team.enabled_roles) {
-    const rel=`.agents/roles/${role}.md`,file=path.join(repo,rel),text=fs.existsSync(file)?readText(file):roleText(role);
+    const rel=`.agents/roles/${role}.md`,file=path.join(repo,rel),text=fs.existsSync(file)?regularTeamText(repo,rel):roleText(role);
     operations.push({path:rel,content:text,kind:'seed'});
     for(const host of hosts.filter(h=>h!=='other'))operations.push({path:host==='claude'?`.claude/agents/arti_${role}.md`:`.codex/agents/arti_${role}.toml`,content:nativeRole(host,role,binding(team,host,role),text),kind:'managed'});
   }
@@ -54,7 +66,7 @@ const installedVersion=host=>{const r=command(host,['--version']);invariant(r.co
 export function inspectTeam(repo,{requireLive=false,versionOf=installedVersion}={}) {
   const info=repoInfo(repo),config=readJson(path.join(info.root,'arti_sdd/config.json')),team=readJson(path.join(info.root,'.agents/team.json'));
   validateTeam(team,config.hosts);
-  for(const o of teamOperations(info.root,team,config.hosts))invariant(fs.existsSync(path.join(info.root,o.path))&&readText(path.join(info.root,o.path))===o.content,`Team adapter drift: ${o.path}`);
+  for(const o of teamOperations(info.root,team,config.hosts))invariant(fs.existsSync(path.join(info.root,o.path))&&regularTeamText(info.root,o.path)===o.content,`Team adapter drift: ${o.path}`);
   const fingerprint=teamFingerprint(info.root,team,config.hosts),receipt=path.join(info.state,'qualification/team.json');
   let qualified=false;
   if(fs.existsSync(receipt)) {
@@ -81,7 +93,7 @@ export function recordQualification(repo,report,{versionOf=installedVersion}={})
       const b=binding(team,host,role),r=report.native_runs.find(x=>x.host===host&&x.role===role);
       invariant(r?.status==='passed'&&r.model===b.effective_model&&r.effort===b.effort,`No matching native qualification for ${host}/${role}`);
       invariant(r.effort_verified===(host==='codex')&&typeof r.effort_evidence==='string','Effort evidence is missing or overstated');
-      invariant(['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases','shared-memory'].every(c=>r.checks?.includes(c)),`Incomplete role evidence: ${host}/${role}`);
+      invariant(['native-invocation','dispatch-plan','task-correlated','parent-binding-differs','resolved-model','role-task-cases',role==='researcher'?'supplied-dossier':'shared-memory'].every(c=>r.checks?.includes(c)),`Incomplete role evidence: ${host}/${role}`);
       const write=['implementer','escalation'].includes(role);
       invariant(r.parent_permissions===(write?'workspace-write':'read-only')&&r.checks.includes(write?'assigned-source-only-and-protected-tests':'no-product-mutations'),`Unproven permission boundary: ${host}/${role}`);
     }

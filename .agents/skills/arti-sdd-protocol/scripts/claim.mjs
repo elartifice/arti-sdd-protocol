@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { invariant,repoInfo,readJson,writeJson,git,command,sessionId,ticketId,args,isMain,cli,digest,integrationBranch } from './lib.mjs';
-import { loadTicket,loadTicketAt,peerOverlap,ticketStatus,ticketContract } from './scope.mjs';
+import { loadTicket,loadTicketAt,assertApproval,peerOverlap,ticketStatus,ticketContract } from './scope.mjs';
 
 function store(repo,kind,id) {const info=repoInfo(repo),dir=path.join(info.state,kind);if(!fs.existsSync(dir))fs.mkdirSync(dir,{recursive:true,mode:0o700});return {...info,file:path.join(dir,`${id}.json`)};}
 function exclusive(file,value){const fd=fs.openSync(file,'wx',0o600);try{fs.writeFileSync(fd,JSON.stringify(value,null,2)+'\n');fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
@@ -15,7 +15,7 @@ function mutex(info,fn) {
    fs.mkdirSync(recovery);
    try{if(fs.existsSync(lock)){const owner=fs.existsSync(ownerFile)?readJson(ownerFile):null;if(owner&&!alive(owner.pid)){fs.unlinkSync(ownerFile);fs.rmdirSync(lock);}}}finally{fs.rmdirSync(recovery);}
   }catch(e){if(!['EEXIST','ENOENT','ENOTEMPTY'].includes(e.code))throw e;}
-  invariant(Date.now()<deadline,'Coordination is busy; ownership retained, retry after the active operation');Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,25);
+  invariant(Date.now()<deadline,'Coordination busy or interrupted; ownership retained. Inspect active owners and ownerless/recovery locks before retrying; never reset by age');Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,25);
  }
  try{writeJson(ownerFile,{pid:process.pid,nonce:crypto.randomUUID()},0o600);return fn();}finally{if(fs.existsSync(ownerFile))fs.unlinkSync(ownerFile);fs.rmdirSync(lock);}
 }
@@ -39,8 +39,9 @@ export function acquireClaim(repo,id,session,{remote=null,worktree=null,onPhase=
     invariant(!fs.existsSync(sf),'This session already owns a ticket');
     const ticket=loadTicket(info.root,id);
     const integration=integrationBranch(info.root),approved_base=git(info.root,'rev-parse',`refs/heads/${integration}`),approved=loadTicketAt(info.root,id,approved_base);
+    assertApproval(ticket);assertApproval(approved);
     invariant(digest(ticketContract(ticket))===digest(ticketContract(approved)),'Working ticket differs from approved integration planning; reconcile with the owner before claiming');
-    invariant(!['done','archived'].includes(ticketStatus(info.root,approved)),'Reopen a completed ticket explicitly before claiming');
+    invariant(!['done','archived','blocked','closed-unverified'].includes(ticketStatus(info.root,approved)),'Reopen a completed ticket or resolve a blocked ticket explicitly before claiming');
     for(const dep of ticket.depends_on)invariant(ticketStatus(info.root,loadTicketAt(info.root,dep,approved_base))==='done',`Dependency ${dep} is not done`);
     invariant(peerOverlap(info.root,ticket).length===0,'Territory overlaps another active claim');
     const configFile=path.join(info.root,'arti_sdd/config.json');
@@ -75,8 +76,9 @@ export function reserveCloseout(repo,id,session,receipt) {
  const info=store(repo,'closeout',ticketId(id));
  return mutex(info,()=>{
   const claimFile=path.join(info.state,'claims',`${id}.json`),lockFile=path.join(info.state,'locks/landing.json');
-  if(fs.existsSync(claimFile))invariant(readJson(claimFile).session===session,'Claim belongs to another session');
-  const lock=fs.existsSync(lockFile)?readJson(lockFile):null;if(lock)invariant(lock.ticket===id&&lock.session===session,'Landing lock belongs to another ticket/session');
+  const claim=fs.existsSync(claimFile)?readJson(claimFile):null,lock=fs.existsSync(lockFile)?readJson(lockFile):null,owner=claim||lock?sessionId(session):session;
+  if(claim)invariant(claim.session===owner,'Claim belongs to another session');
+  if(lock)invariant(lock.ticket===id&&lock.session===owner,'Landing lock belongs to another ticket/session');
   writeJson(info.file,{...receipt,status:'closing',claim:'pending-cleanup',lock:lock?'pending-cleanup':'already-released'},0o600);return {owned_lock:!!lock};
  });
 }

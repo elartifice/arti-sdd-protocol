@@ -18,21 +18,28 @@ export function zip(entries){const parts=[],central=[];let offset=0;
  }
  const directory=Buffer.concat(central),end=Buffer.alloc(22);end.writeUInt32LE(0x06054b50,0);end.writeUInt16LE(entries.length,8);end.writeUInt16LE(entries.length,10);end.writeUInt32LE(directory.length,12);end.writeUInt32LE(offset,16);return Buffer.concat([...parts,directory,end]);
 }
+export function qualificationGate(report,adapters,expectedPackage,expectedAdapters){
+ invariant(report?.kind==='release'&&report.status==='passed'&&report.native_runs?.length===12&&report.dispatch_runs?.length===2&&report.continuation_runs?.length===2&&report.naming_runs?.length===2&&report.correction_runs?.length===2&&report.package_sha256===expectedPackage,'No fresh passing release qualification for this package');
+ invariant(adapters?.status==='passed'&&adapters.package_sha256===expectedPackage&&adapters.source_sha256===expectedAdapters&&adapters.github_tracker?.status==='passed'&&adapters.github_board?.status==='passed'&&adapters.compaction_runs?.length===2&&adapters.compaction_runs.every(r=>r.status==='passed')&&['claude','codex'].every(host=>adapters.compaction_runs.some(r=>r.host===host)),'Selected adapters are not fully qualified: live GitHub tracker/Projects and native compaction evidence required');
+ return true;
+}
 export function build({requireQualified=false}={}) {
  const privateTerms=process.env.ARTI_PRIVATE_TERMS_FILE?JSON.parse(fs.readFileSync(process.env.ARTI_PRIVATE_TERMS_FILE)):[];
  const skillEntries=walk(skillRoot).map(p=>({name:`arti-sdd-protocol/${relative(p,skillRoot)}`,data:fs.readFileSync(p)}));auditFiles(skillEntries,privateTerms);
  const allow=['README.md','CONTRIBUTING.md','LICENSE','CHANGELOG.md','AGENTS.md','package.json'];
  let source=allow.map(name=>({name,data:name==='AGENTS.md'?Buffer.from(publicAgentRules(fs.readFileSync(path.join(root,name),'utf8'))):fs.readFileSync(path.join(root,name))}));
- for(const directory of ['.agents/skills/arti-sdd-protocol','dev','tests','docs','.github'])if(fs.existsSync(path.join(root,directory)))source.push(...walk(path.join(root,directory)).filter(p=>!p.endsWith('/dev/ticket.mjs')).map(p=>({name:relative(p),data:fs.readFileSync(p)})));
+ for(const directory of ['.agents/skills/arti-sdd-protocol','dev','tests','docs','extras','.github'])if(fs.existsSync(path.join(root,directory)))source.push(...walk(path.join(root,directory)).filter(p=>!p.endsWith('/dev/ticket.mjs')).map(p=>({name:relative(p),data:fs.readFileSync(p)})));
  source.push({name:'CLAUDE.md',data:Buffer.from('@AGENTS.md\n')},{name:'.gitignore',data:Buffer.from('/.local-evidence/\n/arti_sdd/.state/\n/dist/\n/node_modules/\n/.env\n/.env.*\n**/.DS_Store\n')});
  auditFiles(source,privateTerms);
  const qualification=path.join(root,'docs/qualification.json'),report=fs.existsSync(qualification)?JSON.parse(fs.readFileSync(qualification)):null;
- if(requireQualified)invariant(report?.kind==='release'&&report.status==='passed'&&report.native_runs?.length===10&&report.dispatch_runs?.length===2&&report.package_sha256===packageDigest(),'No fresh passing release qualification for this package');
+ const adapterFile=path.join(root,'docs/qualification-adapters.json'),adapters=fs.existsSync(adapterFile)?JSON.parse(fs.readFileSync(adapterFile)):null,adapterHash=digest(walk(path.join(root,'extras')).map(file=>[relative(file),digest(fs.readFileSync(file))]));
+ if(requireQualified)qualificationGate(report,adapters,packageDigest(),adapterHash);
  fs.mkdirSync(dist,{recursive:true});
  const artifact=zip(skillEntries),archive=path.join(dist,`arti-sdd-protocol-${version}.zip`);fs.writeFileSync(archive,artifact);
  const publicRoot=path.join(dist,'public-repository');if(fs.existsSync(publicRoot))fs.rmSync(publicRoot,{recursive:true});fs.mkdirSync(publicRoot);
  for(const e of source){const p=path.join(publicRoot,e.name);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,e.data);}
- const manifest={version,package_sha256:packageDigest(),qualification:report?.package_sha256===packageDigest()?report.status:'not-qualified',skill_files:skillEntries.length,skill_bytes:skillEntries.reduce((n,e)=>n+e.data.length,0),archive_sha256:digest(artifact),public_files:source.map(e=>({path:e.name,sha256:digest(e.data)})).sort((a,b)=>a.path.localeCompare(b.path))};
+ let qualified=false;try{qualified=qualificationGate(report,adapters,packageDigest(),adapterHash);}catch{}
+ const manifest={version,package_sha256:packageDigest(),qualification:qualified?'passed':'not-qualified',native_qualification:report?.package_sha256===packageDigest()?report.status:'not-qualified',skill_files:skillEntries.length,skill_bytes:skillEntries.reduce((n,e)=>n+e.data.length,0),archive_sha256:digest(artifact),public_files:source.map(e=>({path:e.name,sha256:digest(e.data)})).sort((a,b)=>a.path.localeCompare(b.path))};
  fs.writeFileSync(path.join(dist,'manifest.json'),JSON.stringify(manifest,null,2)+'\n');return {...manifest,archive:relative(archive),public_repository:relative(publicRoot)};
 }
 if(isMain(import.meta.url))console.log(JSON.stringify(build({requireQualified:process.argv.includes('--require-qualified')}),null,2));

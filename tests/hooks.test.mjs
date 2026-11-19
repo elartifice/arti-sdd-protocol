@@ -71,9 +71,8 @@ test('native child identity uses explicit coordinator scope but cannot inherit a
 });
 test('startup lifecycle retains task and shared knowledge and headless runs skip only orientation',t=>{
  const dir=repo(t);applySetup(planSetup(dir,config()));fs.appendFileSync(path.join(dir,'.agents/memory/INDEX.md'),'\nUse idempotency key amber-42.\n');
- for(const source of ['startup','resume','compact','clear','unknown']) {
-  const output=evaluateHook('start',{cwd:dir,source,session_id:'one'},{});assert.match(output.hookSpecificOutput.additionalContext,/amber-42/);assert.match(output.hookSpecificOutput.additionalContext,/preserve the task and prior approvals/);
- }
+ const first=evaluateHook('start',{cwd:dir,source:'startup',session_id:'one'},{});assert.match(first.hookSpecificOutput.additionalContext,/plain-English/);assert.match(first.hookSpecificOutput.additionalContext,/Preserve the task and prior approvals/);assert.ok(!first.hookSpecificOutput.additionalContext.includes('amber-42'));
+ for(const source of ['startup','resume','compact','clear','unknown'])assert.deepEqual(evaluateHook('start',{cwd:dir,source,session_id:'one'},{}),{});
  assert.deepEqual(evaluateHook('start',{cwd:dir},{ARTI_HEADLESS_REVIEW:'1'}),{});
  assert.equal(evaluateHook('pre',{cwd:dir,session_id:'one',tool_name:'Write',tool_input:{path:'README.md'}},{ARTI_HEADLESS_REVIEW:'1'}).hookSpecificOutput.permissionDecision,'deny');
  landingLock(dir,'acquire','T001','one');assert.equal(evaluateHook('stop',{cwd:dir,session_id:'one'}).decision,'block');

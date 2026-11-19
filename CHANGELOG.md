@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.5.0 — 2026-11-19
+
+- Separate executable candidate checks from model-review size restrictions.
+- Inspect current baseline script/lockfile provenance and reject missing approved npm scripts.
+- Add a researcher candidate and optional pinned last30days collector using a 90-day multi-source window, with explicit coverage gaps.
+- Reserve concise automatic orientation once per native session while preserving ownership checks.
+- Add bounded draft-ticket creation without granting approval or implementation claims.
+- Explain dependency versus territory readiness and conservatively classify consequences for risk review.
+- Add verified Codex metadata naming and an optional official Claude SDK metadata fallback, with unchanged-message and persistent-title checks.
+- Add authoritative GitHub contracts with frozen local approval, interruption-safe draft allocation and a persistent hosted Projects portfolio.
+- Add bounded native wait/continuation adapters, current acceptance before final review, canonical corrective-delta/interaction coverage and repeated-failure diagnosis.
+- Qualify all six roles on both native hosts, both production cross-lab review directions, corrective review, native continuations and persistent hosted-board lifecycles.
+- Pass 174 deterministic regressions and export/privacy checks; downstream adoption remains owner-led.
+
 ## 0.4.1
 
 - Explain the charter-to-ticket delivery loop, optional board design and update propagation; reprice historical tokens under explicit corrected-routing scenarios.

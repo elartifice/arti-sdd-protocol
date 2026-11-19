@@ -46,3 +46,4 @@ test('remote compare-and-create rejects the second clone even from an identical 
  assert.throws(()=>acquireClaim(b,'T001','two',{remote:'origin'}),/compare-and-create/);
  releaseClaim(a,'T001','one');assert.equal(acquireClaim(b,'T001','two',{remote:'origin'}).session,'two');
 });
+test('distinct literal files with a shared prefix remain independently claimable; blocked tickets refuse',t=>{const dir=repo(t);seedTicket(dir,'T001',['src/foo.js']);seedTicket(dir,'T002',['src/foo.js.map']);seedTicket(dir,'T003',['other/**']);const f=path.join(dir,'arti_sdd/tickets/T003.md');fs.writeFileSync(f,fs.readFileSync(f,'utf8').replace('status: "open"','status: "blocked"'));commitPlanning(dir);acquireClaim(dir,'T001','one');assert.equal(acquireClaim(dir,'T002','two').status,'active');assert.throws(()=>acquireClaim(dir,'T003','three'),/blocked/);});
