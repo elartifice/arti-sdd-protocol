@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {validateTracker} from './tracker.mjs';
 import { invariant, readText, args, isMain, cli } from './lib.mjs';
 
 const object=(x,name)=>invariant(x&&typeof x==='object'&&!Array.isArray(x),`${name} must be an object`);
@@ -9,7 +10,7 @@ function keys(value, allowed, name, required=allowed) {
 }
 const member=(x,allowed,name)=>invariant(allowed.includes(x),`Invalid or undecided ${name}: ${JSON.stringify(x)}`);
 export function validateConfig(config,{draft=false}={}) {
-  keys(config,['schema_version','project','facts','hosts','decisions','notes','deferred','default_branch'],'config',['schema_version','project','facts','hosts','decisions']);
+  keys(config,['schema_version','project','facts','hosts','decisions','notes','deferred','default_branch','tracker'],'config',['schema_version','project','facts','hosts','decisions']);
   invariant(config.schema_version===2,'Unsupported schema_version; migrate the old charter explicitly');
   invariant(typeof config.project==='string'&&/^[a-z0-9][a-z0-9-]{0,63}$/.test(config.project),'Invalid project slug');
   if(Object.hasOwn(config,'default_branch'))invariant(typeof config.default_branch==='string'&&/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(config.default_branch)&&!config.default_branch.includes('..')&&!/^(t|refs)\//.test(config.default_branch),'Invalid integration branch');
@@ -19,13 +20,16 @@ export function validateConfig(config,{draft=false}={}) {
   for(const h of config.hosts)member(h,['claude','codex','other'],'host');
   const d=config.decisions;
   keys(d,['merge','planning','qa','team','review','review_risks','board'],'decisions');
-  for(const[k,choices]of Object.entries({merge:['manual','auto'],planning:['committed'],qa:['checks','checklist','recorded'],team:['single','custom'],review:['required','risk','opportunistic','disabled'],board:['markdown','visual']})) {
+  for(const[k,choices]of Object.entries({merge:['manual','auto'],planning:['committed','github'],qa:['checks','checklist','recorded'],team:['single','custom'],review:['required','risk','opportunistic','disabled'],board:['markdown','github','visual']})) {
     if(draft&&d[k]===null)continue;
     member(d[k],choices,`decisions.${k}`);
   }
   invariant(Array.isArray(d.review_risks)&&d.review_risks.every(x=>typeof x==='string'&&/^[a-z][a-z0-9-]*$/.test(x)),'review_risks must be labels');
   invariant(d.review!=='risk'||d.review_risks.length>0,'Risk policy requires explicit risk labels');
   invariant(!['required','risk'].includes(d.review)||d.team==='custom'||draft&&d.team===null,'Required review needs an explicit custom reviewer mapping; single-agent mode cannot satisfy it');
+  if(d.planning==='github')validateTracker(config.tracker);
+  else invariant(!config.tracker,'Tracker settings require explicit GitHub planning');
+  invariant(d.board!=='github'||d.planning==='github','GitHub board requires GitHub planning');
   if(config.notes) {object(config.notes,'notes');for(const v of Object.values(config.notes))invariant(typeof v==='string','Decision notes must be text');}
   if(config.deferred) {keys(config.deferred,['board','recorder','backup','deploy','tracker'],'deferred',[]);for(const v of Object.values(config.deferred))member(v,['later','disabled'],'deferred module');}
   const strings=value=>typeof value==='string'?[value]:value&&typeof value==='object'?Object.values(value).flatMap(strings):[];

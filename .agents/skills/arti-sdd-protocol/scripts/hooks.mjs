@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
+import { reserveOrientation } from './orientation.mjs';
 import { invariant,repoInfo,readJson,readText,sessionId,redact,isMain,digest } from './lib.mjs';
 import { activeTicket,checkPaths,extractPatch,mapPath } from './scope.mjs';
 import { binding,validateTeam,teamOperations } from './team.mjs';
@@ -38,10 +39,10 @@ export function evaluateHook(action,input,env=process.env) {
     if(action==='pre')checkRoleDispatch(input.cwd||process.cwd(),String(input.tool_name||''),input.tool_input);
     if(action==='start') {
       if(env.ARTI_HEADLESS_REVIEW==='1')return {};
-      const info=repoInfo(input.cwd||process.cwd());
-      const memory=path.join(info.root,'.agents/memory/INDEX.md');
-      const knowledge=fs.existsSync(memory)?readText(memory).slice(0,4000):'Shared knowledge index is missing; report it.';
-      return context('SessionStart',`Read AGENTS.md and the active ticket/spec. ${knowledge}\nCoordination session: ${env.ARTI_SESSION_ID||input.session_id||'unavailable; obtain the native session ID before claiming'}. Use this exact ID for claims and locks; delegated CLI processes inherit it through ARTI_SESSION_ID.\nOn first interactive orientation without a concrete task, recommend ready work. On an active task, direct ticket request, resume, compaction or repeated delivery, preserve the task and prior approvals and continue authorised work. Headless review skips orientation only.`);
+      const presentation=reserveOrientation(input,env);
+      if(presentation.diagnostic)return context('SessionStart',presentation.diagnostic);
+      if(!presentation.show)return {};
+      return context('SessionStart',`Read AGENTS.md, the selected ticket/spec and relevant .agents/memory/INDEX.md. Give a short plain-English introduction: what the ticket is about, what it will achieve, why it matters, practical steps and observable completion evidence. Keep counts/locks/raw diagnostics out of the greeting unless actionable. An explicit opening task supplies scope: continue authorised work without asking again. Otherwise recommend ready work and ask only for missing selection. Preserve the task and prior approvals. Native chat: ${presentation.native_session}. Coordination scope: ${env.ARTI_SESSION_ID||presentation.native_session}; delegated ownership scope is not native chat identity. Refresh actual ownership, dependencies and scope when claiming even when orientation is quiet. Context reservation is not proof of UI delivery.`);
     }
     if(action==='stop') {
       if(input.stop_hook_active||env.ARTI_HEADLESS_REVIEW==='1')return {};
@@ -86,18 +87,21 @@ export function evaluateHook(action,input,env=process.env) {
     return deny(error.message);
   }
 }
-export async function runHook(action) {
+export async function runHook(action,host='') {
+  invariant(['','claude','codex'].includes(host),'Unknown native hook host');
+  const hookEnv={...process.env,...(host?{ARTI_NATIVE_HOST:host}:{})};
   let raw='';for await(const chunk of process.stdin)raw+=chunk;
-  let output,input;try{input=JSON.parse(raw||'{}');output=evaluateHook(action,input);}catch{output=action==='pre'?deny('Malformed hook JSON'):action==='stop'?{decision:'block',reason:'Malformed stop hook input; landing lock check unavailable'}:context('SessionStart','Hook input unavailable; preserve the active task.');}
+  let output,input;try{input=JSON.parse(raw||'{}');output=evaluateHook(action,input,hookEnv);}catch{output=action==='pre'?deny('Malformed hook JSON'):action==='stop'?{decision:'block',reason:'Malformed stop hook input; landing lock check unavailable'}:context('SessionStart','Hook input unavailable; preserve the active task.');}
   if(process.env.ARTI_HOOK_AUDIT_FILE&&input) {
     try{const info=repoInfo(input.cwd||process.cwd()),file=path.resolve(process.env.ARTI_HOOK_AUDIT_FILE);invariant(file.startsWith(info.state+path.sep),'Hook audit must stay in private runtime state');fs.mkdirSync(path.dirname(file),{recursive:true,mode:0o700});invariant(!fs.existsSync(file)||!fs.lstatSync(file).isSymbolicLink(),'Audit link refused');fs.appendFileSync(file,JSON.stringify({at:new Date().toISOString(),action,session:process.env.ARTI_SESSION_ID||input.session_id,tool:input.tool_name||null,target:input.tool_input?.file_path||input.tool_input?.path||input.tool_input?.notebook_path||null,input_sha256:digest(raw),decision:output.hookSpecificOutput?.permissionDecision||'allow',reason:output.hookSpecificOutput?.permissionDecisionReason||null})+'\n',{mode:0o600});}catch(error){if(action==='pre')output=deny(`Required audit failed: ${error.message}`);}
   }
   process.stdout.write(JSON.stringify(output)+'\n');
 }
-export function hookCommand(action) {
+export function hookCommand(action,host='') {
+  invariant(['','claude','codex'].includes(host),'Unknown native hook host');
   invariant(['pre','start','stop'].includes(action),'Invalid hook action');
   const fallback=action==='pre'?deny('Required hook module could not load'):action==='stop'?{decision:'block',reason:'Required stop check could not load'}:context('SessionStart','Arti orientation code missing; report the missing check without resetting the active task.');
-  const code=`const ARTI_SDD_HOOK_VERSION=1;try{const p=require('node:child_process').execFileSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8'}).trim();import(require('node:url').pathToFileURL(require('node:path').join(p,'.agents/skills/arti-sdd-protocol/scripts/hooks.mjs')).href).then(m=>m.runHook('${action}')).catch(()=>process.stdout.write(${JSON.stringify(JSON.stringify(fallback)+'\n')}));}catch{process.stdout.write(${JSON.stringify(JSON.stringify(fallback)+'\n')});}`;
+  const code=`const ARTI_SDD_HOOK_VERSION=1;try{const p=require('node:child_process').execFileSync('git',['rev-parse','--show-toplevel'],{encoding:'utf8'}).trim();import(require('node:url').pathToFileURL(require('node:path').join(p,'.agents/skills/arti-sdd-protocol/scripts/hooks.mjs')).href).then(m=>m.runHook('${action}','${host}')).catch(()=>process.stdout.write(${JSON.stringify(JSON.stringify(fallback)+'\n')}));}catch{process.stdout.write(${JSON.stringify(JSON.stringify(fallback)+'\n')});}`;
   return `node -e '${code.replace(/'/g,"'\\''")}'`;
 }
 export function ownedHooks(text) {
@@ -114,11 +118,11 @@ export function ownedHooks(text) {
   }
   return result;
 }
-export function mergeHooks(text='{}') {
+export function mergeHooks(text='{}',host='') {
   const obj=JSON.parse(text),old=ownedHooks(text);obj.hooks??={};
   for(const event of Object.keys(old))obj.hooks[event]=obj.hooks[event].filter(b=>!old[event].includes(b)&&!b.hooks.some(h=>h.command?.includes('ARTI_SDD_HOOK_VERSION=1')));
   for(const [event,action,matcher]of [['SessionStart','start',''],['PreToolUse','pre','Edit|Write|MultiEdit|NotebookEdit|apply_patch|Bash|Agent|spawn_agent|collaboration.spawn_agent|collaborationspawn_agent'],['Stop','stop','']]) {
-    (obj.hooks[event]??=[]).push({matcher,hooks:[{type:'command',command:hookCommand(action),timeout:10}]});
+    (obj.hooks[event]??=[]).push({matcher,hooks:[{type:'command',command:hookCommand(action,host),timeout:10}]});
   }
   return JSON.stringify(obj,null,2)+'\n';
 }

@@ -22,7 +22,7 @@ test('changing the candidate review policy cannot turn a required gate into disa
  const {dir}=fixture(t),file=path.join(dir,'arti_sdd/config.json'),c=readJson(file);c.decisions.review='disabled';fs.writeFileSync(file,JSON.stringify(c));git(dir,'add','.');git(dir,'commit','-qm','disable review');assert.throws(()=>snapshot(dir,'T001','base'),/Approved setup decisions changed/);
 });
 test('DoD evidence may change while the approved execution contract remains fixed',t=>{
- const {dir,file}=fixture(t);acquireClaim(dir,'T001','owner');fs.writeFileSync(file,fs.readFileSync(file,'utf8').replace('- [ ] Behavior passes','- [x] Behavior passes: actual evidence'));git(dir,'add','.');git(dir,'commit','-qm','evidence');assert.match(snapshot(dir,'T001','base').ticket.text,/actual evidence/);
+ const {dir,file}=fixture(t);acquireClaim(dir,'T001','owner');fs.writeFileSync(file,fs.readFileSync(file,'utf8').replace('- [ ] Behavior passes','- [x] Behavior passes')+'\n## Evidence\nactual evidence\n');git(dir,'add','.');git(dir,'commit','-qm','evidence');assert.match(snapshot(dir,'T001','base').ticket.text,/actual evidence/);
 });
 test('an unsatisfiable required reviewer setup is refused before writing files',t=>{
  const dir=repo(t),c=config();c.decisions.review='required';assert.throws(()=>planSetup(dir,c),/reviewer mapping/);assert.equal(fs.existsSync(path.join(dir,'AGENTS.md')),false);

@@ -29,6 +29,6 @@ Use the helpers for deterministic setup, guards, claims and reviews. Fail closed
 
 Required review passes only for the exact candidate snapshot with a qualified binding, complete coverage and a valid final response. Missing authentication/model/base, startup chatter, truncation and stale evidence cannot become a pass. Same-lab review remains labelled same-lab.
 
-Optional board, recording, deployment, tracker and backup modules are described in [optional.md](references/optional.md); they are not installed by this core. Never claim those modules are verified. Preserve consent, real evidence, cleanup decisions and raw latency when adopting one.
+Optional hosted board, continuation, research and other modules are described in [optional.md](references/optional.md); select and qualify adapters separately. Report only the exact behavior and support level actually verified. Preserve consent, real evidence, cleanup decisions and raw latency when adopting one.
 
 Finish with what was installed, what actually passed, remaining limitations, and the next ticket or command. Keep receipts private unless a sanitised report is explicitly selected for sharing. Never publish, deploy, send messages or change global configuration merely because the skill was invoked.

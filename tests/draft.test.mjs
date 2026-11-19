@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import {repo,config,commitPlanning} from './harness.mjs';
+import {applySetup,planSetup} from '../.agents/skills/arti-sdd-protocol/scripts/setup.mjs';
+import {draftTicket} from '../.agents/skills/arti-sdd-protocol/scripts/draft.mjs';
+import {acquireClaim} from '../.agents/skills/arti-sdd-protocol/scripts/claim.mjs';
+import {repoInfo} from '../.agents/skills/arti-sdd-protocol/scripts/lib.mjs';
+test('fresh drafting allocates records without granting claim, approval or product-write authority',t=>{
+ const dir=repo(t);applySetup(planSetup(dir,config()));commitPlanning(dir);
+ const input={session:'fresh',authorization:'Create a draft ticket',title:'Fix parsing',goal:'Reject bad input',territory:['src/**']};
+ assert.throws(()=>draftTicket(dir,{...input,authorization:''}),/authorized scope/);
+ const first=draftTicket(dir,input),second=draftTicket(dir,{...input,session:'other'});assert.notEqual(first.ticket,second.ticket);assert.equal(first.claimed,false);assert.equal(first.approved,false);
+ assert.equal(fs.existsSync(path.join(repoInfo(dir).state,'claims')),false);
+ assert.throws(()=>acquireClaim(dir,first.ticket,'fresh'),/Approved integration ticket|approved integration ticket/);
+ assert.equal(fs.existsSync(path.join(dir,'src')),false);
+ fs.mkdirSync(path.join(repoInfo(dir).state,'draft-allocation.lock'));
+ assert.throws(()=>draftTicket(dir,input),/busy or interrupted/);
+});

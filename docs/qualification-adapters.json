@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "version": "0.5.0",
+  "status": "passed",
+  "package_sha256": "e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0",
+  "source_sha256": "525520a52440c9e71e666293d23e023c5804ddbded74e46a7f6819cdea0c491d",
+  "github_tracker": {
+    "status": "passed",
+    "package_sha256": "e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0",
+    "checks": [
+      "actual-authoritative-issue",
+      "frozen-approved-contract",
+      "normal-claim",
+      "real-source-assertion",
+      "web-editor-CRLF-and-checkbox-progress-without-approval-change",
+      "exact-tested-merge-tree",
+      "verified-closeout-before-remote-close",
+      "closed-readback",
+      "private-claim-release",
+      "persisted-CRLF-body-readback"
+    ],
+    "scope": "Disposable upstream-only fixture; no downstream adoption."
+  },
+  "github_board": {
+    "status": "passed",
+    "checked_at": "2026-11-19",
+    "package_sha256": "e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0",
+    "checks": [
+      "actual-private-project-create-and-readback",
+      "selected-upstream-issues-only",
+      "idempotent-sync-without-duplicate-cards",
+      "hosted-board-and-table-views",
+      "repository-association-readback",
+      "card-moves-cannot-auto-close-issues",
+      "no-automatic-sub-issue-expansion"
+    ],
+    "native_runs": [
+      {
+        "host": "claude",
+        "status": "passed",
+        "checks": [
+          "actual-native-helper-command",
+          "selected-upstream-only",
+          "idempotent-project-link",
+          "hosted-readback",
+          "actual-fixture-ticket-landing",
+          "claim-release",
+          "worktree-removal",
+          "same-project-after-native-session-exit-and-cleanup",
+          "no-product-mutations"
+        ]
+      },
+      {
+        "host": "codex",
+        "status": "passed",
+        "checks": [
+          "actual-native-helper-command",
+          "selected-upstream-only",
+          "idempotent-project-link",
+          "hosted-readback",
+          "actual-fixture-ticket-landing",
+          "claim-release",
+          "worktree-removal",
+          "same-project-after-native-session-exit-and-cleanup",
+          "no-product-mutations"
+        ]
+      }
+    ],
+    "scope": "One explicitly selected upstream repository; no downstream adoption. Multi-repository identity and pagination have deterministic fixture coverage; a live multi-repository portfolio was not exercised.",
+    "qualification": "Component-only native board probe on the unchanged fully qualified core; it does not replace the complete 2026-11-17 native profile."
+  },
+  "compaction_runs": [
+    {
+      "host": "claude",
+      "status": "passed",
+      "compaction_observed": true,
+      "task_approval_retained": true,
+      "route": "native-compact-hook",
+      "startup_events": [
+        {
+          "source": "startup",
+          "quiet": false
+        },
+        {
+          "source": "resume",
+          "quiet": true
+        },
+        {
+          "source": "compact",
+          "quiet": true
+        },
+        {
+          "source": "resume",
+          "quiet": true
+        }
+      ],
+      "package_sha256": "e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0"
+    },
+    {
+      "host": "codex",
+      "status": "passed",
+      "compaction_observed": true,
+      "task_approval_retained": true,
+      "route": "app-server-contextCompaction-and-CLI-resume",
+      "startup_events": [
+        {
+          "source": "startup",
+          "quiet": false
+        },
+        {
+          "source": "resume",
+          "quiet": true
+        }
+      ],
+      "package_sha256": "e4b80640567b3d69a7e14a1b74a70d99eff4b075ad2b15c57b18067545b85ca0"
+    }
+  ]
+}

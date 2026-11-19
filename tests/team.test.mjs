@@ -35,3 +35,6 @@ test('only complete matching role and repeated review evidence can qualify a con
  assert.throws(()=>inspectTeam(dir,{requireLive:true,versionOf:()=> 'fixture 2'}),/not live-qualified/);
  const single=repo(t),one=config();one.hosts=['claude'];one.decisions.team='custom';one.decisions.review='required';applySetup(planSetup(single,one,{team}));const scoped=structuredClone(report);scoped.team_fingerprint=teamFingerprint(single,team,one.hosts);assert.equal(recordQualification(single,scoped,{versionOf:()=> 'fixture 1'}).status,'qualified');assert.equal(readJson(path.join(repoInfo(single).state,'qualification/bindings.json')).entries.codex.status,'passed');assert.equal(fs.existsSync(path.join(single,'.codex/agents')),false);
 });
+test('canonical role sources cannot follow a link into unrelated private files',async t=>{
+ const {teamOperations}=await import('../.agents/skills/arti-sdd-protocol/scripts/team.mjs');const dir=repo(t),team=mapping();applySetup(planSetup(dir,config({...config(),decisions:{...config().decisions,team:'custom'}}),{team}));const target=path.join(dir,'.agents/roles/scout.md');fs.unlinkSync(target);fs.writeFileSync(path.join(dir,'fixture-private.txt'),'fixture-only-private-placeholder');fs.symlinkSync('../../fixture-private.txt',target);assert.throws(()=>teamOperations(dir,team,['claude','codex']),/regular files/);
+});

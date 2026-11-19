@@ -18,3 +18,7 @@ test('only the real skill entry is discoverable and all templates are inert', ()
   assert.deepEqual(entries,[`${root}/SKILL.md`]);
   assert.ok(fs.readdirSync(`${root}/templates`).every(x=>x.endsWith('.tmpl')));
 });
+test('a native pass alone cannot certify a missing, stale or failed hosted adapter',async()=>{
+ const {qualificationGate}=await import('../dev/package.mjs');const report={kind:'release',status:'passed',package_sha256:'package',native_runs:Array(12).fill({}),dispatch_runs:Array(2).fill({}),continuation_runs:Array(2).fill({}),naming_runs:Array(2).fill({}),correction_runs:Array(2).fill({})};
+ const adapters={status:'passed',package_sha256:'package',source_sha256:'adapters',github_tracker:{status:'passed'},github_board:{status:'passed'},compaction_runs:[{host:'claude',status:'passed'},{host:'codex',status:'passed'}]};assert.equal(qualificationGate(report,adapters,'package','adapters'),true);assert.throws(()=>qualificationGate(report,null,'package','adapters'),/Selected adapters/);assert.throws(()=>qualificationGate(report,{...adapters,github_board:{status:'pending-authentication'}},'package','adapters'),/Selected adapters/);assert.throws(()=>qualificationGate(report,adapters,'package','changed-adapter'),/Selected adapters/);
+});

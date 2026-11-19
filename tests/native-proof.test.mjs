@@ -34,3 +34,17 @@ test('child test proof requires exact successful native child tool execution',()
  const codex={thread:{turns:[{status:'completed',items:[{type:'commandExecution',status:'completed',exitCode:0,commandActions:[{type:'unknown',command:cmd}]}]}]}};assert.equal(nativeTestRun('codex',codex,cmd),true);
  for(const mutate of [x=>x.thread.turns[0].items[0].exitCode=1,x=>x.thread.turns[0].items[0].commandActions.push({command:'echo ok'}),x=>x.thread.turns[0].items[0].commandActions[0].command=cmd+' && echo ok',x=>x.thread.turns.push({status:'inProgress',items:[]}),x=>x.thread.turns[0].items=[{type:'agentMessage',text:'tests passed'}]]){const x=structuredClone(codex);mutate(x);assert.throws(()=>nativeTestRun('codex',x,cmd));}
 });
+
+test('primary command proof consumes exact successful tool output despite misleading assistant prose',async()=>{
+ const {nativeCommandOutput,exactNativeCommand}=await import('../dev/native-proof.mjs');
+ const cmd=`node 'helper.mjs' --issues '["owner/repo"]'`,output='{"status":"verified"}';
+ const claude=[{type:'assistant',message:{content:[{type:'tool_use',id:'run',name:'Bash',input:{command:cmd}}]}},{type:'user',message:{content:[{type:'tool_result',tool_use_id:'run',is_error:false,content:output}]},tool_use_result:{stdout:output,interrupted:false}},{type:'assistant',message:{content:[{type:'text',text:'I ran it successfully.'}]}}];
+ assert.equal(nativeCommandOutput('claude',claude,cmd),output);
+ for(const mutate of [x=>x[0].message.content[0].input.command+='; echo forged',x=>x[1].message.content[0].tool_use_id='unrelated',x=>x[1].message.content[0].is_error=true,x=>x[1].tool_use_result.interrupted=true,x=>x[0].parent_tool_use_id='child',x=>x.push(x[1])]){const x=structuredClone(claude);mutate(x);assert.throws(()=>nativeCommandOutput('claude',x,cmd));}
+ const wrapped='/bin/zsh -lc "'+cmd.replace(/[\\"$`]/g,c=>'\\'+c)+'"';assert.equal(exactNativeCommand(wrapped,cmd),true);
+ const codex=[{type:'item.completed',item:{type:'command_execution',command:wrapped,status:'completed',exit_code:0,aggregated_output:output}},{type:'item.completed',item:{type:'agent_message',text:'This is only a recap'}}];
+ assert.equal(nativeCommandOutput('codex',codex,cmd),output);
+ for(const mutate of [x=>x[0].item.command+='; echo forged',x=>x[0].item.exit_code=1,x=>x[0].item.status='failed',x=>x[0].type='item.started',x=>x.push(x[0])]){const x=structuredClone(codex);mutate(x);assert.throws(()=>nativeCommandOutput('codex',x,cmd));}
+ for(const raw of [wrapped+' && true','/bin/zsh -lc "'+cmd+'"','echo '+cmd])assert.equal(exactNativeCommand(raw,cmd),false);
+ assert.throws(()=>nativeCommandOutput('claude',[claude[2]],cmd));assert.throws(()=>nativeCommandOutput('codex',[codex[1]],cmd));
+});
